@@ -7,5 +7,5 @@ public interface UserSync {
 
     void sync(Long startId);
 
-    void wechatSync(String wxUnionId);
+    void wechatSync();
 }

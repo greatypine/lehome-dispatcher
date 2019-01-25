@@ -16,8 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Field;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringBootTest(classes = ServiceApplication.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = ServiceApplication.class)
 public class HouseholdServiceImplTest {
 
 

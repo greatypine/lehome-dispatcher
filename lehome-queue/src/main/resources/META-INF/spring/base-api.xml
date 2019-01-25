@@ -25,6 +25,5 @@
     <import resource="classpath*:provider/base-api/content-service.xml"/>
     <import resource="classpath*:provider/base-api/operation-service.xml"/>
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
-    <import resource="classpath*:provider/base-api/oauth2-service.xml"/>
 
 </beans>

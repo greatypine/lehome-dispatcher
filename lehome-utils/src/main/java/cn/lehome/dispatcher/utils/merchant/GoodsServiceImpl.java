@@ -1,30 +1,20 @@
 package cn.lehome.dispatcher.utils.merchant;
 
-import cn.lehome.base.api.business.bean.ecommerce.goods.GoodsCatalog;
-import cn.lehome.base.api.business.bean.ecommerce.goods.GoodsSpuIndex;
-import cn.lehome.base.api.business.bean.ecommerce.goods.QGoodsSpuIndex;
 import cn.lehome.base.api.business.bean.response.goods.GoodsInfo;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsCatalogApiService;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsSpuIndexApiService;
 import cn.lehome.base.api.business.service.goods.GoodsInfoApiService;
 import cn.lehome.base.api.business.service.goods.GoodsInfoIndexApiService;
-import cn.lehome.bean.business.enums.ecommerce.goods.GoodsType;
-import cn.lehome.bean.business.enums.ecommerce.goods.SaleStatus;
 import cn.lehome.bean.business.merchant.search.GoodsInfoIndexEntity;
 import cn.lehome.dispatcher.utils.es.util.EsFlushUtil;
-import cn.lehome.framework.base.api.core.compoment.request.ApiPageRequestHelper;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.BeanMapping;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -40,13 +30,7 @@ public class GoodsServiceImpl implements GoodsService{
     private GoodsInfoIndexApiService goodsInfoIndexApiService;
 
     @Autowired
-    private GoodsSpuIndexApiService goodsSpuIndexApiService;
-
-    @Autowired
     private ThreadPoolExecutor userTaskThreadPool;
-
-    @Autowired
-    private GoodsCatalogApiService goodsCatalogApiService;
 
 
     @Override
@@ -67,35 +51,6 @@ public class GoodsServiceImpl implements GoodsService{
         }else{
             System.out.println("参数错误");
         }
-    }
-
-    @Override
-    public void refreshGoodsNum(String[] input) {
-        int pageIndex = 0;
-        int pageSize = 20;
-        if (input.length == 2 ) {
-            pageIndex = Integer.valueOf(input[1]);
-        }
-        if (input.length == 3 ) {
-            pageSize = Integer.valueOf(input[1]);
-        }
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLikes(QGoodsSpuIndex.saleStatus, Lists.newArrayList(SaleStatus.SHELF.name(), SaleStatus.SHELVES.name()))
-                .filterLikes(QGoodsSpuIndex.goodsType, Lists.newArrayList(GoodsType.NORMAL.name(), GoodsType.SHOPGIFT.name()));
-        ApiRequestPage apiRequestPage = ApiRequestPage.newInstance().paging(pageIndex,pageSize);
-        List<GoodsSpuIndex> goodsSpuIndexList = ApiPageRequestHelper.request(apiRequest, apiRequestPage, goodsSpuIndexApiService::findAll);
-
-        Map<Long, Integer> cataLogGoodsNumMap = Maps.newHashMap();
-        goodsSpuIndexList.forEach(e -> {
-            cataLogGoodsNumMap.put(e.getFirstGoodsCatalogId(), cataLogGoodsNumMap.get(e.getFirstGoodsCatalogId())==null ? 1 : (cataLogGoodsNumMap.get(e.getFirstGoodsCatalogId())+1));
-            cataLogGoodsNumMap.put(e.getSecondGoodsCatalogId(), cataLogGoodsNumMap.get(e.getSecondGoodsCatalogId())==null ? 1 : (cataLogGoodsNumMap.get(e.getSecondGoodsCatalogId())+1));
-        });
-        cataLogGoodsNumMap.keySet().parallelStream().forEach(e -> updateCatalogGoodsNum(e, cataLogGoodsNumMap.get(e)));
-    }
-
-    private void updateCatalogGoodsNum(Long goodsCatalogId, Integer goodsNum) {
-        GoodsCatalog goodsCatalog = goodsCatalogApiService.get(goodsCatalogId);
-        goodsCatalog.setGoodsNum(goodsNum);
-        goodsCatalogApiService.update(goodsCatalog);
     }
 
     private void deleteGoodsInfoIndex(int pageIndex) {
