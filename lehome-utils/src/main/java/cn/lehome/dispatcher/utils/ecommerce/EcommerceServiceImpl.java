@@ -14,6 +14,7 @@ import cn.lehome.base.api.business.service.ecommerce.order.OrderDetailApiService
 import cn.lehome.base.api.business.service.ecommerce.pay.PayRecordApiService;
 import cn.lehome.base.api.business.service.ecommerce.store.StoreApiService;
 import cn.lehome.base.api.business.service.ecommerce.store.StoreGoodsRelationshipApiService;
+import cn.lehome.base.api.business.utils.EcommerceConstant;
 import cn.lehome.base.api.oauth2.bean.user.UserAccount;
 import cn.lehome.base.api.oauth2.bean.user.UserAccountDetails;
 import cn.lehome.base.api.oauth2.service.user.UserAccountApiService;
@@ -25,12 +26,14 @@ import cn.lehome.bean.business.entity.search.ecommerce.order.OrderBackIndexEntit
 import cn.lehome.bean.business.entity.search.ecommerce.order.OrderDetailIndexEntity;
 import cn.lehome.bean.business.entity.search.ecommerce.order.OrderIndexEntity;
 import cn.lehome.bean.business.entity.search.ecommerce.pay.PayRecordIndexEntity;
+import cn.lehome.bean.business.enums.ecommerce.goods.GoodsType;
 import cn.lehome.bean.business.enums.ecommerce.goods.UrlType;
 import cn.lehome.dispatcher.utils.es.util.EsFlushUtil;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.BeanMapping;
+import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +84,16 @@ public class EcommerceServiceImpl implements EcommerceService{
     private UserAccountApiService userAccountApiService;
 
     @Autowired
+    private OrderBackApiService orderBackApiService;
+
+    @Autowired
     private GoodsGroupbuyApiService goodsGroupbuyApiService;
 
     @Autowired
-    private OrderBackApiService orderBackApiService;
+    private GoodsSpuIndexApiService goodsSpuIndexApiService;
 
+    @Autowired
+    private GoodsSkuIndexApiService goodsSkuIndexApiService;
 
     @Override
     public void updateEcommerceData(String [] input) {
@@ -104,9 +112,82 @@ public class EcommerceServiceImpl implements EcommerceService{
         if ("updateOrderInfoIndex".equals(option)){
             this.flushIndex();
         }
+        if ("updateGroupGoodsInfoIndex".equals(option)){
+            this.updateGroupGoodsInfoIndex();
+        }
     }
 
+    private void updateGroupGoodsInfoIndex() {
+        int count = 0;
+        int pageIndex = 0;
+        int pageSize = 100;
+        ApiRequestPage apiRequestPage = ApiRequestPage.newInstance();
+        apiRequestPage.paging(pageIndex,pageSize);
+        ApiResponse<GoodsGroupbuy>  response = goodsGroupbuyApiService.findAll(ApiRequest.newInstance(),apiRequestPage);
+        System.out.println("刷新团购商品索引信息开始...");
+        while(response.getPagedData().size()>0){
+            count += response.getPagedData().size();
+            List<GoodsSpuIndexEntity> goodsSpuIndexEntities = Lists.newArrayList();
+            List<GoodsSkuIndexEntity> goodsSkuIndexEntities = Lists.newArrayList();
+            List<GoodsGroupbuy> goodsGroupbuys = Lists.newArrayList(response.getPagedData());
+            goodsGroupbuys.forEach(goodsGroupbuy -> {
+                GoodsSpuIndexEntity goodsSpuIndexEntity = this.convertGroupGoodsSpuIndexEntity(goodsGroupbuy);
+                goodsSpuIndexEntities.add(goodsSpuIndexEntity);
 
+                this.convertGroupGoodsSkuIndexEntity(goodsGroupbuy,goodsSkuIndexEntities);
+            });
+            EsFlushUtil.getInstance().batchInsert(goodsSpuIndexEntities);
+            EsFlushUtil.getInstance().batchInsertChild(goodsSkuIndexEntities,QGoodsSkuIndex.goodsId);
+            pageIndex++;
+            apiRequestPage.paging(pageIndex,pageSize);
+            response = goodsGroupbuyApiService.findAll(ApiRequest.newInstance(),apiRequestPage);
+        }
+        System.out.println("刷新团购商品索引完毕共" + count + "条数据");
+    }
+
+    private List<GoodsSkuIndexEntity> convertGroupGoodsSkuIndexEntity(GoodsGroupbuy goodsGroupbuy,List<GoodsSkuIndexEntity> goodsSkuIndexEntities ) {
+        //团购商品规格信息设置
+        BigDecimal discount = goodsGroupbuy.getDiscount();
+        String goodsId = goodsGroupbuy.getGoodsId().toString();
+        String goodsGroupBuyId = goodsGroupbuy.getId().toString();
+        List<GoodsSkuIndex> goodsSkuIndexList = goodsSkuIndexApiService.findByGoodsId(goodsId);
+        //过滤删除的规格
+        List<GoodsSkuIndex> newGoodsSkuIndex = goodsSkuIndexList.stream().filter(goodsSkuIndex -> EnableDisableStatus.ENABLE.equals(goodsSkuIndex.getStatus())).collect(Collectors.toList());
+        for (GoodsSkuIndex goodsSkuIndex : newGoodsSkuIndex) {
+            String groupSpuId = String.format("%s%s", EcommerceConstant.GOODS_GROUP_ID_PREFIX, goodsGroupBuyId);
+            String groupSkuId = String.format("%s%s_%s", EcommerceConstant.GOODS_GROUP_ID_PREFIX, goodsGroupBuyId, goodsSkuIndex.getId());
+            BigDecimal discountPrice = discount.multiply(goodsSkuIndex.getGoodsPrice()).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP);
+            BigDecimal newDiscountPrice = discountPrice.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal(1) : discountPrice;
+
+            goodsSkuIndex.setGoodsPrice(newDiscountPrice);//设置商品规格团购折扣后的价格
+            goodsSkuIndex.setGoodsId(groupSpuId);
+            goodsSkuIndex.setId(groupSkuId);
+            GoodsSkuIndexEntity goodsSkuIndexEntity =  BeanMapping.map(goodsSkuIndex,GoodsSkuIndexEntity.class);
+            goodsSkuIndexEntities.add(goodsSkuIndexEntity);
+        }
+        return goodsSkuIndexEntities;
+    }
+
+    private GoodsSpuIndexEntity convertGroupGoodsSpuIndexEntity(GoodsGroupbuy goodsGroupbuy) {
+        BigDecimal discount = goodsGroupbuy.getDiscount();
+        String goodsId = goodsGroupbuy.getGoodsId().toString();
+        String goodsGroupBuyId = goodsGroupbuy.getId().toString();
+        Long storeId = goodsGroupbuy.getStoreId();
+        String groupGoodsSpuId = String.format("%s%s", EcommerceConstant.GOODS_GROUP_ID_PREFIX, goodsGroupBuyId);
+        //团购基本信息设置
+        GoodsSpuIndex goodsSpuIndex = goodsSpuIndexApiService.get(goodsId);
+        goodsSpuIndex.setGoodsType(GoodsType.GROUP);
+        goodsSpuIndex.setId(groupGoodsSpuId);
+        goodsSpuIndex.setStoreId(storeId);
+        goodsSpuIndex.setCreatedTime(goodsGroupbuy.getCreatedTime());
+        //设置团购折扣后的默认价格
+        BigDecimal defaultSkuPrice = goodsSpuIndex.getDefaultSkuPrice();
+        BigDecimal groupDefaultSkuPrice = defaultSkuPrice.multiply(discount).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP);
+        //向上取整
+        BigDecimal newGroupDefaultSkuPrice = groupDefaultSkuPrice.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal(1) : groupDefaultSkuPrice;
+        goodsSpuIndex.setDefaultSkuPrice(newGroupDefaultSkuPrice);
+        return BeanMapping.map(goodsSpuIndex,GoodsSpuIndexEntity.class);
+    }
 
 
     private void updateGoodsInfoIndex() {

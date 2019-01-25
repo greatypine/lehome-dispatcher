@@ -167,7 +167,7 @@ public class Main implements CommandLineRunner {
                         "updateAllCommunityExt                                      --刷新communityExt表缓存数据\n" +
                         "updateAllCommunity                                      --刷新Community表缓存数据\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
-                        "updateEcommerceData <[updateGoodsInfoIndex][updateOrderInfoIndex]>      --电商es数据刷新\n" +
+                        "updateEcommerceData <[updateGoodsInfoIndex][updateOrderInfoIndex][updateGroupGoodsInfoIndex]>      --电商es数据刷新\n" +
                         "updateUserIndexFromExcel                                --从excel中刷新用户缓存\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
                         "refreshPrizeRedis [advertId]                           --刷新奖励金额\n" +
