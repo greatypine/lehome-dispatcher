@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://code.alibabatech.com/schema/dubbo
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+       default-autowire="byName">
+
+    <!-- Application name -->
+    <dubbo:application name="${dubbo.application.name}"/>
+
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry protocol="${dubbo.registry.protocol}" address="${dubbo.registry.address}" client="curator" file="${dubbo.cache.file.prefix}/${dubbo.application.name}/${dubbo.cache.file.name}"/>
+
+    <dubbo:consumer check="false" timeout="30000"/>
+
+    <import resource="classpath*:provider/base-api/tool-service.xml"/>
+    <import resource="classpath*:provider/base-api/user-service.xml"/>
+    <import resource="classpath*:provider/base-api/property-service.xml"/>
+    <import resource="classpath*:provider/base-api/advertising-service.xml"/>
+    <import resource="classpath*:provider/base-api/business-service.xml"/>
+    <import resource="classpath*:provider/base-api/thirdparty-service.xml"/>
+    <import resource="classpath*:provider/base-api/content-service.xml"/>
+    <import resource="classpath*:provider/base-api/operation-service.xml"/>
+    <import resource="classpath*:provider/base-api/activity-service.xml"/>
+    <import resource="classpath*:provider/base-api/oauth2-service.xml"/>
+
+</beans>

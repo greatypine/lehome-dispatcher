@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] %-5level %msg - %logger{80}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/service.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>../logs/service-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <level value="INFO"/>
+        <!--
+        <appender-ref ref="stdout"/>
+        -->
+        <appender-ref ref="file" />
+    </root>
+
+</configuration>

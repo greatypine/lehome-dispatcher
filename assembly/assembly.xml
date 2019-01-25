@@ -1,0 +1,52 @@
+<assembly>
+    <id>bin</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*:jar:*</include>
+            </includes>
+            <excludes>
+                <exclude>*:sources</exclude>
+                <exclude>*:${exculde.first.branch}:*</exclude>
+                <exclude>*:${exculde.second.branch}:*</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/wrapper/bin</directory>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>755</fileMode>
+            <includes>
+                <include>service.sh</include>
+                <include>wrapper</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/wrapper/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <includes>
+                <include>wrapper.conf</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/wrapper/logs</directory>
+            <outputDirectory>/logs</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/wrapper/lib</directory>
+            <outputDirectory>/lib</outputDirectory>
+            <includes>
+                <include>wrapper.jar</include>
+                <include>libwrapper.so</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+ 
+     http://code.alibabatech.com/schema/dubbo
+     http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       default-autowire="byName">
+
+    <dubbo:application name="${dubbo.application.name}"/>
+
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry protocol="${dubbo.registry.protocol}" address="${dubbo.registry.address}" client="curator" check="false" file="${dubbo.cache.file.prefix}/${dubbo.application.name}/${dubbo.cache.file.name}"/>
+
+    <!-- expose this service through dubbo protocol, through port 20880 -->
+    <dubbo:consumer check="false" timeout="10000" init="false"/>
+
+    <import resource="classpath*:provider/base-api/oauth2-service.xml"/>
+    <import resource="classpath*:provider/base-api/tool-service.xml"/>
+    <import resource="classpath*:provider/base-api/content-service.xml"/>
+    <import resource="classpath*:provider/base-api/thirdparty-service.xml"/>
+    <import resource="classpath*:provider/base-api/bigdata-service.xml"/>
+    <import resource="classpath*:provider/base-api/business-service.xml"/>
+    <import resource="classpath*:provider/base-api/property-service.xml"/>
+    <import resource="classpath*:provider/base-api/operation-service.xml"/>
+
+    <dubbo:reference id="userHouseRelationshipApiService" interface="cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService"/>
+    <dubbo:reference id="contributeSettingApiService" interface="cn.lehome.base.api.advertising.service.activity.ContributeSettingApiService"/>
+    <dubbo:reference id="userInfoApiService" interface="cn.lehome.base.api.user.service.user.UserInfoApiService"/>
+    <dubbo:reference id="weChatInfoApiService" interface="cn.lehome.base.api.user.service.wechat.WeChatInfoApiService"/>
+    <dubbo:reference id="userWeChatRelationApiService" interface="cn.lehome.base.api.user.service.wechat.UserWeChatRelationApiService"/>
+    <dubbo:reference id="userDeviceRelationshipApiService" interface="cn.lehome.base.api.user.service.user.UserDeviceRelationshipApiService"/>
+    <dubbo:reference id="userInfoIndexApiService" interface="cn.lehome.base.api.user.service.user.UserInfoIndexApiService"/>
+    <dubbo:reference id="userTaskRecordApiService" interface="cn.lehome.base.api.advertising.service.task.UserTaskRecordApiService"/>
+    <dubbo:reference id="taskSettingApiService" interface="cn.lehome.base.api.advertising.service.task.TaskSettingApiService"/>
+    <dubbo:reference id="apprenticeContributionStatisticsApiService" interface="cn.lehome.base.api.advertising.service.activity.ApprenticeContributionStatisticsApiService"/>
+    <dubbo:reference id="userBeanFlowApiService" interface="cn.lehome.base.api.user.service.asset.UserBeanFlowApiService"/>
+    <dubbo:reference id="userTaskOperationRecordApiService" interface="cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService"/>
+    <dubbo:reference id="weChatTaskOperationRecordApiService" interface="cn.lehome.base.api.advertising.service.wechat.WeChatTaskOperationRecordApiService"/>
+    <dubbo:reference id="masterApprenticeRelationshipApiService" interface="cn.lehome.base.api.advertising.service.activity.MasterApprenticeRelationshipApiService"/>
+    <dubbo:reference id="userMessageApiService" interface="cn.lehome.base.api.user.service.message.UserMessageApiService"/>
+    <dubbo:reference id="dailyConversionAccountApiService" interface="cn.lehome.base.api.advertising.service.task.DailyConversionAccountApiService"/>
+    <dubbo:reference id="userAddiationalIndexApiService" interface="cn.lehome.base.api.advertising.service.activity.UserAddiationalIndexApiService"/>
+    <dubbo:reference id="userCommunityRelationshipApiService" interface="cn.lehome.base.api.user.service.user.UserCommunityRelationshipApiService"/>
+    <!--<dubbo:reference id="actionLogStatisticApiService" interface="cn.lehome.base.api.bigdata.service.actionlog.ActionLogStatisticApiService" />-->
+
+    <dubbo:reference id="weChatUserIndexApiService" interface="cn.lehome.base.api.user.service.wechat.WeChatUserIndexApiService"/>
+    <dubbo:reference id="userAssetApiService" interface="cn.lehome.base.api.user.service.asset.UserAssetApiService"/>
+</beans>
