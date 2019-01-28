@@ -146,17 +146,17 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sqbj.asrt</groupId>
-            <artifactId>oauth2-sdk</artifactId>
-            <classifier>${branch}</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sqbj.asrt</groupId>-->
+            <!--<artifactId>oauth2-sdk</artifactId>-->
+            <!--<classifier>${branch}</classifier>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>javax.servlet</groupId>-->
+                    <!--<artifactId>servlet-api</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-oauth2-api</artifactId>
