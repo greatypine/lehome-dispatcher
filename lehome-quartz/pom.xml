@@ -132,16 +132,50 @@
             <artifactId>lehome-configuration</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sqbj.asrt</groupId>-->
+            <!--<artifactId>oauth2-sdk</artifactId>-->
+            <!--<classifier>${branch}</classifier>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>javax.servlet</groupId>-->
+                    <!--<artifactId>servlet-api</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>com.sqbj.asrt</groupId>
-            <artifactId>oauth2-sdk</artifactId>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>business-bean</artifactId>
             <classifier>${branch}</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-oauth2-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>lehome-actionlog</artifactId>
+            <classifier>${branch}</classifier>
+            <version>${rebuild.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>lehome-bigdata-bean</artifactId>
+            <classifier>${branch}</classifier>
+            <version>${rebuild.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>lehome-bigdata-core</artifactId>
+            <classifier>${branch}</classifier>
+            <version>${rebuild.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.5.1</version>
         </dependency>
     </dependencies>
 
