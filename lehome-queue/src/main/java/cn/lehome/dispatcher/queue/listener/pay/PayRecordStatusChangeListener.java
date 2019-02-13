@@ -6,6 +6,7 @@ import cn.lehome.base.api.business.bean.ecommerce.store.BrokerageRecord;
 import cn.lehome.base.api.business.bean.ecommerce.store.BrokerageRecordIndex;
 import cn.lehome.base.api.business.bean.ecommerce.store.QBrokerageRecord;
 import cn.lehome.base.api.business.bean.ecommerce.store.Store;
+import cn.lehome.base.api.business.service.ecommerce.goods.GoodsSpuApiService;
 import cn.lehome.base.api.business.service.ecommerce.order.*;
 import cn.lehome.base.api.business.service.ecommerce.pay.PayRecordIndexApiService;
 import cn.lehome.base.api.business.service.ecommerce.store.BrokerageRecordApiService;
@@ -93,6 +94,9 @@ public class PayRecordStatusChangeListener extends AbstractJobListener {
     @Autowired
     private OrderDetailIndexApiService orderDetailIndexApiService;
 
+    @Autowired
+    private GoodsSpuApiService goodsSpuApiService;
+
 
     @Override
     public void execute(IEventMessage eventMessage) throws Exception {
@@ -171,7 +175,7 @@ public class PayRecordStatusChangeListener extends AbstractJobListener {
         ActionLog.Builder builder = ActionLog.newBuilder();
 
         orderIndexList.forEach(p -> {
-            if(orderApiService.updateStatusForSys(p.getId(), OrderStatus.WAIT_SHIPMENTS)){
+            if (orderApiService.updateStatusForSys(p.getId(), OrderStatus.WAIT_SHIPMENTS)) {
                 builder.addActionLogBean(AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, p.getUserOpenId(), p.getClientId())
                         .addMap("orderId", p.getId())
                         .addMap("prevOrderStatus", OrderStatus.OBLIGATION)
@@ -190,7 +194,18 @@ public class PayRecordStatusChangeListener extends AbstractJobListener {
             }
         }
 
-        orderIndexList.forEach(p -> p.getOrderDetailIndexList().forEach(this::brokerage_payComplete));
+        orderIndexList.forEach(p -> p.getOrderDetailIndexList().forEach(q -> {
+            try {
+                this.brokerage_payComplete(q);
+            } catch (Exception ex) {
+                logger.error("normalOrderPaySuccess brokerage_payComplete error={}", ex.getMessage());
+            }
+            try {
+                goodsSpuApiService.updateSalesNumber(q.getGoodsSpuId());
+            } catch (Exception ex) {
+                logger.error("normalOrderPaySuccess updateSalesNumber error={}", ex.getMessage());
+            }
+        }));
 
         builder.send(actionLogRequest);
     }
@@ -389,8 +404,6 @@ public class PayRecordStatusChangeListener extends AbstractJobListener {
             logger.error("cancel order orderDetailId={} brokerage is zore ! ", orderDetailIndex.getId());
             return;
         }
-
-
 
 
         BrokerageSettleStatus prevStatus = recordIndex.getStatus();

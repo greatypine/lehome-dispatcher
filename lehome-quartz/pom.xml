@@ -132,17 +132,17 @@
             <artifactId>lehome-configuration</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.sqbj.asrt</groupId>-->
-            <!--<artifactId>oauth2-sdk</artifactId>-->
-            <!--<classifier>${branch}</classifier>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>javax.servlet</groupId>-->
-                    <!--<artifactId>servlet-api</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.sqbj.asrt</groupId>
+            <artifactId>oauth2-sdk</artifactId>
+            <classifier>${branch}</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>business-bean</artifactId>

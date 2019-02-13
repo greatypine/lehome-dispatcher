@@ -20,8 +20,9 @@
 
     <repositories>
         <repository>
-            <id>nexus.sqbj.info</id>
-            <url>http://nexus.sqbj.info/repository/maven-public/</url>
+            <id>public</id>
+            <name>Public Repositories</name>
+            <url>http://nexus.sqbj.com/content/groups/public</url>
         </repository>
     </repositories>
 

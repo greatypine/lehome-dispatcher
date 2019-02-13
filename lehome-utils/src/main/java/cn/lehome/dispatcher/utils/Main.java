@@ -12,6 +12,7 @@ import cn.lehome.dispatcher.utils.ecommerce.EcommerceService;
 import cn.lehome.dispatcher.utils.house.HouseService;
 import cn.lehome.dispatcher.utils.merchant.GoodsService;
 import cn.lehome.dispatcher.utils.operation.OperationService;
+import cn.lehome.dispatcher.utils.order.OrderService;
 import cn.lehome.dispatcher.utils.push.PushService;
 import cn.lehome.dispatcher.utils.robot.PostMaterielService;
 import cn.lehome.dispatcher.utils.robot.RobotService;
@@ -109,6 +110,9 @@ public class Main implements CommandLineRunner {
     @Autowired
     private UserSync userSync;
 
+    @Autowired
+    private OrderService orderService;
+
     public static void main(String args[]) {
         SpringApplication.run(Main.class, args);
     }
@@ -167,7 +171,7 @@ public class Main implements CommandLineRunner {
                         "updateAllCommunityExt                                      --刷新communityExt表缓存数据\n" +
                         "updateAllCommunity                                      --刷新Community表缓存数据\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
-                        "updateEcommerceData <[updateGoodsInfoIndex][updateOrderInfoIndex]>      --电商es数据刷新\n" +
+                        "updateEcommerceData <[updateGoodsInfoIndex][updateOrderInfoIndex][updateGoodsSpuAndSkuField]>      --电商es数据刷新\n" +
                         "updateUserIndexFromExcel                                --从excel中刷新用户缓存\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
                         "refreshPrizeRedis [advertId]                           --刷新奖励金额\n" +
@@ -175,6 +179,7 @@ public class Main implements CommandLineRunner {
                         "syncUser                                         --同步用户\n" +
                         "syncWechatUser                                         --同步微信用户\n" +
                         "refreshGoodsNum [advertId]                           --刷新商品分类商品数\n" +
+                        "updateOrderDate <orderId>                          --更新订单的付款时间及发货时间\n" +
                         "exit                                               --退出\n" +
                         "help                                               --帮助\n"
 
@@ -404,6 +409,9 @@ public class Main implements CommandLineRunner {
                 break;
             case "refreshGoodsNum":
                 goodsService.refreshGoodsNum(input);
+                break;
+            case "updateOrderDate":
+                orderService.refreshOrderDate(input);
                 break;
             default:
                 if (!"".equals(command)) {

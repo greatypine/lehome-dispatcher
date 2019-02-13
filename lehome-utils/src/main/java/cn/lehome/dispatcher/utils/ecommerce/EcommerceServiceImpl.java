@@ -14,6 +14,7 @@ import cn.lehome.base.api.business.service.ecommerce.order.OrderDetailApiService
 import cn.lehome.base.api.business.service.ecommerce.pay.PayRecordApiService;
 import cn.lehome.base.api.business.service.ecommerce.store.StoreApiService;
 import cn.lehome.base.api.business.service.ecommerce.store.StoreGoodsRelationshipApiService;
+import cn.lehome.base.api.business.utils.EcommerceConstant;
 import cn.lehome.base.api.oauth2.bean.user.UserAccount;
 import cn.lehome.base.api.oauth2.bean.user.UserAccountDetails;
 import cn.lehome.base.api.oauth2.service.user.UserAccountApiService;
@@ -27,10 +28,12 @@ import cn.lehome.bean.business.entity.search.ecommerce.order.OrderIndexEntity;
 import cn.lehome.bean.business.entity.search.ecommerce.pay.PayRecordIndexEntity;
 import cn.lehome.bean.business.enums.ecommerce.goods.UrlType;
 import cn.lehome.dispatcher.utils.es.util.EsFlushUtil;
+import cn.lehome.dispatcher.utils.es.util.EsScrollResponse;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.BeanMapping;
+import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -86,7 +90,11 @@ public class EcommerceServiceImpl implements EcommerceService{
     @Autowired
     private OrderBackApiService orderBackApiService;
 
+    @Autowired
+    private GoodsSkuIndexApiService goodsSkuIndexApiService;
 
+    @Autowired
+    private GoodsSpuIndexApiService goodsSpuIndexApiService;
     @Override
     public void updateEcommerceData(String [] input) {
         if(input.length < 2){
@@ -104,9 +112,40 @@ public class EcommerceServiceImpl implements EcommerceService{
         if ("updateOrderInfoIndex".equals(option)){
             this.flushIndex();
         }
+        if ("updateGoodsSpuAndSkuField".equals(option)){
+            this.updateGoodsSpuAndSkuField();
+        }
     }
 
+    private void updateGoodsSpuAndSkuField() {
+        int pageSize = 100;
+        System.out.println("刷新goodsSpu和goodsSku开始...");
+        long millis = 30000L;
+        Integer execNums = 0;
+        EsScrollResponse scrollResponse = EsFlushUtil.getInstance().searchByScroll(GoodsSpuIndexEntity.class, pageSize, null, millis);
+        if (org.springframework.util.CollectionUtils.isEmpty(scrollResponse.getDatas())) {
+            System.out.println("无可处理数据！");
+            return;
+        }
+        List<GoodsSpuIndexEntity> goodsSpuIndexEntities = scrollResponse.getDatas();
+        setGoodsSpuIndexValue(goodsSpuIndexEntities);
+        EsFlushUtil.getInstance().batchUpdate(goodsSpuIndexEntities);
+        execNums = goodsSpuIndexEntities.size();
+        String scrollId = scrollResponse.getScrollId();
+        while (true) {
+            EsScrollResponse esScrollResponse = EsFlushUtil.getInstance().searchByScrollId(GoodsSpuIndexEntity.class, pageSize, scrollId, millis);
+            if (esScrollResponse == null || org.springframework.util.CollectionUtils.isEmpty(esScrollResponse.getDatas())) {
+                break;
+            }
+            setGoodsSpuIndexValue(esScrollResponse.getDatas());
+            EsFlushUtil.getInstance().batchUpdate(esScrollResponse.getDatas());
+            scrollId = esScrollResponse.getScrollId();
+            execNums += esScrollResponse.getDatas().size();
+            System.out.println("已处理商品数 num=" + execNums);
+        }
+        System.out.println("商品数据处理完成！");
 
+    }
 
 
     private void updateGoodsInfoIndex() {
@@ -375,6 +414,36 @@ public class EcommerceServiceImpl implements EcommerceService{
     }
 
 
+    private void setGoodsSpuIndexValue(List<GoodsSpuIndexEntity> goodsSpuIndexValue) {
+        List<GoodsSkuIndexEntity> goodsSkuIndexEntities = Lists.newArrayList();
+        for (GoodsSpuIndexEntity goodsSpuIndexEntity : goodsSpuIndexValue){
+            if (goodsSpuIndexEntity.getId().startsWith(EcommerceConstant.GOODS_GROUP_ID_PREFIX)){
+                goodsSpuIndexEntity.setSalesNumber(this.generateRandom());
+            }else {
+                goodsSpuApiService.updateSalesNumber(Long.parseLong(goodsSpuIndexEntity.getId()));
+            }
+            goodsSpuIndexEntity.setRecommendGoods(YesNoStatus.NO);
+            goodsSpuIndexEntity.setDefaultMarkingPrice(goodsSpuIndexEntity.getDefaultSkuPrice());//设置原来商品划线价格和默认规格价格相同
+            List<GoodsSkuIndex> goodsSkuIndexList = goodsSkuIndexApiService.findByGoodsId(goodsSpuIndexEntity.getId());
+            for (GoodsSkuIndex goodsSkuIndex : goodsSkuIndexList){
+                if (YesNoStatus.YES.equals(goodsSpuIndexEntity.getSupportCollage())){
+                    goodsSkuIndex.setGroupPrice(goodsSkuIndex.getGoodsPrice());
+                }else{
+                    goodsSkuIndex.setGroupPrice(new BigDecimal(0));
+                }
+                goodsSkuIndex.setMarkingPrice(goodsSkuIndex.getGoodsPrice());
+                GoodsSkuIndexEntity goodsSkuIndexEntity = BeanMapping.map(goodsSkuIndex,GoodsSkuIndexEntity.class);
+                goodsSkuIndexEntities.add(goodsSkuIndexEntity);
+            }
+        }
+        EsFlushUtil.getInstance().batchInsertChild(goodsSkuIndexEntities,QGoodsSkuIndex.goodsId);
+    }
 
-
+    private Long generateRandom(){
+        Random random = new Random();
+        int max=100;
+        int min=10;
+        Integer salesNumber = random.nextInt(max)%(max-min+1) + min;;
+        return salesNumber.longValue();
+    }
 }
