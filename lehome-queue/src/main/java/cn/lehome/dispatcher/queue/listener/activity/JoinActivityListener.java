@@ -74,6 +74,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.mortbay.util.ajax.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.CollectionUtils;
@@ -854,21 +855,29 @@ public class JoinActivityListener extends AbstractJobListener {
         }
 
         Advert advertInfo = advertApiServiceNew.findOne(advertId);
+        logger.info("advertInfo:" + JSON.toString(advertInfo));
         List<AdvertDeliverRange> deliveryRanges = advertDeliverRangeApiServiceNew.findByAdvertId(advertId);
+        logger.info("deliveryRanges:" + JSON.toString(deliveryRanges));
         for (AdvertDeliverRange advertDeliveryRange : deliveryRanges) {
+            logger.info("advertDeliveryRange:" + JSON.toString(advertDeliveryRange));
             if (advertDeliveryRange.getType().equals(DeliverRangeType.REGION)) {
+                logger.info("1");
                 if (advertDeliveryRange.getTargetId().equals(100000L)) {
+                    logger.info("2");
                     return advertInfo;
                 }
                 if (regionIds.contains(advertDeliveryRange.getTargetId())) {
                     return advertInfo;
                 }
             } else {
+                logger.info("3");
                 if (communityIds.contains(advertDeliveryRange.getTargetId())) {
+                    logger.info("4");
                     return advertInfo;
                 }
             }
         }
+        logger.info("5");
         return null;
     }
 
