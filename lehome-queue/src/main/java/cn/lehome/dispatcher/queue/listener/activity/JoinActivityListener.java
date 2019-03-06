@@ -856,29 +856,21 @@ public class JoinActivityListener extends AbstractJobListener {
         }
 
         Advert advertInfo = advertApiServiceNew.findOne(advertId);
-        logger.info("advertInfo:" + JSONObject.toJSONString(advertInfo));
         List<AdvertDeliverRange> deliveryRanges = advertDeliverRangeApiServiceNew.findByAdvertId(advertId);
-        logger.info("deliveryRanges:" + JSONObject.toJSONString(deliveryRanges));
         for (AdvertDeliverRange advertDeliveryRange : deliveryRanges) {
-            logger.info("advertDeliveryRange:" + JSONObject.toJSONString(advertDeliveryRange));
             if (advertDeliveryRange.getType().getValue() == DeliverRangeType.REGION.getValue()) {
-                logger.info("1");
                 if (advertDeliveryRange.getTargetId().equals(100000L)) {
-                    logger.info("2");
                     return advertInfo;
                 }
                 if (regionIds.contains(advertDeliveryRange.getTargetId())) {
                     return advertInfo;
                 }
             } else {
-                logger.info("3");
                 if (communityIds.contains(advertDeliveryRange.getTargetId())) {
-                    logger.info("4");
                     return advertInfo;
                 }
             }
         }
-        logger.info("5");
         return null;
     }
 
