@@ -65,6 +65,7 @@ import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
 import cn.lehome.framework.base.api.core.exception.BaseApiException;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.bean.core.enums.*;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -855,12 +856,12 @@ public class JoinActivityListener extends AbstractJobListener {
         }
 
         Advert advertInfo = advertApiServiceNew.findOne(advertId);
-        logger.info("advertInfo:" + JSON.toString(advertInfo));
+        logger.info("advertInfo:" + JSONObject.toJSONString(advertInfo));
         List<AdvertDeliverRange> deliveryRanges = advertDeliverRangeApiServiceNew.findByAdvertId(advertId);
-        logger.info("deliveryRanges:" + JSON.toString(deliveryRanges));
+        logger.info("deliveryRanges:" + JSONObject.toJSONString(deliveryRanges));
         for (AdvertDeliverRange advertDeliveryRange : deliveryRanges) {
-            logger.info("advertDeliveryRange:" + JSON.toString(advertDeliveryRange));
-            if (advertDeliveryRange.getType().equals(DeliverRangeType.REGION)) {
+            logger.info("advertDeliveryRange:" + JSONObject.toJSONString(advertDeliveryRange));
+            if (advertDeliveryRange.getType().getValue() == DeliverRangeType.REGION.getValue()) {
                 logger.info("1");
                 if (advertDeliveryRange.getTargetId().equals(100000L)) {
                     logger.info("2");
