@@ -124,12 +124,12 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-business-api</artifactId>
+            <artifactId>base-business-ec-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>business-bean</artifactId>
+            <artifactId>business-ec-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>

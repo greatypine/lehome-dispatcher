@@ -1,10 +1,10 @@
 package cn.lehome.dispatcher.queue.listener.order;
 
-import cn.lehome.base.api.business.service.ecommerce.order.OrderBackIndexApiService;
-import cn.lehome.base.api.business.service.ecommerce.order.OrderDetailApiService;
-import cn.lehome.base.api.business.service.ecommerce.order.OrderIndexApiService;
-import cn.lehome.base.api.business.service.ecommerce.pay.PayRecordIndexApiService;
-import cn.lehome.base.api.business.service.ecommerce.store.*;
+import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderBackIndexApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderDetailApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderIndexApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordIndexApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.store.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package cn.lehome.dispatcher.quartz.service.invoke.ecommerce;
 
-import cn.lehome.base.api.business.bean.ecommerce.goods.GoodsSpuIndex;
-import cn.lehome.base.api.business.bean.ecommerce.goods.QGoodsSpuIndex;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsSpuApiService;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsSpuIndexApiService;
-import cn.lehome.bean.business.enums.ecommerce.goods.SaleStatus;
+import cn.lehome.base.api.business.ec.bean.ecommerce.goods.GoodsSpuIndex;
+import cn.lehome.base.api.business.ec.bean.ecommerce.goods.QGoodsSpuIndex;
+import cn.lehome.base.api.business.ec.service.ecommerce.goods.GoodsSpuApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.goods.GoodsSpuIndexApiService;
+import cn.lehome.bean.business.ec.enums.ecommerce.goods.SaleStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
 import cn.lehome.framework.base.api.core.request.ApiRequest;

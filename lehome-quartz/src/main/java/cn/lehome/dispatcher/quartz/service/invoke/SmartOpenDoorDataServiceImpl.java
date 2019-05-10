@@ -2,7 +2,7 @@ package cn.lehome.dispatcher.quartz.service.invoke;
 
 import cn.lehome.base.api.bigdata.bean.SmartCommunityReport;
 import cn.lehome.base.api.bigdata.service.smart.SmartCommunityReportApiService;
-import cn.lehome.base.api.business.service.partner.PartnerCommunityApiService;
+import cn.lehome.base.api.business.ec.service.partner.PartnerCommunityApiService;
 import cn.lehome.base.api.thirdparty.bean.smart.SmartOpenDoorRequest;
 import cn.lehome.base.api.thirdparty.bean.smart.SmartOpenDoorResponse;
 import cn.lehome.base.api.thirdparty.service.smart.SmartHttpRequestApiService;

@@ -1,9 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.goods;
 
-import cn.lehome.base.api.business.bean.ecommerce.goods.GoodsSpuIndex;
-import cn.lehome.base.api.business.bean.ecommerce.goods.QGoodsSpuIndex;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsCatalogIndexApiService;
-import cn.lehome.base.api.business.service.ecommerce.goods.GoodsSpuIndexApiService;
+import cn.lehome.base.api.business.ec.bean.ecommerce.goods.GoodsSpuIndex;
+import cn.lehome.base.api.business.ec.bean.ecommerce.goods.QGoodsSpuIndex;
+import cn.lehome.base.api.business.ec.service.ecommerce.goods.GoodsCatalogIndexApiService;
+import cn.lehome.base.api.business.ec.service.ecommerce.goods.GoodsSpuIndexApiService;
 import cn.lehome.dispatcher.queue.bean.CatalogMqBean;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.compoment.request.ApiPageRequestHelper;
