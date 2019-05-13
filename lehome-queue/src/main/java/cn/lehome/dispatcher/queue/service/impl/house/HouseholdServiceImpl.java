@@ -198,9 +198,9 @@ public class HouseholdServiceImpl extends AbstractBaseServiceImpl implements Hou
                 insertList.forEach(p -> {
                     UserHouseRelationship userHouseRelationship = userHouseRelationshipApiService.saveUserHouse(p);
 
-                    AppActionLog.Builder appBuilder = AppActionLog.newBuilder(UserActionKeyConstants.USER_HOUSE_NEW, userInfoIndex.getUserOpenId(), clientId).isBackProcess();
-                    setActionLog(appBuilder, userHouseRelationship.getCommunityExtId(), clientId);
-                    builder.addActionLogBean(appBuilder.build());
+                    //AppActionLog.Builder appBuilder = AppActionLog.newBuilder(UserActionKeyConstants.USER_HOUSE_NEW, userInfoIndex.getUserOpenId(), clientId).isBackProcess();
+                    //setActionLog(appBuilder, userHouseRelationship.getCommunityExtId(), clientId);
+                    //builder.addActionLogBean(appBuilder.build());
                 });
                 List<UserHouseRelationship> userHouseRelationships = userHouseRelationshipApiService.findByUserId(userInfoIndex.getId());
                 userHouseRelationshipId = userHouseRelationships.get(0).getId();
@@ -214,11 +214,11 @@ public class HouseholdServiceImpl extends AbstractBaseServiceImpl implements Hou
                     if (HouseType.FORBID.equals(userHouseRelationship.getHouseType())) {
                         actionKey = UserActionKeyConstants.USER_HOUSE_REMOVE;
                     }
-                    AppActionLog.Builder appBuilder = AppActionLog.newBuilder(actionKey, userInfoIndex.getUserOpenId(), clientId).isBackProcess();
-                    if (UserActionKeyConstants.USER_HOUSE_REMOVE.equals(actionKey)) {
-                        setActionLog(appBuilder, userHouseRelationship.getCommunityExtId(), clientId);
-                    }
-                    builder.addActionLogBean(appBuilder.build());
+                    //AppActionLog.Builder appBuilder = AppActionLog.newBuilder(actionKey, userInfoIndex.getUserOpenId(), clientId).isBackProcess();
+                    //if (UserActionKeyConstants.USER_HOUSE_REMOVE.equals(actionKey)) {
+                      //  setActionLog(appBuilder, userHouseRelationship.getCommunityExtId(), clientId);
+                    //}
+                    //builder.addActionLogBean(appBuilder.build());
                 });
 
                 userHouseRelationshipId = updateList.get(0).getId();
