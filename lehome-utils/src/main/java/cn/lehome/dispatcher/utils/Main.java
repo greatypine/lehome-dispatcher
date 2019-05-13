@@ -2,6 +2,7 @@ package cn.lehome.dispatcher.utils;
 
 import cn.lehome.base.api.user.service.asset.UserBeanFlowApiService;
 import cn.lehome.dispatcher.utils.activity.CalculateKeepActivityService;
+import cn.lehome.dispatcher.utils.activity.GainPrizeService;
 import cn.lehome.dispatcher.utils.community.CommunityService;
 import cn.lehome.dispatcher.utils.community.SmartDataService;
 import cn.lehome.dispatcher.utils.content.ContentService;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static java.lang.System.exit;
+import static java.lang.System.in;
 
 /**
  * 工具类调入口
@@ -105,6 +107,9 @@ public class Main implements CommandLineRunner {
     @Autowired
     private UserSync userSync;
 
+    @Autowired
+    private GainPrizeService gainPrizeService;
+
     public static void main(String args[]) {
         SpringApplication.run(Main.class, args);
     }
@@ -163,12 +168,13 @@ public class Main implements CommandLineRunner {
                         "updateAllCommunityExt                                      --刷新communityExt表缓存数据\n" +
                         "updateAllCommunity                                      --刷新Community表缓存数据\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
-                        "updateEcommerceData                               --电商es数据迁移\n" +
-                        "updateUserIndexFromExcel                                --从excel中刷新用户缓存\n" +
-                        "refreshPrizeRedis [advertId]                           --刷新奖励金额\n" +
+                        "updateEcommerceData                                --电商es数据迁移\n" +
+                        "updateUserIndexFromExcel                           --从excel中刷新用户缓存\n" +
+                        "refreshPrizeRedis [advertId]                       --刷新奖励金额\n" +
                         "syncDevice                                         --同步设备\n" +
-                        "syncUser                                         --同步用户\n" +
-                        "syncWechatUser                                         --同步微信用户\n" +
+                        "syncUser                                           --同步用户\n" +
+                        "syncWechatUser                                     --同步微信用户\n" +
+                        "gainPrizeFromExcel <excelUrl> <activityId>         --重新获取集卡瓜分金豆\n" +
                         "exit                                               --退出\n" +
                         "help                                               --帮助\n"
 
@@ -385,6 +391,9 @@ public class Main implements CommandLineRunner {
                 break;
             case "syncWechatUser":
                 userSync.wechatSync();
+                break;
+            case "gainPrizeFromExcel":
+                gainPrizeService.gainPrize(input);
                 break;
             default:
                 if (!"".equals(command)) {
