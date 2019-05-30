@@ -59,12 +59,12 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-operation-api</artifactId>
+            <artifactId>base-common-operation-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-tool-api</artifactId>
+            <artifactId>base-common-tool-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
@@ -99,17 +99,17 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-user-api</artifactId>
+            <artifactId>base-common-user-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>user-bean</artifactId>
+            <artifactId>common-user-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-property-api</artifactId>
+            <artifactId>base-business-property-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
