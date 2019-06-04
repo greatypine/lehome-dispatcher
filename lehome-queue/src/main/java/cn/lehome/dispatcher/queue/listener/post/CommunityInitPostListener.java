@@ -1,5 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.post;
 
+import cn.lehome.base.api.common.bean.community.Community;
+import cn.lehome.base.api.common.component.idgenerator.RedisIdGeneratorComponent;
+import cn.lehome.base.api.common.service.community.CommunityApiService;
+import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.content.bean.post.*;
 import cn.lehome.base.api.content.bean.robot.PostMateriel;
 import cn.lehome.base.api.content.bean.robot.QPostMateriel;
@@ -11,15 +15,11 @@ import cn.lehome.base.api.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.content.service.robot.PostMaterielApiService;
 import cn.lehome.base.api.content.service.robot.RobotApiService;
 import cn.lehome.base.api.content.service.type.ForumTypeInfoApiService;
-import cn.lehome.base.api.tool.bean.community.Community;
-import cn.lehome.base.api.tool.compoment.idgenerator.RedisIdGeneratorComponent;
-import cn.lehome.base.api.tool.service.community.CommunityApiService;
-import cn.lehome.base.api.tool.service.community.CommunityCacheApiService;
+import cn.lehome.bean.common.enums.jnr.JnrTypeEnum;
 import cn.lehome.bean.content.entity.enums.post.ApprovedStatus;
 import cn.lehome.bean.content.entity.enums.post.DataStatus;
 import cn.lehome.bean.content.entity.enums.post.PostType;
 import cn.lehome.bean.content.entity.enums.post.UserType;
-import cn.lehome.bean.tool.entity.enums.jnr.JnrTypeEnum;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.compoment.redis.lock.RedisLock;

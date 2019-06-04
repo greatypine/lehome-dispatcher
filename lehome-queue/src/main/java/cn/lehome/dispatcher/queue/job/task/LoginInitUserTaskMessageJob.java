@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.job.task;
 
-import cn.lehome.base.api.tool.constant.EventConstants;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.dispatcher.queue.listener.task.UserTaskInitListener;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;

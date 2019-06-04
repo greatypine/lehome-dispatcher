@@ -2,26 +2,24 @@ package cn.lehome.dispatcher.queue.listener.activity;
 
 
 import cn.lehome.base.api.advertising.bean.task.BeanConsume;
-import cn.lehome.base.api.advertising.bean.task.TaskSetting;
 import cn.lehome.base.api.advertising.constant.JoinConsumeActivityTypeConstants;
 import cn.lehome.base.api.advertising.service.task.BeanConsumeSettingApiService;
 import cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.common.event.JoinActivityEventBean;
 import cn.lehome.base.api.content.bean.post.PostInfoIndex;
 import cn.lehome.base.api.content.service.post.PostInfoIndexApiService;
-import cn.lehome.base.api.tool.event.JoinActivityEventBean;
-import cn.lehome.bean.advertising.enums.task.*;
+import cn.lehome.bean.advertising.enums.task.AssetType;
+import cn.lehome.bean.advertising.enums.task.ConsumeType;
 import cn.lehome.dispatcher.queue.bean.UserOperationRecord;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.task.UserTaskOperationService;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
-import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import cn.lehome.framework.bean.core.enums.Operation;
 import cn.lehome.framework.bean.core.enums.OperationType;
 import cn.lehome.framework.bean.core.enums.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
 import java.util.List;
 
 /**

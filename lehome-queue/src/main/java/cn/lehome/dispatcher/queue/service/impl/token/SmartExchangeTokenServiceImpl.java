@@ -1,13 +1,13 @@
 package cn.lehome.dispatcher.queue.service.impl.token;
 
+import cn.lehome.base.api.common.bean.community.CommunityExt;
+import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.property.bean.oauth.SmartTokenInfo;
 import cn.lehome.base.api.property.bean.oauth.TokenInfo;
 import cn.lehome.base.api.property.service.oauth.OauthInfoApiService;
-import cn.lehome.base.api.tool.bean.community.CommunityExt;
-import cn.lehome.base.api.tool.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.tool.entity.enums.community.EditionType;
+import cn.lehome.bean.common.enums.community.EditionType;
 import cn.lehome.dispatcher.queue.service.impl.AbstractBaseServiceImpl;
 import cn.lehome.dispatcher.queue.service.token.SmartExchangeTokenService;
 import cn.lehome.framework.base.api.core.bean.SmartTokenBean;

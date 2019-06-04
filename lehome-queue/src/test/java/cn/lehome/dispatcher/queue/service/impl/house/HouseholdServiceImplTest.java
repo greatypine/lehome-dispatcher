@@ -1,18 +1,14 @@
 package cn.lehome.dispatcher.queue.service.impl.house;
 
+import cn.lehome.base.api.common.service.community.CommunityApiService;
 import cn.lehome.base.api.property.service.households.HouseholdsInfoApiService;
-import cn.lehome.base.api.tool.service.community.CommunityApiService;
 import cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.dispatcher.queue.ServiceApplication;
 import cn.lehome.dispatcher.queue.service.house.HouseholdService;
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Field;
 

@@ -1,18 +1,18 @@
 package cn.lehome.dispatcher.queue.listener.entrance;
 
+import cn.lehome.base.api.common.bean.community.CommunityExt;
+import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.service.community.CommunityApiService;
+import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.property.bean.door.DoorOpenInfo;
 import cn.lehome.base.api.property.service.door.DoorInfoApiService;
-import cn.lehome.base.api.tool.bean.community.CommunityExt;
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
-import cn.lehome.base.api.tool.service.community.CommunityApiService;
-import cn.lehome.base.api.tool.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.user.bean.entrance.UserEntrance;
 import cn.lehome.base.api.user.bean.user.UserHouseRelationship;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.entrance.UserEntranceApiService;
 import cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.tool.entity.enums.community.EditionType;
+import cn.lehome.bean.common.enums.community.EditionType;
 import cn.lehome.bean.user.entity.enums.user.HouseType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.token.SmartExchangeTokenService;

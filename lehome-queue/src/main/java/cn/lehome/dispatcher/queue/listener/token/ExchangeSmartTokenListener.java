@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.queue.listener.token;
 
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
-import cn.lehome.base.api.tool.constant.EventConstants;
+import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;

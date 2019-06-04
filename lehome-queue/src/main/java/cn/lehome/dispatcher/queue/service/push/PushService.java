@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.service.push;
 
-import cn.lehome.base.api.tool.bean.push.PushPlan;
+import cn.lehome.base.api.common.operation.bean.push.PushPlan;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 
 import java.util.List;

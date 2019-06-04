@@ -1,8 +1,7 @@
 package cn.lehome.dispatcher.queue.job.auth;
 
-import cn.lehome.base.api.tool.constant.EventConstants;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.dispatcher.queue.listener.auth.RemoveUserHouseCheckTokenListener;
-import cn.lehome.dispatcher.queue.listener.login.LoginExchangeSmartTokenListener;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

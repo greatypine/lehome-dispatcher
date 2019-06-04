@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.job.token;
 
-import cn.lehome.base.api.tool.constant.EventConstants;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.dispatcher.queue.listener.token.ExchangeSmartTokenListener;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;

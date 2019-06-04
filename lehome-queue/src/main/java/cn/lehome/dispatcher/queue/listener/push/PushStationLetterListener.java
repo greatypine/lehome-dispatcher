@@ -1,9 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.push;
 
-import cn.lehome.base.api.tool.bean.push.PushPlan;
-import cn.lehome.base.api.tool.bean.push.StationLetterInfo;
-import cn.lehome.base.api.tool.service.push.PushPlanApiService;
-import cn.lehome.base.api.tool.service.push.StationLetterApiService;
+import cn.lehome.base.api.common.operation.bean.push.PushPlan;
+import cn.lehome.base.api.common.operation.bean.push.StationLetterInfo;
+import cn.lehome.base.api.common.operation.service.push.PushPlanApiService;
+import cn.lehome.base.api.common.operation.service.push.StationLetterApiService;
 import cn.lehome.base.api.user.bean.message.UserMessage;
 import cn.lehome.base.api.user.bean.message.UserMessageIndex;
 import cn.lehome.base.api.user.bean.user.QUserInfoIndex;

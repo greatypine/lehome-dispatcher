@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.queue.service.impl;
 
 import cn.lehome.base.api.advertising.service.activity.MasterApprenticeRelationshipApiService;
-import cn.lehome.base.api.tool.util.DateUtil;
+import cn.lehome.base.api.advertising.utils.DateUtil;
 import cn.lehome.dispatcher.queue.service.activity.ActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

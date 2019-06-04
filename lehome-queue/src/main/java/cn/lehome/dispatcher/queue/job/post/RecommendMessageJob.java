@@ -1,7 +1,6 @@
 package cn.lehome.dispatcher.queue.job.post;
 
-import cn.lehome.base.api.tool.constant.EventConstants;
-import cn.lehome.dispatcher.queue.listener.post.CommunityInitPostListener;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.dispatcher.queue.listener.post.RecommendPostListener;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;

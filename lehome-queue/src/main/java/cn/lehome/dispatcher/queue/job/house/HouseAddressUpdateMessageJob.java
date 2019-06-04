@@ -1,7 +1,8 @@
-package cn.lehome.dispatcher.queue.job.gigold;
+package cn.lehome.dispatcher.queue.job.house;
 
-import cn.lehome.base.api.tool.constant.EventConstants;
-import cn.lehome.dispatcher.queue.listener.gigold.GigoldPayMessageListener;
+import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.dispatcher.queue.listener.house.HouseAddressUpdateListener;
+import cn.lehome.dispatcher.queue.listener.house.SyncUserHouseholdMessageListener;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +12,10 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import javax.jms.ConnectionFactory;
 
 /**
- * Created by jinsheng on 15/11/27.
+ * Created by zuoguodong on 2018/6/4
  */
 @Configuration
-public class GigoldPayMessageJob {
+public class HouseAddressUpdateMessageJob {
 
     @Autowired
     private ConnectionFactory connectionFactory;
@@ -23,17 +24,17 @@ public class GigoldPayMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer gigoldPayMessageListenerContainer() {
+    public DefaultMessageListenerContainer syncUserHouseholdMessageListenerContainer() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
-        defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.GIGOLD_PAY_EVENT.getTopicName()));
-        defaultMessageListenerContainer.setMessageListener(gigoldPayMessageListener());
+        defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.ADDRESS_NAME_CHANGE_EVENT.getTopicName()));
+        defaultMessageListenerContainer.setMessageListener(householdMessageListener());
         defaultMessageListenerContainer.setSessionTransacted(true);
         return defaultMessageListenerContainer;
     }
 
     @Bean
-    public GigoldPayMessageListener gigoldPayMessageListener() {
-        return new GigoldPayMessageListener();
+    public HouseAddressUpdateListener householdMessageListener() {
+        return new HouseAddressUpdateListener();
     }
 }

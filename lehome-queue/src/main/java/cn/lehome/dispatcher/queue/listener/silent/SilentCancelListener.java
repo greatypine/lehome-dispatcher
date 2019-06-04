@@ -1,28 +1,24 @@
 package cn.lehome.dispatcher.queue.listener.silent;
 
+import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
+import cn.lehome.base.api.common.bean.message.MessageTemplate;
+import cn.lehome.base.api.common.bean.push.PushSendRecord;
+import cn.lehome.base.api.common.component.message.push.PushComponent;
+import cn.lehome.base.api.common.constant.MessageKeyConstants;
+import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
+import cn.lehome.base.api.common.service.message.MessageTemplateApiService;
 import cn.lehome.base.api.content.bean.silent.UserSilent;
 import cn.lehome.base.api.content.service.silent.UserSilentApiService;
-import cn.lehome.base.api.tool.bean.device.ClientDeviceIndex;
-import cn.lehome.base.api.tool.bean.message.MessageTemplate;
-import cn.lehome.base.api.tool.bean.push.PushSendRecord;
-import cn.lehome.base.api.tool.compoment.message.push.PushComponent;
-import cn.lehome.base.api.tool.constant.MessageKeyConstants;
-import cn.lehome.base.api.tool.service.device.ClientDeviceIndexApiService;
-import cn.lehome.base.api.tool.service.message.MessageTemplateApiService;
 import cn.lehome.base.api.user.bean.message.UserMessage;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.message.UserMessageApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
 import cn.lehome.bean.content.entity.enums.post.DataStatus;
-import cn.lehome.bean.tool.entity.enums.push.PushOsType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.util.CoreDateUtils;
-import cn.lehome.framework.bean.core.enums.ClientOSType;
-import cn.lehome.framework.bean.core.enums.ClientType;
-import cn.lehome.framework.bean.core.enums.PushGroupType;
-import cn.lehome.framework.bean.core.enums.YesNoStatus;
+import cn.lehome.framework.bean.core.enums.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +70,7 @@ public class SilentCancelListener extends AbstractJobListener {
             userSilentApiService.update(userSilent);
         }
         //发送推送
-        this.sendPush(userId,MessageKeyConstants.CANCEL_USER_SILENT, null, null);
+        this.sendPush(userId, MessageKeyConstants.CANCEL_USER_SILENT, null, null);
     }
 
     @Override
