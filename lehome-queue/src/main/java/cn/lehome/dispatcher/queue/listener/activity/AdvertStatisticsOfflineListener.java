@@ -1,10 +1,10 @@
 package cn.lehome.dispatcher.queue.listener.activity;
 
-import cn.lehome.base.api.activity.bean.advert.AdvertInfoResponse;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertRedPacketAllocateApiService;
-import cn.lehome.base.api.activity.service.card.AdvertCollectCardRecordApiService;
-import cn.lehome.bean.activity.enums.advert.AdvertType;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertInfoResponse;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertRedPacketAllocateApiService;
+import cn.lehome.base.api.business.activity.service.card.AdvertCollectCardRecordApiService;
+import cn.lehome.bean.business.activity.enums.advert.AdvertType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;

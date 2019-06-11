@@ -1,5 +1,7 @@
 package cn.lehome.dispatcher.queue.listener.silent;
 
+import cn.lehome.base.api.business.content.bean.silent.UserSilent;
+import cn.lehome.base.api.business.content.service.silent.UserSilentApiService;
 import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
 import cn.lehome.base.api.common.bean.message.MessageTemplate;
 import cn.lehome.base.api.common.bean.push.PushSendRecord;
@@ -7,13 +9,11 @@ import cn.lehome.base.api.common.component.message.push.PushComponent;
 import cn.lehome.base.api.common.constant.MessageKeyConstants;
 import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
 import cn.lehome.base.api.common.service.message.MessageTemplateApiService;
-import cn.lehome.base.api.content.bean.silent.UserSilent;
-import cn.lehome.base.api.content.service.silent.UserSilentApiService;
 import cn.lehome.base.api.user.bean.message.UserMessage;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.message.UserMessageApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.content.entity.enums.post.DataStatus;
+import cn.lehome.bean.business.content.enums.post.DataStatus;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;

@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.listener.task;
 
-import cn.lehome.base.api.advertising.service.task.UserTaskApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;

@@ -1,8 +1,8 @@
 package cn.lehome.dispatcher.queue.bean;
 
-import cn.lehome.bean.advertising.enums.task.AssetType;
-import cn.lehome.bean.advertising.enums.task.TaskDrewStatus;
-import cn.lehome.bean.advertising.enums.task.UserTaskStatus;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
+import cn.lehome.bean.business.activity.enums.task.TaskDrewStatus;
+import cn.lehome.bean.business.activity.enums.task.UserTaskStatus;
 import cn.lehome.framework.bean.core.enums.Operation;
 import cn.lehome.framework.bean.core.enums.OperationType;
 import cn.lehome.framework.bean.core.enums.UserType;

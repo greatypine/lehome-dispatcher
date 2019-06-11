@@ -1,22 +1,22 @@
 package cn.lehome.dispatcher.queue.listener.activity;
 
 
-import cn.lehome.base.api.advertising.bean.task.TaskSetting;
-import cn.lehome.base.api.advertising.bean.task.UserTaskAccount;
-import cn.lehome.base.api.advertising.constant.JoinActivityTypeConstants;
-import cn.lehome.base.api.advertising.constant.JoinRewardActivityTypeConstants;
-import cn.lehome.base.api.advertising.constant.PubConstant;
-import cn.lehome.base.api.advertising.service.task.UserTaskAccountApiService;
+import cn.lehome.base.api.business.activity.bean.task.TaskSetting;
+import cn.lehome.base.api.business.activity.bean.task.UserTaskAccount;
+import cn.lehome.base.api.business.activity.constant.JoinActivityTypeConstants;
+import cn.lehome.base.api.business.activity.constant.JoinRewardActivityTypeConstants;
+import cn.lehome.base.api.business.activity.constant.PubConstant;
+import cn.lehome.base.api.business.activity.service.task.UserTaskAccountApiService;
+import cn.lehome.base.api.business.content.bean.comment.CommentInfoIndex;
+import cn.lehome.base.api.business.content.bean.post.PostInfoIndex;
+import cn.lehome.base.api.business.content.service.comment.CommentInfoIndexApiService;
+import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
 import cn.lehome.base.api.common.event.JoinActivityEventBean;
 import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
-import cn.lehome.base.api.content.bean.comment.CommentInfoIndex;
-import cn.lehome.base.api.content.bean.post.PostInfoIndex;
-import cn.lehome.base.api.content.service.comment.CommentInfoIndexApiService;
-import cn.lehome.base.api.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.advertising.enums.task.*;
+import cn.lehome.bean.business.activity.enums.task.*;
 import cn.lehome.bean.user.entity.enums.user.SexType;
 import cn.lehome.dispatcher.queue.bean.UserOperationRecord;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
@@ -273,7 +273,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
         CommentInfoIndex commentInfoIndex = commentInfoIndexApiService.get(commentId);
         String postId = commentInfoIndex.getPostId();
         PostInfoIndex postInfoIndex = postInfoIndexApiService.get(postId);
-        if(postInfoIndex.getUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         Long userId = postInfoIndex.getUserId();
@@ -309,7 +309,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
         Long agreeId = (Long)list.get(2);
         logger.error("postId:" + postId + ",agreeUserId:" + agreeUserId);
         PostInfoIndex postInfoIndex = postInfoIndexApiService.get(postId);
-        if(postInfoIndex.getUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         Long userId = postInfoIndex.getUserId();
@@ -387,7 +387,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
         String beCommentId = commentInfoIndex.getBeCommentId();
         //评论
         CommentInfoIndex beCommentInfoIndex = commentInfoIndexApiService.get(beCommentId);
-        if(beCommentInfoIndex.getCommentUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(beCommentInfoIndex.getCommentUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         //评论人
@@ -422,7 +422,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
     private void postTop(List<Object> list){
         String postId = (String)list.get(0);
         PostInfoIndex postInfoIndex = postInfoIndexApiService.get(postId);
-        if(postInfoIndex.getUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         Long userId = postInfoIndex.getUserId();
@@ -450,7 +450,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
     private void postSelected(List<Object> list){
         String postId = (String)list.get(0);
         PostInfoIndex postInfoIndex = postInfoIndexApiService.get(postId);
-        if(postInfoIndex.getUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         Long userId = postInfoIndex.getUserId();
@@ -478,7 +478,7 @@ public class JoinRewardActivityListener extends AbstractJobListener {
         String postId = (String)list.get(0);
         PostInfoIndex postInfoIndex = postInfoIndexApiService.get(postId);
         Long userId = postInfoIndex.getUserId();
-        if(postInfoIndex.getUserType().equals(cn.lehome.bean.content.entity.enums.post.UserType.ROBOT)){
+        if(postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT)){
             return;
         }
         TaskSetting taskSetting = userTaskOperationService.getTaskSetting(TaskType.POST_INDEX);

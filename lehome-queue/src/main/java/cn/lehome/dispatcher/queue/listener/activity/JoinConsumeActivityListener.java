@@ -1,15 +1,15 @@
 package cn.lehome.dispatcher.queue.listener.activity;
 
 
-import cn.lehome.base.api.advertising.bean.task.BeanConsume;
-import cn.lehome.base.api.advertising.constant.JoinConsumeActivityTypeConstants;
-import cn.lehome.base.api.advertising.service.task.BeanConsumeSettingApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.business.activity.bean.task.BeanConsume;
+import cn.lehome.base.api.business.activity.constant.JoinConsumeActivityTypeConstants;
+import cn.lehome.base.api.business.activity.service.task.BeanConsumeSettingApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.business.content.bean.post.PostInfoIndex;
+import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.common.event.JoinActivityEventBean;
-import cn.lehome.base.api.content.bean.post.PostInfoIndex;
-import cn.lehome.base.api.content.service.post.PostInfoIndexApiService;
-import cn.lehome.bean.advertising.enums.task.AssetType;
-import cn.lehome.bean.advertising.enums.task.ConsumeType;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
+import cn.lehome.bean.business.activity.enums.task.ConsumeType;
 import cn.lehome.dispatcher.queue.bean.UserOperationRecord;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.task.UserTaskOperationService;

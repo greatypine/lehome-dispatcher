@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.service.impl.house;
 
-import cn.lehome.base.api.advertising.constant.JoinActivityTypeConstants;
+import cn.lehome.base.api.business.activity.constant.JoinActivityTypeConstants;
 import cn.lehome.base.api.common.bean.community.Community;
 import cn.lehome.base.api.common.bean.community.CommunityExt;
 import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;

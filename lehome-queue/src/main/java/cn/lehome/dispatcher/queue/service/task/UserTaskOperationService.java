@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.queue.service.task;
 
-import cn.lehome.base.api.advertising.bean.task.TaskSetting;
-import cn.lehome.bean.advertising.enums.task.TaskType;
+import cn.lehome.base.api.business.activity.bean.task.TaskSetting;
+import cn.lehome.bean.business.activity.enums.task.TaskType;
 import cn.lehome.dispatcher.queue.bean.UserOperationRecord;
 
 /**

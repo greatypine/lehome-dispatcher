@@ -1,30 +1,29 @@
 package cn.lehome.dispatcher.queue.listener.activity;
 
-import cn.lehome.base.api.activity.bean.advert.Advert;
-import cn.lehome.base.api.activity.bean.advert.AdvertDeliverRange;
-import cn.lehome.base.api.activity.bean.advert.AdvertPrizeResponse;
-import cn.lehome.base.api.activity.bean.card.*;
-import cn.lehome.base.api.activity.service.advert.ActivityAdvertRedisCache;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertDeliverRangeApiService;
-import cn.lehome.base.api.activity.service.card.*;
-import cn.lehome.base.api.advertising.bean.activity.ApprenticeContributionStatistics;
-import cn.lehome.base.api.advertising.bean.activity.InviteApprenticeRecord;
-import cn.lehome.base.api.advertising.bean.activity.MasterApprenticeRelationship;
-import cn.lehome.base.api.advertising.bean.activity.QInviteApprenticeRecord;
-import cn.lehome.base.api.advertising.bean.bonus.Bonus;
-import cn.lehome.base.api.advertising.bean.bonus.BonusItem;
-import cn.lehome.base.api.advertising.bean.task.*;
-import cn.lehome.base.api.advertising.constant.JoinActivityTypeConstants;
-import cn.lehome.base.api.advertising.service.activity.ApprenticeContributionStatisticsApiService;
-import cn.lehome.base.api.advertising.service.activity.InviteApprenticeRecordApiService;
-import cn.lehome.base.api.advertising.service.activity.MasterApprenticeRelationshipApiService;
-import cn.lehome.base.api.advertising.service.advert.AdvertRedisCache;
-import cn.lehome.base.api.advertising.service.bonus.BonusApiService;
-import cn.lehome.base.api.advertising.service.task.UserSigninApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskRecordApiService;
+import cn.lehome.base.api.business.activity.bean.activity.ApprenticeContributionStatistics;
+import cn.lehome.base.api.business.activity.bean.activity.InviteApprenticeRecord;
+import cn.lehome.base.api.business.activity.bean.activity.MasterApprenticeRelationship;
+import cn.lehome.base.api.business.activity.bean.activity.QInviteApprenticeRecord;
+import cn.lehome.base.api.business.activity.bean.advert.Advert;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertDeliverRange;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertPrizeResponse;
+import cn.lehome.base.api.business.activity.bean.bonus.Bonus;
+import cn.lehome.base.api.business.activity.bean.bonus.BonusItem;
+import cn.lehome.base.api.business.activity.bean.card.*;
+import cn.lehome.base.api.business.activity.bean.task.*;
+import cn.lehome.base.api.business.activity.constant.JoinActivityTypeConstants;
+import cn.lehome.base.api.business.activity.service.activity.ApprenticeContributionStatisticsApiService;
+import cn.lehome.base.api.business.activity.service.activity.InviteApprenticeRecordApiService;
+import cn.lehome.base.api.business.activity.service.activity.MasterApprenticeRelationshipApiService;
+import cn.lehome.base.api.business.activity.service.advert.ActivityAdvertRedisCache;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertDeliverRangeApiService;
+import cn.lehome.base.api.business.activity.service.bonus.BonusApiService;
+import cn.lehome.base.api.business.activity.service.card.*;
+import cn.lehome.base.api.business.activity.service.task.UserSigninApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskRecordApiService;
 import cn.lehome.base.api.common.bean.community.Community;
 import cn.lehome.base.api.common.bean.device.ClientDevice;
 import cn.lehome.base.api.common.bean.device.PushDeviceInfo;
@@ -42,18 +41,18 @@ import cn.lehome.base.api.user.service.relationship.UserFriendApiService;
 import cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService;
 import cn.lehome.base.api.user.service.user.UserInfoApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.activity.enums.advert.AdvertStatus;
-import cn.lehome.bean.activity.enums.advert.AdvertType;
-import cn.lehome.bean.activity.enums.card.CardType;
-import cn.lehome.bean.activity.enums.card.ChannelType;
-import cn.lehome.bean.activity.enums.card.PrizeType;
-import cn.lehome.bean.advertising.enums.advert.bouns.BonusSourceType;
-import cn.lehome.bean.advertising.enums.advert.bouns.BonusType;
-import cn.lehome.bean.advertising.enums.advert.policy.DeliverRangeType;
-import cn.lehome.bean.advertising.enums.task.AssetType;
-import cn.lehome.bean.advertising.enums.task.InviteUserType;
-import cn.lehome.bean.advertising.enums.task.TaskType;
-import cn.lehome.bean.advertising.enums.task.UserTaskStatus;
+import cn.lehome.bean.business.activity.enums.advert.AdvertStatus;
+import cn.lehome.bean.business.activity.enums.advert.AdvertType;
+import cn.lehome.bean.business.activity.enums.advert.DeliverRangeType;
+import cn.lehome.bean.business.activity.enums.bouns.BonusSourceType;
+import cn.lehome.bean.business.activity.enums.bouns.BonusType;
+import cn.lehome.bean.business.activity.enums.card.CardType;
+import cn.lehome.bean.business.activity.enums.card.ChannelType;
+import cn.lehome.bean.business.activity.enums.card.PrizeType;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
+import cn.lehome.bean.business.activity.enums.task.InviteUserType;
+import cn.lehome.bean.business.activity.enums.task.TaskType;
+import cn.lehome.bean.business.activity.enums.task.UserTaskStatus;
 import cn.lehome.bean.user.entity.enums.friend.FriendSourceType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.activity.ActivityService;
@@ -84,7 +83,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static cn.lehome.base.api.advertising.service.advert.AdvertRedisCache.CollectCardRedisCache.CARD_PROBABILITY_KEY;
 import static cn.lehome.dispatcher.queue.service.activity.ActivityService.MASTER_APPRENTICE_CACHE_KEY;
 
 /**
@@ -583,7 +581,7 @@ public class JoinActivityListener extends AbstractJobListener {
             return;
         }
 
-        String key = String.format("%s%s", AdvertRedisCache.USER_LOCK_PREFIX, beBegUser.getId());
+        String key = String.format("%s%s", ActivityAdvertRedisCache.USER_LOCK_PREFIX, beBegUser.getId());
         RedisLock redisLock = new RedisLock(stringRedisTemplate, key, 5, TimeUnit.SECONDS);
         Pair<Long, AdvertPrizeResponse> pair;
         try {
@@ -678,7 +676,7 @@ public class JoinActivityListener extends AbstractJobListener {
                 }
                 try {
                     String cardProbabilityStr = objectMapper.writeValueAsString(cardProbability);
-                    activityCollectCardRedisCache.modifyExpireCacheBean(advertId,CARD_PROBABILITY_KEY, cardProbabilityStr);
+                    activityCollectCardRedisCache.modifyExpireCacheBean(advertId, ActivityAdvertRedisCache.ActivityCollectCardRedisCache.CARD_PROBABILITY_KEY, cardProbabilityStr);
                 } catch (JsonProcessingException e) {
                     logger.error("json转换失败:", e);
 

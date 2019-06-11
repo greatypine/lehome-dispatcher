@@ -1,21 +1,21 @@
 package cn.lehome.dispatcher.queue.service.impl.task;
 
-import cn.lehome.base.api.advertising.bean.task.TaskSetting;
-import cn.lehome.base.api.advertising.bean.task.UserTaskAccount;
-import cn.lehome.base.api.advertising.bean.task.UserTaskOperationRecord;
-import cn.lehome.base.api.advertising.constant.PubConstant;
-import cn.lehome.base.api.advertising.service.task.TaskSettingApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskAccountApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.business.activity.bean.task.TaskSetting;
+import cn.lehome.base.api.business.activity.bean.task.UserTaskAccount;
+import cn.lehome.base.api.business.activity.bean.task.UserTaskOperationRecord;
+import cn.lehome.base.api.business.activity.constant.PubConstant;
+import cn.lehome.base.api.business.activity.service.task.TaskSettingApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskAccountApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskOperationRecordApiService;
 import cn.lehome.base.api.user.bean.asset.UserBeanFlowInfo;
 import cn.lehome.base.api.user.bean.asset.UserDepositFlowInfo;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.asset.UserAssetApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.advertising.enums.task.AssetType;
-import cn.lehome.bean.advertising.enums.task.ConsumeType;
-import cn.lehome.bean.advertising.enums.task.LimitType;
-import cn.lehome.bean.advertising.enums.task.TaskType;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
+import cn.lehome.bean.business.activity.enums.task.ConsumeType;
+import cn.lehome.bean.business.activity.enums.task.LimitType;
+import cn.lehome.bean.business.activity.enums.task.TaskType;
 import cn.lehome.dispatcher.queue.bean.UserOperationRecord;
 import cn.lehome.dispatcher.queue.exception.task.UserTaskException;
 import cn.lehome.dispatcher.queue.service.impl.AbstractBaseServiceImpl;
@@ -118,7 +118,7 @@ public class UserTaskOperationServiceImpl extends AbstractBaseServiceImpl implem
     }
 
     @Override
-    public TaskSetting getPostCommentReward(Long userId,String commentUserId, String postId) {
+    public TaskSetting getPostCommentReward(Long userId, String commentUserId, String postId) {
         TaskSetting taskSetting = getTaskSetting(TaskType.POST_COMMENT);
         //判断任务是否有效
         if(taskSetting.getEnabledStatus().equals(EnableDisableStatus.DISABLE)){

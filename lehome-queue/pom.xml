@@ -44,11 +44,6 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>lehome-bigdata-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>lehome-bigdata-core</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
@@ -74,22 +69,17 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>content-bean</artifactId>
+            <artifactId>business-content-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>activity-bean</artifactId>
+            <artifactId>business-activity-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-activity-api</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-advertising-api</artifactId>
+            <artifactId>base-business-activity-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
@@ -100,11 +90,6 @@
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>pro-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>advertising-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
@@ -122,14 +107,10 @@
             <artifactId>base-business-property-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
+
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-thirdparty-api</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-content-api</artifactId>
+            <artifactId>base-business-content-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>

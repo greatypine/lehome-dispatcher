@@ -3,7 +3,6 @@ package cn.lehome.dispatcher.queue.config;
 import cn.lehome.base.api.common.component.idgenerator.RedisIdGeneratorComponent;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.component.message.push.PushComponent;
-import cn.lehome.base.api.thirdparty.compoment.gigold.GigoldPaymentComponent;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
@@ -43,11 +42,6 @@ public class InitConfig {
     @Bean
     public EventBusComponent eventBusComponent() {
         return new EventBusComponent();
-    }
-
-    @Bean
-    public GigoldPaymentComponent gigoldPaymentComponent() {
-        return new GigoldPaymentComponent();
     }
 
     @Bean

@@ -1,12 +1,12 @@
 package cn.lehome.dispatcher.queue.listener.register;
 
-import cn.lehome.base.api.advertising.bean.bonus.BonusItem;
-import cn.lehome.base.api.advertising.service.bonus.BonusApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskApiService;
+import cn.lehome.base.api.business.activity.bean.bonus.BonusItem;
+import cn.lehome.base.api.business.activity.service.bonus.BonusApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskApiService;
 import cn.lehome.base.api.user.bean.user.UserInfo;
 import cn.lehome.base.api.user.service.user.UserInfoApiService;
-import cn.lehome.bean.advertising.enums.advert.bouns.BonusSourceType;
-import cn.lehome.bean.advertising.enums.advert.bouns.BonusType;
+import cn.lehome.bean.business.activity.enums.bouns.BonusSourceType;
+import cn.lehome.bean.business.activity.enums.bouns.BonusType;
 import cn.lehome.bean.user.entity.enums.wechat.UserRegisterType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;

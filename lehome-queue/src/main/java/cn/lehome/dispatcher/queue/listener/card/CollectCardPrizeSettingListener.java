@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.queue.listener.card;
 
-import cn.lehome.base.api.activity.service.advert.ActivityAdvertRedisCache;
+import cn.lehome.base.api.business.activity.service.advert.ActivityAdvertRedisCache;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;

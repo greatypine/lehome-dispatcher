@@ -1,5 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.post;
 
+import cn.lehome.base.api.business.content.bean.post.PostInfoIndex;
+import cn.lehome.base.api.business.content.bean.post.RecommendInfo;
+import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
+import cn.lehome.base.api.business.content.service.post.RecommendInfoApiService;
 import cn.lehome.base.api.common.bean.community.Community;
 import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
 import cn.lehome.base.api.common.bean.device.QClientDeviceIndex;
@@ -9,10 +13,6 @@ import cn.lehome.base.api.common.component.message.push.PushComponent;
 import cn.lehome.base.api.common.constant.MessageKeyConstants;
 import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
-import cn.lehome.base.api.content.bean.post.PostInfoIndex;
-import cn.lehome.base.api.content.bean.post.RecommendInfo;
-import cn.lehome.base.api.content.service.post.PostInfoIndexApiService;
-import cn.lehome.base.api.content.service.post.RecommendInfoApiService;
 import cn.lehome.base.api.user.bean.message.UserMessage;
 import cn.lehome.base.api.user.bean.user.QUserInfoIndex;
 import cn.lehome.base.api.user.bean.user.UserCommunityRelationship;
@@ -22,7 +22,6 @@ import cn.lehome.base.api.user.service.message.UserMessageApiService;
 import cn.lehome.base.api.user.service.user.UserCommunityRelationshipApiService;
 import cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.content.entity.enums.post.UserType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.template.MessageTemplateService;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
@@ -143,7 +142,7 @@ public class RecommendPostListener extends AbstractJobListener {
             forwardParams.put("value",postId);
             forwardParams.put("postId",postId);
             String vendorClientId = "";
-            if(postInfoIndex !=null && (!postInfoIndex.getUserType().equals(UserType.ROBOT))){
+            if(postInfoIndex !=null && (!postInfoIndex.getUserType().equals(cn.lehome.bean.business.content.enums.post.UserType.ROBOT))){
                 vendorClientId = singlePostPush(userId,forwardParams);
                 logger.error("vendorClientId为:"+vendorClientId);
             }

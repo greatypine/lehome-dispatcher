@@ -1,9 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.activity;
 
-import cn.lehome.base.api.activity.bean.advert.AdvertDeliverRange;
-import cn.lehome.base.api.activity.bean.redpacket.RedPacketUploadUserBean;
-import cn.lehome.base.api.activity.service.advert.AdvertDeliverRangeApiService;
-import cn.lehome.bean.activity.enums.advert.DeliverRangeType;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertDeliverRange;
+import cn.lehome.base.api.business.activity.bean.redpacket.RedPacketUploadUserBean;
+import cn.lehome.base.api.business.activity.service.advert.AdvertDeliverRangeApiService;
+import cn.lehome.bean.business.activity.enums.advert.DeliverRangeType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.push.PushService;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
