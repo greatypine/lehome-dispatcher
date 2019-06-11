@@ -1,14 +1,13 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.tool.bean.green.ImageInfo;
-import cn.lehome.base.api.tool.bean.storage.QStorageInfo;
-import cn.lehome.base.api.tool.bean.storage.StorageInfo;
-import cn.lehome.base.api.tool.service.green.ImageSafeApiService;
-import cn.lehome.base.api.tool.service.storage.StorageInfoApiService;
-import cn.lehome.bean.tool.entity.enums.storage.SceneType;
-import cn.lehome.bean.tool.entity.enums.storage.StorageIsCheckedType;
-import cn.lehome.bean.tool.entity.enums.storage.StorageObjectType;
-import cn.lehome.bean.tool.entity.enums.storage.StorageUsageType;
+import cn.lehome.base.api.common.bean.storage.ImageInfo;
+import cn.lehome.base.api.common.bean.storage.QStorageInfo;
+import cn.lehome.base.api.common.bean.storage.StorageInfo;
+import cn.lehome.base.api.common.service.storage.StorageInfoApiService;
+import cn.lehome.bean.common.enums.storage.SceneType;
+import cn.lehome.bean.common.enums.storage.StorageIsCheckedType;
+import cn.lehome.bean.common.enums.storage.StorageObjectType;
+import cn.lehome.bean.common.enums.storage.StorageUsageType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
@@ -31,8 +30,8 @@ public class CheckUserUploadImageScheduleJobServiceImpl extends AbstractInvokeSe
     @Autowired
     private StorageInfoApiService storageInfoApiService;
 
-    @Autowired
-    private ImageSafeApiService imageSafeApiService;
+//    @Autowired
+//    private ImageSafeApiService imageSafeApiService;
 
     @Override
     public void doInvoke(Map<String, String> params) {
@@ -56,7 +55,7 @@ public class CheckUserUploadImageScheduleJobServiceImpl extends AbstractInvokeSe
             return imageInfo;
         }).collect(Collectors.toList());
         List<SceneType> sceneTypeList = Arrays.asList(SceneType.porn,SceneType.terrorism);
-        Map<String,String> result = imageSafeApiService.imageAsyncScan(imageInfoList,sceneTypeList);
-        storageInfoApiService.updateStorageInfoCheckedStatus(result);
+//        Map<String,String> result = imageSafeApiService.imageAsyncScan(imageInfoList,sceneTypeList);
+//        storageInfoApiService.updateStorageInfoCheckedStatus(result);
     }
 }

@@ -1,16 +1,15 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.advertising.bean.task.DailyConversionAccount;
-import cn.lehome.base.api.advertising.bean.task.RateSettingInfo;
-import cn.lehome.base.api.advertising.service.task.DailyConversionAccountApiService;
-import cn.lehome.base.api.advertising.service.task.RateSettingApiService;
-import cn.lehome.base.api.advertising.service.task.UserTaskOperationRecordApiService;
-import cn.lehome.base.api.advertising.service.wechat.WeChatTaskOperationRecordApiService;
+import cn.lehome.base.api.business.activity.bean.task.DailyConversionAccount;
+import cn.lehome.base.api.business.activity.bean.task.RateSettingInfo;
+import cn.lehome.base.api.business.activity.service.task.DailyConversionAccountApiService;
+import cn.lehome.base.api.business.activity.service.task.RateSettingApiService;
+import cn.lehome.base.api.business.activity.service.task.UserTaskOperationRecordApiService;
+import cn.lehome.base.api.business.activity.service.wechat.WeChatTaskOperationRecordApiService;
 import cn.lehome.base.api.user.service.asset.UserBeanFlowApiService;
 import cn.lehome.base.api.user.service.asset.UserDepositFlowApiService;
-import cn.lehome.bean.advertising.entity.task.DailyConversionAccountEntity;
-import cn.lehome.bean.advertising.enums.task.AssetType;
-import cn.lehome.bean.advertising.enums.task.ConsumeType;
+import cn.lehome.bean.business.activity.entity.task.DailyConversionAccountEntity;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.bean.core.enums.Operation;
 import cn.lehome.framework.bean.core.enums.OperationType;

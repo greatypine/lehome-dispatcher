@@ -1,9 +1,8 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.tool.bean.green.ImageScanTask;
-import cn.lehome.base.api.tool.service.green.ImageSafeApiService;
-import cn.lehome.base.api.tool.service.storage.AliyunImageScanTaskApiService;
-import cn.lehome.bean.tool.entity.enums.storage.ImageScanTaskStatus;
+import cn.lehome.base.api.common.bean.storage.ImageScanTask;
+import cn.lehome.base.api.common.service.storage.AliyunImageScanTaskApiService;
+import cn.lehome.bean.common.enums.storage.ImageScanTaskStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
@@ -21,8 +20,8 @@ import java.util.stream.Collectors;
 @Service("getUploadImageCheckResultScheduleJobService")
 public class GetUploadImageCheckResultScheduleJobServiceImpl extends AbstractInvokeServiceImpl {
 
-    @Autowired
-    private ImageSafeApiService imageSafeApiService;
+//    @Autowired
+//    private ImageSafeApiService imageSafeApiService;
 
     @Autowired
     private AliyunImageScanTaskApiService aliyunImageScanTaskApiService;
@@ -38,8 +37,8 @@ public class GetUploadImageCheckResultScheduleJobServiceImpl extends AbstractInv
             return;
         }
         List<String> taskList = response.getPagedData().stream().map(m -> m.getTaskId()).collect(Collectors.toList());
-        List<ImageScanTask> imageScanResultList = imageSafeApiService.getImageAsyncScanResults(taskList);
-        aliyunImageScanTaskApiService.updateImageScanTaskStatus(imageScanResultList);
+//        List<ImageScanTask> imageScanResultList = imageSafeApiService.getImageAsyncScanResults(taskList);
+//        aliyunImageScanTaskApiService.updateImageScanTaskStatus(imageScanResultList);
     }
 
 }

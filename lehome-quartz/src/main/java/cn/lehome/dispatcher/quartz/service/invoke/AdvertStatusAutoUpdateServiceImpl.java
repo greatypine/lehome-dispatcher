@@ -1,18 +1,18 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.activity.bean.advert.*;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertDeliverTimelineApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertRedPacketAllocateApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertRedPacketPolicyApiService;
-import cn.lehome.base.api.tool.bean.job.ScheduleJob;
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
-import cn.lehome.base.api.tool.constant.EventConstants;
-import cn.lehome.base.api.tool.service.job.ScheduleJobApiService;
-import cn.lehome.base.api.tool.util.DateUtil;
-import cn.lehome.bean.activity.enums.advert.AdvertStatus;
-import cn.lehome.bean.activity.enums.advert.AdvertTimeLineType;
-import cn.lehome.bean.activity.enums.advert.AdvertType;
+import cn.lehome.base.api.business.activity.bean.advert.*;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertDeliverTimelineApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertRedPacketAllocateApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertRedPacketPolicyApiService;
+import cn.lehome.base.api.common.bean.job.ScheduleJob;
+import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.base.api.common.service.job.ScheduleJobApiService;
+import cn.lehome.base.api.common.util.DateUtil;
+import cn.lehome.bean.business.activity.enums.advert.AdvertStatus;
+import cn.lehome.bean.business.activity.enums.advert.AdvertTimeLineType;
+import cn.lehome.bean.business.activity.enums.advert.AdvertType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
@@ -37,16 +37,16 @@ import java.util.Map;
 public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl {
 
     @Autowired
-    private AdvertApiService advertApiServiceNew;
+    private AdvertApiService advertApiService;
 
     @Autowired
-    private AdvertDeliverTimelineApiService advertDeliverTimelineApiServiceNew;
+    private AdvertDeliverTimelineApiService advertDeliverTimelineApiService;
 
     @Autowired
-    private AdvertRedPacketAllocateApiService advertRedPacketAllocateApiServiceNew;
+    private AdvertRedPacketAllocateApiService advertRedPacketAllocateApiService;
 
     @Autowired
-    private AdvertRedPacketPolicyApiService advertRedPacketPolicyApiServiceNew;
+    private AdvertRedPacketPolicyApiService advertRedPacketPolicyApiService;
 
     @Autowired
     private ScheduleJobApiService scheduleJobApiService;
@@ -63,7 +63,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
 
         ApiRequest apiRequest = ApiRequest.newInstance();
         apiRequest.filterEqual(QAdvert.status, AdvertStatus.AUDITED);
-        List<Advert> advertList = advertApiServiceNew.findAll(apiRequest);
+        List<Advert> advertList = advertApiService.findAll(apiRequest);
         List<Advert> needChangeAdverts = filterToBePublishedByTimeLine(advertList);
         logger.info("查询需要更新为已发布的活动有{}个", needChangeAdverts.size());
         if (!CollectionUtils.isEmpty(needChangeAdverts)) {
@@ -72,20 +72,20 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                     AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                     changeBean.setReason("自动发布");
                     changeBean.setStatus(AdvertStatus.PUBLISHED);
-                    advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                    advertApiService.updateStatus(e.getId(), changeBean);
                     createSendRedPacketTimePush(e.getId(),e.getType());
                 } else if (AdvertType.CARD_COLLECTING.equals(e.getType())) {
                     AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                     changeBean.setReason("集卡自动发布");
                     changeBean.setStatus(AdvertStatus.PUBLISHED);
-                    advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                    advertApiService.updateStatus(e.getId(), changeBean);
                 }
             });
         }
 
         apiRequest = ApiRequest.newInstance();
         apiRequest.filterEqual(QAdvert.status, AdvertStatus.PUBLISHED);
-        advertList = advertApiServiceNew.findAll(apiRequest);
+        advertList = advertApiService.findAll(apiRequest);
         needChangeAdverts = filterToBeOfflineByTimeLine(advertList);
         logger.info("查询需要下线的红包活动有{}个", needChangeAdverts.size());
         if (!CollectionUtils.isEmpty(needChangeAdverts)) {
@@ -93,7 +93,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                 AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                 changeBean.setReason("自动下线");
                 changeBean.setStatus(AdvertStatus.OFFLINE);
-                advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                advertApiService.updateStatus(e.getId(), changeBean);
                 sendOfflineMessage(e.getId());
             });
         }
@@ -105,7 +105,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                 AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                 changeBean.setReason("集卡时间到期, 等待开奖");
                 changeBean.setStatus(AdvertStatus.WAITING);
-                advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                advertApiService.updateStatus(e.getId(), changeBean);
                 sendMessage(e.getId());
             });
         }
@@ -113,7 +113,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
         apiRequest = ApiRequest.newInstance();
         apiRequest.filterEqual(QAdvert.type, AdvertType.CARD_COLLECTING);
         apiRequest.filterEqual(QAdvert.status, AdvertStatus.WAITING);
-        advertList = advertApiServiceNew.findAll(apiRequest);
+        advertList = advertApiService.findAll(apiRequest);
         needChangeAdverts = filterToBeOpeningByTimeLine(advertList);
         logger.info("查询等待开奖需要开奖的集卡活动有{}个",needChangeAdverts.size());
         if (!CollectionUtils.isEmpty(needChangeAdverts)) {
@@ -121,14 +121,14 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                 AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                 changeBean.setReason("开始开奖集卡活动");
                 changeBean.setStatus(AdvertStatus.OPENING);
-                advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                advertApiService.updateStatus(e.getId(), changeBean);
             });
         }
 
         apiRequest = ApiRequest.newInstance();
         apiRequest.filterEqual(QAdvert.type, AdvertType.CARD_COLLECTING);
         apiRequest.filterEqual(QAdvert.status, AdvertStatus.OPENING);
-        advertList = advertApiServiceNew.findAll(apiRequest);
+        advertList = advertApiService.findAll(apiRequest);
         needChangeAdverts = filterToBeOfflineByTimeLine(advertList);
         logger.info("查询开奖中需要下线的集卡活动有{}个",needChangeAdverts.size());
         if (!CollectionUtils.isEmpty(needChangeAdverts)) {
@@ -136,7 +136,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                 AdvertStatusChangeBean changeBean = new AdvertStatusChangeBean();
                 changeBean.setReason("集卡开奖时间到期, 自动下线");
                 changeBean.setStatus(AdvertStatus.OFFLINE);
-                advertApiServiceNew.updateStatus(e.getId(), changeBean);
+                advertApiService.updateStatus(e.getId(), changeBean);
                 sendOfflineMessage(e.getId());
             });
         }
@@ -146,7 +146,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
     private List<Advert> filterToBeOpeningByTimeLine(List<Advert> advertList) {
         List<Advert> adverts = Lists.newArrayList();
         advertList.stream().forEach(e -> {
-            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(e.getId());
+            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiService.findAllByAdvertId(e.getId());
             for (AdvertDeliverTimeline advertDeliverTimeline : timelineList) {
                 boolean check = false;
                 if (AdvertType.CARD_COLLECTING.equals(e.getType())) {
@@ -165,7 +165,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
     private List<Advert> filterToBeWaitingByTimeLine(List<Advert> advertList) {
         List<Advert> adverts = Lists.newArrayList();
         advertList.stream().forEach(e -> {
-            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(e.getId());
+            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiService.findAllByAdvertId(e.getId());
             for (AdvertDeliverTimeline advertDeliverTimeline : timelineList) {
                 boolean check = false;
                 if (AdvertType.CARD_COLLECTING.equals(e.getType())) {
@@ -184,7 +184,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
     private List<Advert> filterToBePublishedByTimeLine(List<Advert> advertList) {
         List<Advert> adverts = Lists.newArrayList();
         advertList.stream().forEach(e -> {
-            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(e.getId());
+            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiService.findAllByAdvertId(e.getId());
             for (AdvertDeliverTimeline advertDeliverTimeline : timelineList) {
                 boolean check = false;
                 if (RED_PACKET_LIST.contains(e.getType())) {
@@ -205,7 +205,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
     private List<Advert> filterToBeOfflineByTimeLine(List<Advert> advertList) {
         List<Advert> adverts = Lists.newArrayList();
         advertList.stream().forEach(e -> {
-            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(e.getId());
+            List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiService.findAllByAdvertId(e.getId());
             for (AdvertDeliverTimeline advertDeliverTimeline : timelineList) {
                 boolean check = false;
                 if (RED_PACKET_LIST.contains(e.getType())) {
@@ -225,8 +225,8 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
                             continue;
                         }
                         //1.2 时间没到但是已经领取完并且全部打开了自动下线
-                        Long openedNum = advertRedPacketAllocateApiServiceNew.countByAdvertIdAndDrewAndOpened(e.getId(), YesNoStatus.YES, YesNoStatus.YES);
-                        AdvertRedPacketPolicy redPacketPolicy = advertRedPacketPolicyApiServiceNew.findOne(e.getId());
+                        Long openedNum = advertRedPacketAllocateApiService.countByAdvertIdAndDrewAndOpened(e.getId(), YesNoStatus.YES, YesNoStatus.YES);
+                        AdvertRedPacketPolicy redPacketPolicy = advertRedPacketPolicyApiService.findOne(e.getId());
                         if (redPacketPolicy.getDeliverCount().compareTo(openedNum) <= 0) {
                             adverts.add(e);
                         }
@@ -239,7 +239,7 @@ public class AdvertStatusAutoUpdateServiceImpl extends AbstractInvokeServiceImpl
 
     private void createSendRedPacketTimePush(Long advertId,AdvertType type) {
         if (AdvertType.SPECIAL_PACKET.equals(type) || AdvertType.THEME_RED_PACKET.equals(type)||AdvertType.RED_PACKET.equals(type) || AdvertType.BEAN_PACKET.equals(type)){
-            List<AdvertDeliverTimeline> allByAdvertId = advertDeliverTimelineApiServiceNew.findAllByAdvertId(advertId);
+            List<AdvertDeliverTimeline> allByAdvertId = advertDeliverTimelineApiService.findAllByAdvertId(advertId);
             if (!CollectionUtils.isEmpty(allByAdvertId)) {
                 AdvertDeliverTimeline timeline = allByAdvertId.get(0);
                 Date endDate = timeline.getEndDate();

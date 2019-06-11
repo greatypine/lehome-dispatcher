@@ -1,24 +1,17 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.bigdata.bean.SmartCommunityReport;
 import cn.lehome.base.api.bigdata.service.smart.SmartCommunityReportApiService;
 import cn.lehome.base.api.business.ec.service.partner.PartnerCommunityApiService;
-import cn.lehome.base.api.thirdparty.bean.smart.SmartOpenDoorRequest;
-import cn.lehome.base.api.thirdparty.bean.smart.SmartOpenDoorResponse;
-import cn.lehome.base.api.thirdparty.service.smart.SmartHttpRequestApiService;
-import cn.lehome.base.api.tool.bean.community.CommunityExt;
-import cn.lehome.base.api.tool.bean.community.QCommunityExt;
-import cn.lehome.base.api.tool.service.community.CommunityApiService;
-import cn.lehome.base.api.tool.service.community.CommunityCacheApiService;
-import cn.lehome.base.api.tool.util.DateUtil;
-import cn.lehome.bean.bigdata.enums.DataIncreEnum;
-import cn.lehome.bean.tool.entity.enums.community.EditionType;
+import cn.lehome.base.api.common.bean.community.CommunityExt;
+import cn.lehome.base.api.common.bean.community.QCommunityExt;
+import cn.lehome.base.api.common.service.community.CommunityApiService;
+import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
+import cn.lehome.bean.common.enums.community.EditionType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.compoment.request.ApiPageRequestHelper;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +32,8 @@ public class SmartOpenDoorDataServiceImpl extends AbstractInvokeServiceImpl {
     @Autowired
     private PartnerCommunityApiService partnerCommunityApiService;
 
-    @Autowired
-    private SmartHttpRequestApiService smartHttpRequestApiService;
+//    @Autowired
+//    private SmartHttpRequestApiService smartHttpRequestApiService;
 
     @Autowired
     private CommunityCacheApiService communityCacheApiService;
@@ -72,97 +65,97 @@ public class SmartOpenDoorDataServiceImpl extends AbstractInvokeServiceImpl {
 
         if (!CollectionUtils.isEmpty(communityExts)) {
             communityExts.parallelStream().forEach(communityExt -> {
-                SmartOpenDoorRequest request = new SmartOpenDoorRequest();
-
-                Date now = new Date();
-
-                Date endTime = DateUtils.setHours(now, 0);
-                endTime = DateUtils.setMinutes(endTime, 0);
-                endTime = DateUtils.setSeconds(endTime, 0);
-                endTime = DateUtils.setMilliseconds(endTime, 0);
-                Date startTime = DateUtils.addDays(endTime, -1);
-
-                request.setStartDate(dateFormat_time.format(startTime));
-                // 结束时间是23:59:59
-                Date queryEndTime = DateUtils.addSeconds(endTime, -1);
-                request.setEndDate(dateFormat_time.format(queryEndTime));
-
-                if (communityExt != null && communityExt.getPropertyCommunityId() != 0L) {
-                    if (!communityIds.contains(communityExt.getId())) {
-                        request.setCommunityId(communityExt.getPropertyCommunityId());
-                        logger.error("获取这社区小区开门数据请求参数 : " + JSON.toJSONString(request));
-                        SmartOpenDoorResponse smartOpenDoorResponse = null;
-                        try {
-                            smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
-                        } catch (Exception e) {
-                            logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
-                            smartOpenDoorResponse = null;
-                        }
-
-                        logger.error("获取这社区小区开门数据请求结果 : " + JSON.toJSONString(smartOpenDoorResponse));
-                        if (smartOpenDoorResponse != null) {
-                            SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
-                            smartCommunityReport.setCommunityId(communityExt.getId());
-                            smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
-                            smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
-                            smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
-                            smartCommunityReport.setStatDateTime(DateUtil.getDayBegin(startTime));
-                            smartCommunityReport.setBeginDateTime(DateUtil.getDayBegin(startTime));
-                            smartCommunityReport.setEndDateTime(DateUtil.getDayBegin(now));
-                            smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
-
-                            smartCommunityReportApiService.save(smartCommunityReport);
-
-                        }
-                        if (getFirstDayOfMonth(endTime).equals(endTime)) {
-                            // 月初跑上一整月的数据
-                            Date lastMonthFirstDay = getFirstDayOfMonth(startTime);
-                            request.setStartDate(dateFormat_time.format(lastMonthFirstDay));
-                            try {
-                                smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
-                            } catch (Exception e) {
-                                logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
-                                smartOpenDoorResponse = null;
-                            }
-                            if (smartOpenDoorResponse != null) {
-                                SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
-                                smartCommunityReport.setCommunityId(communityExt.getId());
-                                smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
-                                smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
-                                smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
-                                smartCommunityReport.setStatDateTime(lastMonthFirstDay);
-                                smartCommunityReport.setBeginDateTime(lastMonthFirstDay);
-                                smartCommunityReport.setEndDateTime(DateUtil.getDayBegin(now));
-                                smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
-
-                                smartCommunityReportApiService.save(smartCommunityReport);
-                            }
-                        } else {
-                            Date thisMonthFirstDay = getFirstDayOfMonth(startTime);
-                            request.setStartDate(dateFormat_time.format(thisMonthFirstDay));
-                            try {
-                                smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
-                            } catch (Exception e) {
-                                logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
-                                smartOpenDoorResponse = null;
-                            }
-                            if (smartOpenDoorResponse != null) {
-                                SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
-                                smartCommunityReport.setCommunityId(communityExt.getId());
-                                smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
-                                smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
-                                smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
-                                smartCommunityReport.setStatDateTime(endTime);
-                                smartCommunityReport.setBeginDateTime(thisMonthFirstDay);
-                                smartCommunityReport.setEndDateTime(endTime);
-                                smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
-
-                                smartCommunityReportApiService.save(smartCommunityReport);
-                            }
-                        }
-                        communityIds.add(communityExt.getId());
-                    }
-                }
+//                SmartOpenDoorRequest request = new SmartOpenDoorRequest();
+//
+//                Date now = new Date();
+//
+//                Date endTime = DateUtils.setHours(now, 0);
+//                endTime = DateUtils.setMinutes(endTime, 0);
+//                endTime = DateUtils.setSeconds(endTime, 0);
+//                endTime = DateUtils.setMilliseconds(endTime, 0);
+//                Date startTime = DateUtils.addDays(endTime, -1);
+//
+//                request.setStartDate(dateFormat_time.format(startTime));
+//                // 结束时间是23:59:59
+//                Date queryEndTime = DateUtils.addSeconds(endTime, -1);
+//                request.setEndDate(dateFormat_time.format(queryEndTime));
+//
+//                if (communityExt != null && communityExt.getPropertyCommunityId() != 0L) {
+//                    if (!communityIds.contains(communityExt.getId())) {
+//                        request.setCommunityId(communityExt.getPropertyCommunityId());
+//                        logger.error("获取这社区小区开门数据请求参数 : " + JSON.toJSONString(request));
+//                        SmartOpenDoorResponse smartOpenDoorResponse = null;
+//                        try {
+//                            smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
+//                        } catch (Exception e) {
+//                            logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
+//                            smartOpenDoorResponse = null;
+//                        }
+//
+//                        logger.error("获取这社区小区开门数据请求结果 : " + JSON.toJSONString(smartOpenDoorResponse));
+//                        if (smartOpenDoorResponse != null) {
+//                            SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
+//                            smartCommunityReport.setCommunityId(communityExt.getId());
+//                            smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
+//                            smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
+//                            smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
+//                            smartCommunityReport.setStatDateTime(DateUtil.getDayBegin(startTime));
+//                            smartCommunityReport.setBeginDateTime(DateUtil.getDayBegin(startTime));
+//                            smartCommunityReport.setEndDateTime(DateUtil.getDayBegin(now));
+//                            smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
+//
+//                            smartCommunityReportApiService.save(smartCommunityReport);
+//
+//                        }
+//                        if (getFirstDayOfMonth(endTime).equals(endTime)) {
+//                            // 月初跑上一整月的数据
+//                            Date lastMonthFirstDay = getFirstDayOfMonth(startTime);
+//                            request.setStartDate(dateFormat_time.format(lastMonthFirstDay));
+//                            try {
+//                                smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
+//                            } catch (Exception e) {
+//                                logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
+//                                smartOpenDoorResponse = null;
+//                            }
+//                            if (smartOpenDoorResponse != null) {
+//                                SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
+//                                smartCommunityReport.setCommunityId(communityExt.getId());
+//                                smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
+//                                smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
+//                                smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
+//                                smartCommunityReport.setStatDateTime(lastMonthFirstDay);
+//                                smartCommunityReport.setBeginDateTime(lastMonthFirstDay);
+//                                smartCommunityReport.setEndDateTime(DateUtil.getDayBegin(now));
+//                                smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
+//
+//                                smartCommunityReportApiService.save(smartCommunityReport);
+//                            }
+//                        } else {
+//                            Date thisMonthFirstDay = getFirstDayOfMonth(startTime);
+//                            request.setStartDate(dateFormat_time.format(thisMonthFirstDay));
+//                            try {
+//                                smartOpenDoorResponse = smartHttpRequestApiService.openDoorData(request);
+//                            } catch (Exception e) {
+//                                logger.error("调用智社区获取数据报错, request = {}", JSON.toJSONString(request));
+//                                smartOpenDoorResponse = null;
+//                            }
+//                            if (smartOpenDoorResponse != null) {
+//                                SmartCommunityReport smartCommunityReport = new SmartCommunityReport();
+//                                smartCommunityReport.setCommunityId(communityExt.getId());
+//                                smartCommunityReport.setPropertyCommunityId(communityExt.getPropertyCommunityId());
+//                                smartCommunityReport.setOpenDoorNum(smartOpenDoorResponse.getCount());
+//                                smartCommunityReport.setOpenDoorUserNum(smartOpenDoorResponse.getUserCount());
+//                                smartCommunityReport.setStatDateTime(endTime);
+//                                smartCommunityReport.setBeginDateTime(thisMonthFirstDay);
+//                                smartCommunityReport.setEndDateTime(endTime);
+//                                smartCommunityReport.setTotalOrIncre(DataIncreEnum.DAY);
+//
+//                                smartCommunityReportApiService.save(smartCommunityReport);
+//                            }
+//                        }
+//                        communityIds.add(communityExt.getId());
+//                    }
+//                }
             });
         }
 

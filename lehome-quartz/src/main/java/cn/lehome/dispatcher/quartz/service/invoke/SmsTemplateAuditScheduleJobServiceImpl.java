@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.tool.service.message.MessageTemplateApiService;
+import cn.lehome.base.api.common.service.message.MessageTemplateApiService;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

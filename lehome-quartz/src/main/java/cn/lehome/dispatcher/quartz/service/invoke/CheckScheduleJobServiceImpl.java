@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.tool.bean.job.ScheduleJob;
-import cn.lehome.bean.tool.entity.enums.job.SchedulerStatus;
+import cn.lehome.base.api.common.bean.job.ScheduleJob;
+import cn.lehome.bean.common.enums.job.SchedulerStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.dispatcher.quartz.service.ScheduleJobService;
 import com.google.common.collect.Sets;

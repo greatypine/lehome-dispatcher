@@ -1,26 +1,22 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.activity.bean.advert.Advert;
-import cn.lehome.base.api.activity.bean.advert.AdvertRedPacketAllocate;
-import cn.lehome.base.api.activity.bean.advert.QAdvertRedPacketAllocate;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertRedPacketAllocateApiService;
-import cn.lehome.base.api.tool.bean.device.ClientDevice;
-import cn.lehome.base.api.tool.bean.device.PushDeviceInfo;
-import cn.lehome.base.api.tool.compoment.message.push.PushComponent;
-import cn.lehome.base.api.tool.constant.MessageKeyConstants;
-import cn.lehome.base.api.tool.service.device.DeviceApiService;
+import cn.lehome.base.api.business.activity.bean.advert.Advert;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertRedPacketAllocate;
+import cn.lehome.base.api.business.activity.bean.advert.QAdvertRedPacketAllocate;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertRedPacketAllocateApiService;
+import cn.lehome.base.api.common.bean.device.ClientDevice;
+import cn.lehome.base.api.common.bean.device.PushDeviceInfo;
+import cn.lehome.base.api.common.component.message.push.PushComponent;
+import cn.lehome.base.api.common.constant.MessageKeyConstants;
+import cn.lehome.base.api.common.service.device.DeviceApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.activity.enums.advert.AdvertStatus;
-import cn.lehome.bean.tool.entity.enums.device.PushVendorType;
-import cn.lehome.bean.tool.entity.enums.push.PushOsType;
+import cn.lehome.bean.business.activity.enums.advert.AdvertStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.util.StringUtil;
-import cn.lehome.framework.bean.core.enums.ClientOSType;
-import cn.lehome.framework.bean.core.enums.ClientType;
-import cn.lehome.framework.bean.core.enums.YesNoStatus;
+import cn.lehome.framework.bean.core.enums.*;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,10 +32,10 @@ import java.util.Map;
 public class RedPacketWillExpireSendPushServiceImpl extends AbstractInvokeServiceImpl {
 
     @Autowired
-    private AdvertApiService advertApiServiceNew;
+    private AdvertApiService advertApiService;
 
     @Autowired
-    private AdvertRedPacketAllocateApiService advertRedPacketAllocateApiServiceNew;
+    private AdvertRedPacketAllocateApiService advertRedPacketAllocateApiService;
 
     @Autowired
     private PushComponent pushComponent;
@@ -55,14 +51,14 @@ public class RedPacketWillExpireSendPushServiceImpl extends AbstractInvokeServic
         String advertId = params.get("advertId");
         logger.info("红包将要过期定时发送推送开始advertId:{}",advertId);
         if (StringUtil.isNotEmpty(advertId)) {
-            Advert one = advertApiServiceNew.findOne(Long.valueOf(advertId));
+            Advert one = advertApiService.findOne(Long.valueOf(advertId));
             AdvertStatus status = one.getStatus();
             if (AdvertStatus.PUBLISHED.equals(status)) {
                 ApiRequest apiRequest = ApiRequest.newInstance();
                 apiRequest.filterEqual(QAdvertRedPacketAllocate.advertId,advertId);
                 apiRequest.filterEqual(QAdvertRedPacketAllocate.opened, YesNoStatus.NO);
                 apiRequest.filterEqual(QAdvertRedPacketAllocate.drew,YesNoStatus.YES);
-                List<AdvertRedPacketAllocate> all = advertRedPacketAllocateApiServiceNew.findAll(apiRequest);
+                List<AdvertRedPacketAllocate> all = advertRedPacketAllocateApiService.findAll(apiRequest);
                 all.forEach(advertRedPacketAllocate -> {
                     String drewUser = advertRedPacketAllocate.getDrewUser();
                     if (StringUtil.isNotEmpty(drewUser)) {
