@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.quartz.bean;
 
-import cn.lehome.bean.tool.entity.enums.job.SchedulerStatus;
+import cn.lehome.bean.common.enums.job.SchedulerStatus;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 
 import java.io.Serializable;

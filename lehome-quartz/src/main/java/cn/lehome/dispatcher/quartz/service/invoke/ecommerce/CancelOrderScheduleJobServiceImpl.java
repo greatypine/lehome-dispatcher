@@ -10,7 +10,6 @@ import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordIndexApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.store.StoreApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.store.StoreAssetApiService;
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
 import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderType;
@@ -60,8 +59,6 @@ public class CancelOrderScheduleJobServiceImpl extends AbstractInvokeServiceImpl
     @Autowired
     private LoaderServiceComponent loaderServiceComponent;
 
-    @Autowired
-    private EventBusComponent eventBusComponent;
 
     @Override
     public void doInvoke(Map<String, String> params) {

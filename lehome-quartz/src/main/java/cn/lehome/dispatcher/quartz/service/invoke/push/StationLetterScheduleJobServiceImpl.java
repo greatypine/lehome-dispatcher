@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.quartz.service.invoke.push;
 
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
-import cn.lehome.base.api.tool.constant.EventConstants;
+import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import org.apache.commons.lang3.StringUtils;

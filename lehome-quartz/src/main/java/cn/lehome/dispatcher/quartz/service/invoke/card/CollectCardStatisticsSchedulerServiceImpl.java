@@ -1,19 +1,19 @@
 package cn.lehome.dispatcher.quartz.service.invoke.card;
 
-import cn.lehome.base.api.activity.bean.advert.Advert;
-import cn.lehome.base.api.activity.bean.advert.QAdvert;
-import cn.lehome.base.api.activity.bean.card.AdvertCollectCardCommonCacheBean;
-import cn.lehome.base.api.activity.bean.card.AdvertCollectCardStatistics;
-import cn.lehome.base.api.activity.bean.card.AdvertStatisticsCacheBean;
-import cn.lehome.base.api.activity.bean.card.CardImage;
-import cn.lehome.base.api.activity.service.advert.ActivityAdvertRedisCache;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertRedPacketAllocateApiService;
-import cn.lehome.base.api.activity.service.card.ActivityCollectCardStatisticsCache;
-import cn.lehome.base.api.activity.service.card.AdvertCollectCardStatisticsApiService;
-import cn.lehome.bean.activity.enums.advert.AdvertStatus;
-import cn.lehome.bean.activity.enums.advert.AdvertType;
-import cn.lehome.bean.activity.enums.card.CardType;
+import cn.lehome.base.api.business.activity.bean.advert.Advert;
+import cn.lehome.base.api.business.activity.bean.advert.QAdvert;
+import cn.lehome.base.api.business.activity.bean.card.AdvertCollectCardCommonCacheBean;
+import cn.lehome.base.api.business.activity.bean.card.AdvertCollectCardStatistics;
+import cn.lehome.base.api.business.activity.bean.card.AdvertStatisticsCacheBean;
+import cn.lehome.base.api.business.activity.bean.card.CardImage;
+import cn.lehome.base.api.business.activity.service.advert.ActivityAdvertRedisCache;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertRedPacketAllocateApiService;
+import cn.lehome.base.api.business.activity.service.card.ActivityCollectCardStatisticsCache;
+import cn.lehome.base.api.business.activity.service.card.AdvertCollectCardStatisticsApiService;
+import cn.lehome.bean.business.activity.enums.advert.AdvertStatus;
+import cn.lehome.bean.business.activity.enums.advert.AdvertType;
+import cn.lehome.bean.business.activity.enums.card.CardType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,13 +37,13 @@ import java.util.Map;
 public class CollectCardStatisticsSchedulerServiceImpl extends AbstractInvokeServiceImpl {
 
     @Autowired
-    private AdvertApiService advertApiServiceNew;
+    private AdvertApiService advertApiService;
 
     @Autowired
     private ActivityCollectCardStatisticsCache activityCollectCardStatisticsCache;
 
     @Autowired
-    private AdvertCollectCardStatisticsApiService advertCollectCardStatisticsApiServiceNew;
+    private AdvertCollectCardStatisticsApiService advertCollectCardStatisticsApiService;
 
     @Autowired
     private ActivityAdvertRedisCache.ActivityCollectCardRedisCache activityCollectCardRedisCache;
@@ -67,20 +67,20 @@ public class CollectCardStatisticsSchedulerServiceImpl extends AbstractInvokeSer
             ApiRequest apiRequest = ApiRequest.newInstance();
             apiRequest.filterEqual(QAdvert.status, AdvertStatus.PUBLISHED);
             apiRequest.filterEqual(QAdvert.type, AdvertType.CARD_COLLECTING);
-            List<Advert> advertList = advertApiServiceNew.findAll(apiRequest);
+            List<Advert> advertList = advertApiService.findAll(apiRequest);
             advertList.stream().forEach(this::cardToDB);
 
             //统计开奖中统计入库
             apiRequest = ApiRequest.newInstance();
             apiRequest.filterEqual(QAdvert.status, AdvertStatus.OPENING);
             apiRequest.filterEqual(QAdvert.type, AdvertType.CARD_COLLECTING);
-            advertList = advertApiServiceNew.findAll(apiRequest);
+            advertList = advertApiService.findAll(apiRequest);
             advertList.stream().forEach(this::cardToDB);
 
             apiRequest = ApiRequest.newInstance();
             apiRequest.filterEqual(QAdvert.status, AdvertStatus.PUBLISHED);
             apiRequest.filterIn(QAdvert.type, RED_PACKET_LIST);
-            advertList = advertApiServiceNew.findAll(apiRequest);
+            advertList = advertApiService.findAll(apiRequest);
             advertList.stream().forEach(this::redPacketToDB);
 
         }
@@ -102,7 +102,7 @@ public class CollectCardStatisticsSchedulerServiceImpl extends AbstractInvokeSer
         }
         activityCollectCardStatisticsCache.mergeTempCache(tempBean);
         AdvertStatisticsCacheBean bean = activityCollectCardStatisticsCache.getStay(advertId);
-        AdvertCollectCardStatistics statistics = advertCollectCardStatisticsApiServiceNew.findOne(advertId);
+        AdvertCollectCardStatistics statistics = advertCollectCardStatisticsApiService.findOne(advertId);
         AdvertCollectCardCommonCacheBean commonCacheBean = activityCollectCardRedisCache.getCollectCardCommonData(advertId);
         List<CardImage> cardImageList = Lists.newArrayList(commonCacheBean.getCards().values());
         Collections.sort(cardImageList, (o1, o2) -> Integer.compare(o1.getCardType().getValue(), o2.getCardType().getValue()));
@@ -189,7 +189,7 @@ public class CollectCardStatisticsSchedulerServiceImpl extends AbstractInvokeSer
         }
         statistics.setCardOfCountDetail(cardDetailStr);
         try {
-            advertCollectCardStatisticsApiServiceNew.saveOrUpdate(statistics);
+            advertCollectCardStatisticsApiService.saveOrUpdate(statistics);
         } catch (Exception e) {
             logger.error("统计结果入库失败: ", e);
         } finally {

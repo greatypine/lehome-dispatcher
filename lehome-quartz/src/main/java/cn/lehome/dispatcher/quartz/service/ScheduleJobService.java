@@ -1,6 +1,7 @@
 package cn.lehome.dispatcher.quartz.service;
 
-import cn.lehome.base.api.tool.bean.job.ScheduleJob;
+
+import cn.lehome.base.api.common.bean.job.ScheduleJob;
 
 /**
  * Created by wuzhao on 2018/2/4.

@@ -16,16 +16,14 @@
 
     <dubbo:consumer check="false" timeout="10000"/>
 
-    <import resource="classpath*:provider/base-api/advertising-service.xml"/>
-    <import resource="classpath*:provider/base-api/tool-service.xml"/>
-    <import resource="classpath*:provider/base-api/thirdparty-service.xml"/>
-    <import resource="classpath*:provider/base-api/business-service.xml"/>
-    <import resource="classpath*:provider/base-api/bigdata-service.xml"/>
-    <import resource="classpath*:provider/base-api/content-service.xml"/>
-    <import resource="classpath*:provider/base-api/user-service.xml"/>
-    <import resource="classpath*:provider/base-api/operation-service.xml"/>
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
-    <import resource="classpath*:provider/base-api/oauth2-service.xml"/>
+    <import resource="classpath*:provider/base-api/common-service.xml"/>
+    <import resource="classpath*:provider/base-api/ec-service.xml"/>
+    <import resource="classpath*:provider/base-api/common-bigdata-service.xml"/>
+    <import resource="classpath*:provider/base-api/content-service.xml"/>
+    <import resource="classpath*:provider/base-api/common-user-service.xml"/>
+    <import resource="classpath*:provider/base-api/operation-service.xml"/>
+    <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
 
 
 </beans>

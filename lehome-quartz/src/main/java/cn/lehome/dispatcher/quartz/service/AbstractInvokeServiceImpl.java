@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.quartz.service;
 
-import cn.lehome.base.api.tool.service.job.ScheduleJobApiService;
+import cn.lehome.base.api.common.service.job.ScheduleJobApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;

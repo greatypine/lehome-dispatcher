@@ -1,37 +1,35 @@
 package cn.lehome.dispatcher.quartz.service.invoke.card;
 
-import cn.lehome.base.api.activity.bean.advert.Advert;
-import cn.lehome.base.api.activity.bean.advert.AdvertDeliverRange;
-import cn.lehome.base.api.activity.bean.advert.AdvertDeliverTimeline;
-import cn.lehome.base.api.activity.bean.advert.QAdvert;
-import cn.lehome.base.api.activity.bean.card.AdvertCollectCardCommonCacheBean;
-import cn.lehome.base.api.activity.bean.card.AdvertCollectCardRecord;
-import cn.lehome.base.api.activity.bean.card.QAdvertCollectCardRecord;
-import cn.lehome.base.api.activity.service.advert.ActivityAdvertRedisCache;
-import cn.lehome.base.api.activity.service.advert.AdvertApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertDeliverRangeApiService;
-import cn.lehome.base.api.activity.service.advert.AdvertDeliverTimelineApiService;
-import cn.lehome.base.api.activity.service.card.AdvertAdditionalApiService;
-import cn.lehome.base.api.activity.service.card.AdvertCollectCardRecordApiService;
-import cn.lehome.base.api.tool.bean.device.ClientDevice;
-import cn.lehome.base.api.tool.bean.device.ClientDeviceIndex;
-import cn.lehome.base.api.tool.bean.device.PushDeviceInfo;
-import cn.lehome.base.api.tool.bean.device.QClientDeviceIndex;
-import cn.lehome.base.api.tool.compoment.message.push.PushComponent;
-import cn.lehome.base.api.tool.constant.MessageKeyConstants;
-import cn.lehome.base.api.tool.service.device.ClientDeviceIndexApiService;
-import cn.lehome.base.api.tool.service.device.DeviceApiService;
+import cn.lehome.base.api.business.activity.bean.advert.Advert;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertDeliverRange;
+import cn.lehome.base.api.business.activity.bean.advert.AdvertDeliverTimeline;
+import cn.lehome.base.api.business.activity.bean.advert.QAdvert;
+import cn.lehome.base.api.business.activity.bean.card.AdvertCollectCardCommonCacheBean;
+import cn.lehome.base.api.business.activity.bean.card.AdvertCollectCardRecord;
+import cn.lehome.base.api.business.activity.bean.card.QAdvertCollectCardRecord;
+import cn.lehome.base.api.business.activity.service.advert.ActivityAdvertRedisCache;
+import cn.lehome.base.api.business.activity.service.advert.AdvertApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertDeliverRangeApiService;
+import cn.lehome.base.api.business.activity.service.advert.AdvertDeliverTimelineApiService;
+import cn.lehome.base.api.business.activity.service.card.AdvertAdditionalApiService;
+import cn.lehome.base.api.business.activity.service.card.AdvertCollectCardRecordApiService;
+import cn.lehome.base.api.common.bean.device.ClientDevice;
+import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
+import cn.lehome.base.api.common.bean.device.PushDeviceInfo;
+import cn.lehome.base.api.common.bean.device.QClientDeviceIndex;
+import cn.lehome.base.api.common.component.message.push.PushComponent;
+import cn.lehome.base.api.common.constant.MessageKeyConstants;
+import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
+import cn.lehome.base.api.common.service.device.DeviceApiService;
 import cn.lehome.base.api.user.bean.user.QUserInfoIndex;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
-import cn.lehome.bean.activity.enums.advert.AdvertStatus;
-import cn.lehome.bean.activity.enums.advert.AdvertTimeLineType;
-import cn.lehome.bean.activity.enums.advert.AdvertType;
-import cn.lehome.bean.activity.enums.advert.DeliverRangeType;
-import cn.lehome.bean.activity.enums.card.AdvertAdditionalType;
-import cn.lehome.bean.activity.enums.redpacket.AssetType;
-import cn.lehome.bean.tool.entity.enums.device.PushVendorType;
-import cn.lehome.bean.tool.entity.enums.push.PushOsType;
+import cn.lehome.bean.business.activity.enums.advert.AdvertStatus;
+import cn.lehome.bean.business.activity.enums.advert.AdvertTimeLineType;
+import cn.lehome.bean.business.activity.enums.advert.AdvertType;
+import cn.lehome.bean.business.activity.enums.advert.DeliverRangeType;
+import cn.lehome.bean.business.activity.enums.card.AdvertAdditionalType;
+import cn.lehome.bean.business.activity.enums.task.AssetType;
 import cn.lehome.bean.user.entity.enums.user.UserStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
@@ -39,20 +37,16 @@ import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.StringUtil;
-import cn.lehome.framework.bean.core.enums.ClientOSType;
-import cn.lehome.framework.bean.core.enums.ClientType;
-import cn.lehome.framework.bean.core.enums.YesNoStatus;
+import cn.lehome.framework.bean.core.enums.*;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.lucene.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -70,22 +64,22 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
     private static final Integer JIGUANG_PUSH_MAX = 500;
 
     @Autowired
-    private AdvertApiService advertApiServiceNew;
+    private AdvertApiService advertApiService;
 
     @Autowired
-    private AdvertDeliverTimelineApiService advertDeliverTimelineApiServiceNew;
+    private AdvertDeliverTimelineApiService advertDeliverTimelineApiService;
 
     @Autowired
-    private AdvertDeliverRangeApiService advertDeliverRangeApiServiceNew;
+    private AdvertDeliverRangeApiService advertDeliverRangeApiService;
 
     @Autowired
     private ActivityAdvertRedisCache.ActivityCollectCardRedisCache activityCollectCardRedisCache;
 
     @Autowired
-    private AdvertCollectCardRecordApiService advertCollectCardRecordApiServiceNew;
+    private AdvertCollectCardRecordApiService advertCollectCardRecordApiService;
 
     @Autowired
-    private AdvertAdditionalApiService advertAdditionalApiServiceNew;
+    private AdvertAdditionalApiService advertAdditionalApiService;
 
     @Autowired
     private DeviceApiService deviceApiService;
@@ -107,13 +101,13 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
         if (enable) {
             ApiRequest apiRequest = ApiRequest.newInstance();
             apiRequest.filterEqual(QAdvert.status,AdvertStatus.PUBLISHED);
-            apiRequest.filterEqual(QAdvert.type,AdvertType.CARD_COLLECTING);
+            apiRequest.filterEqual(QAdvert.type, AdvertType.CARD_COLLECTING);
             apiRequest.filterEqual(QAdvert.isSendPush,YesNoStatus.NO);
-            List<Advert> publishedCollectCardAdvertList = advertApiServiceNew.findAll(apiRequest);
+            List<Advert> publishedCollectCardAdvertList = advertApiService.findAll(apiRequest);
             if (publishedCollectCardAdvertList != null && publishedCollectCardAdvertList.size() != 0) {
                 logger.info("集卡中的集卡活动, 符合条件的广告共有{}个", publishedCollectCardAdvertList.size());
                 for (Advert advert : publishedCollectCardAdvertList) {
-                    List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(advert.getId());
+                    List<AdvertDeliverTimeline> timelineList = advertDeliverTimelineApiService.findAllByAdvertId(advert.getId());
                     if (timelineList != null && timelineList.size() != 0) {
                         AdvertDeliverTimeline advertDeliverTimeline = null;
                         for (AdvertDeliverTimeline timeline : timelineList) {
@@ -124,7 +118,7 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
                         }
                         if (advertDeliverTimeline != null && DateUtils.isSameDay(advertDeliverTimeline.getStartDate(), new Date(System.currentTimeMillis()))) {
                             logger.info("集卡开始首天, 发送推送, advertId = {}", advert.getId());
-                            List<AdvertDeliverRange> list = advertDeliverRangeApiServiceNew.findByAdvertId(advert.getId());
+                            List<AdvertDeliverRange> list = advertDeliverRangeApiService.findByAdvertId(advert.getId());
                             this.sendMessage(list, advert.getId(),advert.getAssetType());
                         }
                     }
@@ -132,14 +126,14 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
             }
 
             apiRequest = ApiRequest.newInstance();
-            apiRequest.filterEqual(QAdvert.status,AdvertStatus.OPENING);
+            apiRequest.filterEqual(QAdvert.status, AdvertStatus.OPENING);
             apiRequest.filterEqual(QAdvert.type,AdvertType.CARD_COLLECTING);
-            List<Advert> collectCardAdvertList = advertApiServiceNew.findAll(apiRequest);
+            List<Advert> collectCardAdvertList = advertApiService.findAll(apiRequest);
             if (collectCardAdvertList != null && collectCardAdvertList.size() != 0) {
                 logger.info("开奖中的集卡活动, 符合条件的广告共有{}个", collectCardAdvertList.size());
 
                 for (Advert advert : collectCardAdvertList) {
-                    List<AdvertDeliverTimeline> timelineEntityList = advertDeliverTimelineApiServiceNew.findAllByAdvertId(advert.getId());
+                    List<AdvertDeliverTimeline> timelineEntityList = advertDeliverTimelineApiService.findAllByAdvertId(advert.getId());
                     if (timelineEntityList != null && timelineEntityList.size() != 0) {
                         AdvertDeliverTimeline advertDeliverTimeline = null;
                         for (AdvertDeliverTimeline timeline : timelineEntityList) {
@@ -157,14 +151,14 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
                             apiRequest.filterEqual(QAdvertCollectCardRecord.advertId,advert.getId());
                             ApiRequestPage apiRequestPage = ApiRequestPage.newInstance();
                             apiRequestPage.paging(pageIndex,PAGE_SIZE);
-                            ApiResponse<AdvertCollectCardRecord> response = advertCollectCardRecordApiServiceNew.findAll(apiRequest,apiRequestPage);
+                            ApiResponse<AdvertCollectCardRecord> response = advertCollectCardRecordApiService.findAll(apiRequest,apiRequestPage);
                             if (response != null && response.getPagedData() != null) {
                                 sendMessage(response.getPagedData().stream().filter(advertCollectCardRecord -> advertCollectCardRecord.getCards().equals(isAllStatus)).collect(Collectors.toList()), advert.getAssetType());
                                 while (response.getPagedData().size() > 0) {
                                     pageIndex++;
                                     apiRequestPage = ApiRequestPage.newInstance();
                                     apiRequestPage.paging(pageIndex,PAGE_SIZE);
-                                    response = advertCollectCardRecordApiServiceNew.findAll(apiRequest,apiRequestPage);
+                                    response = advertCollectCardRecordApiService.findAll(apiRequest,apiRequestPage);
                                     if (response != null && response.getPagedData() != null && response.getPagedData().size() > 0) {
                                         this.sendMessage(response.getPagedData().stream().filter(advertCollectCardRecord -> advertCollectCardRecord.getCards().equals(isAllStatus)).collect(Collectors.toList()),advert.getAssetType());
                                     }
@@ -181,7 +175,7 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
         if (list == null || list.size() == 0) {
             return;
         }
-        Map<AdvertAdditionalType, String> map = advertAdditionalApiServiceNew.findAdditional(advertId, AdvertAdditionalType.PUSH);
+        Map<AdvertAdditionalType, String> map = advertAdditionalApiService.findAdditional(advertId, AdvertAdditionalType.PUSH);
         if (map == null || map.size() == 0) {
             logger.error("未找到推送信息, advertId = {}", advertId);
             return;
@@ -205,7 +199,7 @@ public class CollectCardAllPushMessageSchedulerServiceImpl extends AbstractInvok
                         if (userInfoIndexList != null && userInfoIndexList.size() > 0) {
                             List<String> clientIds = Lists.newArrayList(userInfoIndexList.stream().filter(userInfoIndex -> StringUtil.isNotEmpty(userInfoIndex.getClientId())).map(UserInfoIndex::getClientId).collect(Collectors.toSet()));
                             if (!CollectionUtils.isEmpty(clientIds)) {
-                                pushMessage(clientIds,MessageKeyConstants.COLLECT_CARD_START,params,forwardParams,assetType);
+                                pushMessage(clientIds, MessageKeyConstants.COLLECT_CARD_START,params,forwardParams,assetType);
                             }
                             maxUserId = userInfoIndexList.get(userInfoIndexList.size() - 1).getId();
                         } else {

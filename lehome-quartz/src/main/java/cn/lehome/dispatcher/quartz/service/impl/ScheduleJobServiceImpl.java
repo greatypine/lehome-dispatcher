@@ -1,8 +1,8 @@
 package cn.lehome.dispatcher.quartz.service.impl;
 
-import cn.lehome.base.api.tool.bean.job.ScheduleJob;
-import cn.lehome.base.api.tool.service.job.ScheduleJobApiService;
-import cn.lehome.bean.tool.entity.enums.job.SchedulerStatus;
+import cn.lehome.base.api.common.bean.job.ScheduleJob;
+import cn.lehome.base.api.common.service.job.ScheduleJobApiService;
+import cn.lehome.bean.common.enums.job.SchedulerStatus;
 import cn.lehome.dispatcher.quartz.bean.ScheduleJobBean;
 import cn.lehome.dispatcher.quartz.constants.Constants;
 import cn.lehome.dispatcher.quartz.exception.ScheduleException;

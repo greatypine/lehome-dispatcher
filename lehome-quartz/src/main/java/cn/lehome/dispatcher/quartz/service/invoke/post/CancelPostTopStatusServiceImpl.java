@@ -1,8 +1,8 @@
 package cn.lehome.dispatcher.quartz.service.invoke.post;
 
-import cn.lehome.base.api.content.bean.post.PostInfo;
-import cn.lehome.base.api.content.bean.post.QPostInfo;
-import cn.lehome.base.api.content.service.post.PostInfoApiService;
+import cn.lehome.base.api.business.content.bean.post.PostInfo;
+import cn.lehome.base.api.business.content.bean.post.QPostInfo;
+import cn.lehome.base.api.business.content.service.post.PostInfoApiService;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
@@ -30,7 +30,7 @@ public class CancelPostTopStatusServiceImpl extends AbstractInvokeServiceImpl {
         apiRequest.filterEqual(QPostInfo.topStatus,YesNoStatus.YES);
 
         apiRequest.filterLessEqual(QPostInfo.cancellationTime,new Date());
-        List<PostInfo> all = postInfoApiService.findAll(apiRequest); 
+        List<PostInfo> all = postInfoApiService.findAll(apiRequest);
 
         for (PostInfo postInfo : all){
             postInfoApiService.updateTopStatus(postInfo.getPostId(),YesNoStatus.NO);

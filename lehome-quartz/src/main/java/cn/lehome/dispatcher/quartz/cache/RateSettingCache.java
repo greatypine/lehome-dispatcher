@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.quartz.cache;
 
-import cn.lehome.base.api.advertising.bean.task.RateSettingInfo;
-import cn.lehome.base.api.advertising.service.task.RateSettingApiService;
+import cn.lehome.base.api.business.activity.bean.task.RateSettingInfo;
+import cn.lehome.base.api.business.activity.service.task.RateSettingApiService;
 import cn.lehome.framework.base.api.core.cache.AbstractLocalCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

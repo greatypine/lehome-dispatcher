@@ -46,14 +46,10 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-tool-api</artifactId>
+            <artifactId>base-common-tool-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-thirdparty-api</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
+
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-business-ec-api</artifactId>
@@ -61,69 +57,60 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-bigdata-api</artifactId>
+            <artifactId>base-common-bigdata-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-content-api</artifactId>
+            <artifactId>base-business-content-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>content-bean</artifactId>
+            <artifactId>business-content-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-user-api</artifactId>
+            <artifactId>base-common-user-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>user-bean</artifactId>
+            <artifactId>common-user-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-advertising-api</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>bigdata-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>tool-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>advertising-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>activity-bean</artifactId>
-            <classifier>${branch}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-activity-api</artifactId>
+            <artifactId>base-business-activity-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
 
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-operation-api</artifactId>
+            <artifactId>common-bigdata-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>operation-bean</artifactId>
+            <artifactId>common-tool-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>business-activity-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+
+
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-common-operation-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>common-operation-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
 
@@ -150,7 +137,7 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
-            <artifactId>base-oauth2-api</artifactId>
+            <artifactId>base-custom-oauth2-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
 

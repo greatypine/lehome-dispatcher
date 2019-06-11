@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.quartz.config;
 
-import cn.lehome.base.api.tool.compoment.jms.EventBusComponent;
-import cn.lehome.base.api.tool.compoment.message.push.PushComponent;
+import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.component.message.push.PushComponent;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
