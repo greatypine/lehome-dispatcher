@@ -11,7 +11,7 @@
         <file>../logs/service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>../logs/service-%d{yyyy-MM-dd}.log</FileNamePattern>
-            <maxHistory>60</maxHistory>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
