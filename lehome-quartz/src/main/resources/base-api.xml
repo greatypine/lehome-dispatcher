@@ -22,7 +22,13 @@
     <import resource="classpath*:provider/base-api/common-bigdata-service.xml"/>
     <import resource="classpath*:provider/base-api/content-service.xml"/>
     <import resource="classpath*:provider/base-api/common-user-service.xml"/>
-    <import resource="classpath*:provider/base-api/operation-service.xml"/>
+    <dubbo:reference id="shareRecordApiService" interface="cn.lehome.base.api.common.operation.service.mkt.ShareRecordApiService" group="com"/>
+    <dubbo:reference id="subassemblyDetailApiService" interface="cn.lehome.base.api.common.operation.service.module.subassembly.SubassemblyDetailApiService" group="com"/>
+    <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
+    <dubbo:reference id="pushSendInformationApiService" interface="cn.lehome.base.api.common.operation.service.push.PushSendInformationApiService" group="com"/>
+    <dubbo:reference id="pushTemplatePropertyApiService" interface="cn.lehome.base.api.common.operation.service.push.PushTemplatePropertyApiService" group="com"/>
+    <dubbo:reference id="stationLetterApiService" interface="cn.lehome.base.api.common.operation.service.push.StationLetterApiService" group="com"/>
+
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
 
 

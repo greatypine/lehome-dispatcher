@@ -18,10 +18,26 @@
 
     <import resource="classpath*:provider/base-api/common-service.xml"/>
     <import resource="classpath*:provider/base-api/common-user-service.xml"/>
-    <import resource="classpath*:provider/base-api/property-service.xml"/>
     <import resource="classpath*:provider/base-api/ec-service.xml"/>
     <import resource="classpath*:provider/base-api/content-service.xml"/>
-    <import resource="classpath*:provider/base-api/operation-service.xml"/>
+    <import resource="classpath*:provider/base-api/property-service.xml"/>
+
+    <dubbo:reference id="addressBaseApiService" interface="cn.lehome.base.pro.api.service.address.AddressBaseApiService" group="pro"/>
+    <dubbo:reference id="smartAreaInfoApiService" interface="cn.lehome.base.pro.api.service.area.AreaInfoApiService" group="pro"/>
+    <dubbo:reference id="managerAreaApiService" interface="cn.lehome.base.pro.api.service.area.ManagerAreaApiService" group="pro"/>
+    <dubbo:reference id="floorLayerInfoApiService" interface="cn.lehome.base.pro.api.service.house.FloorLayerInfoApiService" group="pro"/>
+    <dubbo:reference id="smartFloorInfoApiService" interface="cn.lehome.base.pro.api.service.house.FloorInfoApiService" group="pro"/>
+    <dubbo:reference id="floorUnitInfoApiService" interface="cn.lehome.base.pro.api.service.house.FloorUnitInfoApiService" group="pro"/>
+    <dubbo:reference id="smartHouseInfoApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoApiService" group="pro"/>
+    <dubbo:reference id="smartHouseholdsInfoApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdsInfoApiService" group="pro"/>
+    <dubbo:reference id="apartmentLayoutApiService" interface="cn.lehome.base.pro.api.service.house.ApartmentLayoutApiService" group="pro"/>
+    <dubbo:reference id="dataImportApiService" interface="cn.lehome.base.pro.api.service.data.DataImportApiService" group="pro"/>
+
+    <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
+    <dubbo:reference id="pushSendInformationApiService" interface="cn.lehome.base.api.common.operation.service.push.PushSendInformationApiService" group="com"/>
+    <dubbo:reference id="pushTemplatePropertyApiService" interface="cn.lehome.base.api.common.operation.service.push.PushTemplatePropertyApiService" group="com"/>
+    <dubbo:reference id="stationLetterApiService" interface="cn.lehome.base.api.common.operation.service.push.StationLetterApiService" group="com"/>
+
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
 

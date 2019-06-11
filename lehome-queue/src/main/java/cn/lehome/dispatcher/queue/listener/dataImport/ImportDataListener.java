@@ -57,13 +57,13 @@ public class ImportDataListener extends AbstractJobListener {
     private EventBusComponent eventBusComponent;
 
     @Autowired
-    private AreaInfoApiService areaInfoApiService;
+    private AreaInfoApiService smartAreaInfoApiService;
 
     @Autowired
     private ManagerAreaApiService managerAreaApiService;
 
     @Autowired
-    private FloorInfoApiService floorInfoApiService;
+    private FloorInfoApiService smartFloorInfoApiService;
 
     @Autowired
     private FloorUnitInfoApiService floorUnitInfoApiService;
@@ -72,7 +72,7 @@ public class ImportDataListener extends AbstractJobListener {
     private FloorLayerInfoApiService floorLayerInfoApiService;
 
     @Autowired
-    private HouseInfoApiService houseInfoApiService;
+    private HouseInfoApiService smartHouseInfoApiService;
 
     @Autowired
     private ApartmentLayoutApiService apartmentLayoutApiService;
@@ -179,7 +179,7 @@ public class ImportDataListener extends AbstractJobListener {
             return new ImmutablePair<>(false, "数据列数不符合");
         }
         String areaName = rowDatas.get(0);
-        List<AreaInfo> areaInfoList = areaInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QAreaInfo.areaName, areaName));
+        List<AreaInfo> areaInfoList = smartAreaInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QAreaInfo.areaName, areaName));
         if (areaInfoList == null || areaInfoList.size() < 1 || !areaInfoList.get(0).getId().equals(areaId)) {
             return new ImmutablePair<>(false, "未找到小区信息");
         }
@@ -191,7 +191,7 @@ public class ImportDataListener extends AbstractJobListener {
         }
         ManagerArea managerArea = managerAreaList.get(0);
         String floorNo = rowDatas.get(2);
-        List<FloorInfo> floorInfoList = floorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
+        List<FloorInfo> floorInfoList = smartFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
         if (floorInfoList == null || floorInfoList.size() < 1) {
             return new ImmutablePair<>(false, "未找到小区楼宇信息");
         }
@@ -220,7 +220,7 @@ public class ImportDataListener extends AbstractJobListener {
         FloorLayerInfo floorLayerInfo = layerInfoList.get(0);
         String roomId = rowDatas.get(8);
         String roomName = rowDatas.get(9);
-        List<HouseInfo> houseInfoList = houseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
+        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
         if (!CollectionUtils.isEmpty(houseInfoList)) {
             return new ImmutablePair<>(false, "房间信息已经存在");
         }
@@ -315,7 +315,7 @@ public class ImportDataListener extends AbstractJobListener {
             return new ImmutablePair<>(false, "数据列数不符合");
         }
         String areaName = rowDatas.get(0);
-        List<AreaInfo> areaInfoList = areaInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QAreaInfo.areaName, areaName));
+        List<AreaInfo> areaInfoList = smartAreaInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QAreaInfo.areaName, areaName));
         if (areaInfoList == null || areaInfoList.size() < 1 || !areaInfoList.get(0).getId().equals(areaId)) {
             return new ImmutablePair<>(false, "未找到小区信息");
         }
@@ -326,7 +326,7 @@ public class ImportDataListener extends AbstractJobListener {
         }
         ManagerArea managerArea = managerAreaList.get(0);
         String floorNo = rowDatas.get(2);
-        List<FloorInfo> floorInfoList = floorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
+        List<FloorInfo> floorInfoList = smartFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
         if (floorInfoList == null || floorInfoList.size() < 1) {
             return new ImmutablePair<>(false, "未找到小区楼宇信息");
         }
@@ -338,7 +338,7 @@ public class ImportDataListener extends AbstractJobListener {
         }
         FloorUnitInfo unitInfo = floorUnitInfoList.get(0);
         String roomId = rowDatas.get(4);
-        List<HouseInfo> houseInfoList = houseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
+        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
         if (floorUnitInfoList == null || floorUnitInfoList.size() < 1) {
             return new ImmutablePair<>(false, "未找到房间信息");
         }
