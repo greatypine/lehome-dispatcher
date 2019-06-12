@@ -24,17 +24,17 @@ public class HouseAddressUpdateMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer syncUserHouseholdMessageListenerContainer() {
+    public DefaultMessageListenerContainer houseAddressUpdateMessageListenerContainer() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.ADDRESS_NAME_CHANGE_EVENT.getTopicName()));
-        defaultMessageListenerContainer.setMessageListener(householdMessageListener());
+        defaultMessageListenerContainer.setMessageListener(houseAddressUpdateListener());
         defaultMessageListenerContainer.setSessionTransacted(true);
         return defaultMessageListenerContainer;
     }
 
     @Bean
-    public HouseAddressUpdateListener householdMessageListener() {
+    public HouseAddressUpdateListener houseAddressUpdateListener() {
         return new HouseAddressUpdateListener();
     }
 }
