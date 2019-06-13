@@ -1,7 +1,7 @@
 package cn.lehome.dispatcher.queue.service.impl.house;
 
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
-import cn.lehome.base.pro.api.bean.house.AddressBean;
+import cn.lehome.base.pro.api.bean.address.AddressBean;
 import cn.lehome.base.pro.api.bean.house.HouseInfo;
 import cn.lehome.base.pro.api.service.address.AddressBaseApiService;
 import cn.lehome.base.pro.api.service.house.HouseInfoApiService;
@@ -38,8 +38,8 @@ public class HouseAddressChangeServiceImpl extends AbstractBaseServiceImpl imple
             return;
         }
         AddressBean addressBean = JSON.parseObject(addressBaseInfo.getAddress(), AddressBean.class);
-        addressBean.setRoomName(houseInfo.getRoomName());
-        addressBean.setRoomId(houseInfo.getRoomId());
+        addressBean.setHouseNumber(houseInfo.getRoomName());
+        addressBean.setHouseNumber(houseInfo.getRoomId());
         addressBaseInfo.setAddress(JSON.toJSONString(addressBean));
         addressBaseApiService.update(addressBaseInfo);
     }

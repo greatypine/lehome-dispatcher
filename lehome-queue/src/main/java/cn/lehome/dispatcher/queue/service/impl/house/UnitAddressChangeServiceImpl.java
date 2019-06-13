@@ -2,7 +2,7 @@ package cn.lehome.dispatcher.queue.service.impl.house;
 
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.QAddressBaseInfo;
-import cn.lehome.base.pro.api.bean.house.AddressBean;
+import cn.lehome.base.pro.api.bean.address.AddressBean;
 import cn.lehome.base.pro.api.bean.house.FloorUnitInfo;
 import cn.lehome.base.pro.api.bean.house.HouseInfo;
 import cn.lehome.base.pro.api.bean.house.QHouseInfo;

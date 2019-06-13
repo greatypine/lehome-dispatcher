@@ -2,7 +2,7 @@ package cn.lehome.dispatcher.queue.service.impl.house;
 
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.QAddressBaseInfo;
-import cn.lehome.base.pro.api.bean.house.AddressBean;
+import cn.lehome.base.pro.api.bean.address.AddressBean;
 import cn.lehome.base.pro.api.bean.house.FloorInfo;
 import cn.lehome.base.pro.api.bean.house.HouseInfo;
 import cn.lehome.base.pro.api.bean.house.QHouseInfo;
@@ -63,8 +63,8 @@ public class FloorAddressChangeServiceImpl extends AbstractBaseServiceImpl imple
 
         for (AddressBaseInfo info : updateList) {
             AddressBean addressBean = JSON.parseObject(info.getAddress(), AddressBean.class);
-            addressBean.setFloorName(floorInfo.getFloorName());
-            addressBean.setFloorNumber(floorInfo.getFloorNo());
+            addressBean.setBuildingNumber(floorInfo.getFloorName());
+            addressBean.setBuildingName(floorInfo.getFloorNo());
             info.setAddress(JSON.toJSONString(addressBean));
         }
         if (!CollectionUtils.isEmpty(updateList)) {
