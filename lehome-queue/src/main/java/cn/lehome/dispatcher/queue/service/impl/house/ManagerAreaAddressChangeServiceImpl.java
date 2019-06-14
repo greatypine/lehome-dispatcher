@@ -4,10 +4,12 @@ import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.QAddressBaseInfo;
 import cn.lehome.base.pro.api.bean.area.ManagerArea;
 import cn.lehome.base.pro.api.bean.address.AddressBean;
+import cn.lehome.base.pro.api.bean.house.FloorLayerInfo;
 import cn.lehome.base.pro.api.bean.house.HouseInfo;
 import cn.lehome.base.pro.api.bean.house.QHouseInfo;
 import cn.lehome.base.pro.api.service.address.AddressBaseApiService;
 import cn.lehome.base.pro.api.service.area.ManagerAreaApiService;
+import cn.lehome.base.pro.api.service.house.FloorLayerInfoApiService;
 import cn.lehome.base.pro.api.service.house.HouseInfoApiService;
 import cn.lehome.bean.pro.enums.address.ExtendType;
 import cn.lehome.dispatcher.queue.service.house.AddressChangeService;
@@ -36,6 +38,9 @@ public class ManagerAreaAddressChangeServiceImpl extends AbstractBaseServiceImpl
 
     @Autowired
     private HouseInfoApiService houseInfoApiService;
+
+    @Autowired
+    private FloorLayerInfoApiService floorLayerInfoApiService;
 
     @Override
     public void changeName(Integer id) {
@@ -79,6 +84,8 @@ public class ManagerAreaAddressChangeServiceImpl extends AbstractBaseServiceImpl
         List<HouseInfo> list = houseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.manageAreaId, managerArea.getId()));
         for (HouseInfo houseInfo : list) {
             houseInfo.setManagerAreaName(managerArea.getAreaName());
+            FloorLayerInfo floorLayerInfo = floorLayerInfoApiService.findOne(houseInfo.getLayerId());
+            houseInfo.setRoomAddress(String.format("%s-%s%s-%s%s-%s%s-%s%s", houseInfo.getAreaName(), houseInfo.getFloorNo(), houseInfo.getFloorName(), houseInfo.getUnitNo(), houseInfo.getUnitName(), floorLayerInfo.getNumber(), floorLayerInfo.getName(), houseInfo.getRoomId(), houseInfo.getRoomName()));
             houseInfoApiService.update(houseInfo);
         }
     }

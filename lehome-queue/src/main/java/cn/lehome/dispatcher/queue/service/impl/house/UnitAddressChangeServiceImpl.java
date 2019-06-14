@@ -3,10 +3,12 @@ package cn.lehome.dispatcher.queue.service.impl.house;
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.QAddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.AddressBean;
+import cn.lehome.base.pro.api.bean.house.FloorLayerInfo;
 import cn.lehome.base.pro.api.bean.house.FloorUnitInfo;
 import cn.lehome.base.pro.api.bean.house.HouseInfo;
 import cn.lehome.base.pro.api.bean.house.QHouseInfo;
 import cn.lehome.base.pro.api.service.address.AddressBaseApiService;
+import cn.lehome.base.pro.api.service.house.FloorLayerInfoApiService;
 import cn.lehome.base.pro.api.service.house.FloorUnitInfoApiService;
 import cn.lehome.base.pro.api.service.house.HouseInfoApiService;
 import cn.lehome.bean.pro.enums.address.ExtendType;
@@ -34,6 +36,9 @@ public class UnitAddressChangeServiceImpl extends AbstractBaseServiceImpl implem
 
     @Autowired
     private HouseInfoApiService houseInfoApiService;
+
+    @Autowired
+    private FloorLayerInfoApiService floorLayerInfoApiService;
 
     @Override
     public void changeName(Integer id) {
@@ -71,6 +76,8 @@ public class UnitAddressChangeServiceImpl extends AbstractBaseServiceImpl implem
         for (HouseInfo houseInfo : list) {
             houseInfo.setUnitNo(floorUnitInfo.getUnitNo());
             houseInfo.setUnitName(floorUnitInfo.getUnitName());
+            FloorLayerInfo floorLayerInfo = floorLayerInfoApiService.findOne(houseInfo.getLayerId());
+            houseInfo.setRoomAddress(String.format("%s-%s%s-%s%s-%s%s-%s%s", houseInfo.getAreaName(), houseInfo.getFloorNo(), houseInfo.getFloorName(), floorUnitInfo.getUnitNo(), houseInfo.getUnitName(), floorLayerInfo.getNumber(), floorLayerInfo.getName(), houseInfo.getRoomId(), houseInfo.getRoomName()));
             houseInfoApiService.update(houseInfo);
         }
     }
