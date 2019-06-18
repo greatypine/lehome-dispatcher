@@ -36,12 +36,12 @@ import cn.lehome.framework.base.api.core.util.OssFileDownloadUtil;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -77,6 +77,8 @@ public class ImportDataListener extends AbstractJobListener {
     @Autowired
     private ApartmentLayoutApiService apartmentLayoutApiService;
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
+
 
 
     @Override
@@ -105,7 +107,7 @@ public class ImportDataListener extends AbstractJobListener {
                 OssFileDownloadUtil ossFileDownloadUtil = new OssFileDownloadUtil(dataImport.getExcelUrl());
                 String filePath = ossFileDownloadUtil.downloadFileFromOss();
                 ExcelUtils excelUtils = new ExcelUtils(filePath);
-                List<List<String>> datas = excelUtils.read(0, dataImportEvent.getObjectId().intValue() - 1, dataImportEvent.getObjectId().intValue());
+                List<List<String>> datas = excelUtils.read(0, dataImportEvent.getObjectId().intValue() - 1, dataImportEvent.getObjectId().intValue() - 1);
                 if (dataImportEvent.getType().equals(DataImportType.HOUSE)) {
                     Pair<Boolean, String> resultPair = this.preHouse(datas, dataImport.getAreaId(), dataImport.getId());
                     if (!resultPair.getLeft()) {
@@ -133,9 +135,10 @@ public class ImportDataListener extends AbstractJobListener {
                     dataImportFailedRecord.setIsPre(YesNoStatus.YES);
                     dataImportFailedRecord.setObjectId(dataImportEvent.getObjectId());
                     dataImportApiService.addPreFailed(dataImport.getId(), dataImportFailedRecord);
+                    dataImport.setPreFailedNum(dataImport.getPreFailedNum() + 1);
                 }
                 Integer nextLine = dataImportEvent.getObjectId().intValue() + 1;
-                if ( nextLine > dataImport.getExcelMaxLine()) {
+                if ( nextLine < dataImport.getExcelMaxLine()) {
                     eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.DATA_IMPORT_EVENT, new DataImportEvent(dataImport.getId(), dataImport.getType(), true, nextLine.longValue())));
                 } else {
                     if (dataImport.getPreFailedNum() != 0) {
@@ -209,10 +212,10 @@ public class ImportDataListener extends AbstractJobListener {
         }
         List<FloorLayerInfo> layerInfoList = null;
         if (StringUtils.isNotEmpty(upLayer)) {
-            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
         }
         if (StringUtils.isNotEmpty(downLayer)) {
-            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, downLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
         }
         if (layerInfoList == null || layerInfoList.size() < 1) {
             return new ImmutablePair<>(false, "未找到小区楼层信息");
@@ -226,7 +229,7 @@ public class ImportDataListener extends AbstractJobListener {
         }
         String roomType = rowDatas.get(10);
         ApartmentLayout apartmentLayout = null;
-        if (StringUtils.isEmpty(roomType)) {
+        if (StringUtils.isNotEmpty(roomType)) {
             List<ApartmentLayout> apartmentLayoutList = apartmentLayoutApiService.findAll(ApiRequest.newInstance().filterEqual(QApartmentLayout.areaId, areaId).filterEqual(QApartmentLayout.apartmentName, roomType).filterEqual(QApartmentLayout.status, EnabledStatus.Enabled));
             if (!CollectionUtils.isEmpty(apartmentLayoutList)) {
                 apartmentLayout = apartmentLayoutList.get(0);
@@ -406,18 +409,7 @@ public class ImportDataListener extends AbstractJobListener {
     }
 
     private Date dateConvert(String str) throws Exception {
-        String[] dates = str.split("/");
-        if (dates.length != 3) {
-            throw new Exception("日期转换错误");
-        }
-        Date date = new Date();
-        DateUtils.setYears(date, Integer.valueOf(dates[0]));
-        date = DateUtils.setMonths(date, Integer.valueOf(dates[1]));
-        date = DateUtils.setDays(date, Integer.valueOf(dates[2]));
-        date = DateUtils.setHours(date, 0);
-        date = DateUtils.setMinutes(date, 0);
-        date = DateUtils.setSeconds(date, 0);
-        date = DateUtils.setMilliseconds(date, 0);
+        Date date = sdf.parse(str);
         return date;
     }
 }
