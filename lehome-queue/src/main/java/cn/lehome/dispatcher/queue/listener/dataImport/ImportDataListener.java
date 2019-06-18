@@ -153,12 +153,12 @@ public class ImportDataListener extends AbstractJobListener {
             dataImportApiService.addImportNum(dataImport.getId(), dataImport.getType(), dataImportEvent.getObjectId().intValue());
             Long nextId = 0L;
             if (dataImportEvent.getType().equals(DataImportType.HOUSE)) {
-                ApiResponse<DataImportHouseInfo> response = dataImportApiService.findHouseAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport).filterGreaterThan(QDataImportHouseInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
+                ApiResponse<DataImportHouseInfo> response = dataImportApiService.findHouseAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport.getId()).filterGreaterThan(QDataImportHouseInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
                 if (!CollectionUtils.isEmpty(response.getPagedData())) {
                     nextId = Lists.newArrayList(response.getPagedData()).get(0).getId().longValue();
                 }
             } else {
-                ApiResponse<DataImportHouseholdsInfo> response = dataImportApiService.findHouseholdAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport).filterGreaterThan(QDataImportHouseholdsInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
+                ApiResponse<DataImportHouseholdsInfo> response = dataImportApiService.findHouseholdAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport.getId()).filterGreaterThan(QDataImportHouseholdsInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
                 if (!CollectionUtils.isEmpty(response.getPagedData())) {
                     nextId = Lists.newArrayList(response.getPagedData()).get(0).getId().longValue();
                 }
