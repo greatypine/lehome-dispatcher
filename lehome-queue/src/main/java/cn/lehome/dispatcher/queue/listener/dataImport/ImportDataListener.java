@@ -2,6 +2,8 @@ package cn.lehome.dispatcher.queue.listener.dataImport;
 
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.base.api.common.custom.oauth2.bean.user.UserAccount;
+import cn.lehome.base.api.common.custom.oauth2.service.user.UserAccountApiService;
 import cn.lehome.base.pro.api.bean.area.AreaInfo;
 import cn.lehome.base.pro.api.bean.area.ManagerArea;
 import cn.lehome.base.pro.api.bean.area.QAreaInfo;
@@ -33,6 +35,7 @@ import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.ExcelUtils;
 import cn.lehome.framework.base.api.core.util.OssFileDownloadUtil;
+import cn.lehome.framework.bean.core.enums.SexType;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +79,9 @@ public class ImportDataListener extends AbstractJobListener {
 
     @Autowired
     private ApartmentLayoutApiService apartmentLayoutApiService;
+
+    @Autowired
+    private UserAccountApiService userAccountApiService;
 
     private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
 
@@ -322,6 +328,7 @@ public class ImportDataListener extends AbstractJobListener {
         if (areaInfoList == null || areaInfoList.size() < 1 || !areaInfoList.get(0).getId().equals(areaId)) {
             return new ImmutablePair<>(false, "未找到小区信息");
         }
+        AreaInfo areaInfo = areaInfoList.get(0);
         String managerName = rowDatas.get(1);
         List<ManagerArea> managerAreaList = managerAreaApiService.findAll(ApiRequest.newInstance().filterEqual(QManagerArea.areaId, areaId).filterEqual(QManagerArea.areaName, managerName).filterEqual(QManagerArea.status, EnabledStatus.Enabled));
         if (managerAreaList == null || managerAreaList.size() < 1) {
@@ -381,13 +388,14 @@ public class ImportDataListener extends AbstractJobListener {
             return new ImmutablePair<>(false, "在住情况不能为空");
         }
         Boolean isLiv = false;
-        if ("在住".equals(typeStr)) {
+        if ("在住".equals(isLiving)) {
             isLiv = true;
-        } else if ("不在住".equals(typeStr)) {
+        } else if ("不在住".equals(isLiving)) {
             isLiv = false;
         } else {
             return new ImmutablePair<>(false, "在住信息不对");
         }
+
         DataImportHouseholdsInfo dataImportHouseholdsInfo = new DataImportHouseholdsInfo();
         dataImportHouseholdsInfo.setDataImportId(dataImportId);
         dataImportHouseholdsInfo.setAreaId(areaId.intValue());
@@ -398,6 +406,25 @@ public class ImportDataListener extends AbstractJobListener {
         dataImportHouseholdsInfo.setGender(gender);
         dataImportHouseholdsInfo.setIslivein(isLiv);
         dataImportHouseholdsInfo.setIdentity(identity);
+        dataImportHouseholdsInfo.setTelephone(telephone);
+        dataImportHouseholdsInfo.setName(name);
+        dataImportHouseholdsInfo.setTenantId(areaInfo.getUniqueCode());
+
+        if (StringUtils.isNotEmpty(dataImportHouseholdsInfo.getTelephone())) {
+            UserAccount userAccount = userAccountApiService.getByPhone(dataImportHouseholdsInfo.getTelephone());
+            if (userAccount == null) {
+                SexType sexType;
+                if (dataImportHouseholdsInfo.getGender() == Gender.Male) {
+                    sexType = SexType.Male;
+                } else if (dataImportHouseholdsInfo.getGender() == Gender.Female) {
+                    sexType = SexType.Female;
+                } else {
+                    sexType = SexType.Unknown;
+                }
+                userAccount = userAccountApiService.createBySmartPro(dataImportHouseholdsInfo.getTelephone(), dataImportHouseholdsInfo.getName(), sexType);
+            }
+            dataImportHouseholdsInfo.setUserId(userAccount.getId().intValue());
+        }
         dataImportApiService.saveHouseholdInfo(dataImportHouseholdsInfo);
         return new ImmutablePair<>(true, "");
     }
