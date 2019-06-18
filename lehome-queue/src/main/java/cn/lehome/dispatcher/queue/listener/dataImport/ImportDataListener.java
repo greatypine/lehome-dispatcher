@@ -138,7 +138,7 @@ public class ImportDataListener extends AbstractJobListener {
                     dataImport.setPreFailedNum(dataImport.getPreFailedNum() + 1);
                 }
                 Integer nextLine = dataImportEvent.getObjectId().intValue() + 1;
-                if ( nextLine < dataImport.getExcelMaxLine()) {
+                if ( nextLine <= dataImport.getExcelMaxLine()) {
                     eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.DATA_IMPORT_EVENT, new DataImportEvent(dataImport.getId(), dataImport.getType(), true, nextLine.longValue())));
                 } else {
                     if (dataImport.getPreFailedNum() != 0) {
