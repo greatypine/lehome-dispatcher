@@ -89,6 +89,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>acs-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>acs-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>pro-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
@@ -156,6 +166,16 @@
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>custom-oauth2-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-business-oauth2-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>business-oauth2-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
     </dependencies>

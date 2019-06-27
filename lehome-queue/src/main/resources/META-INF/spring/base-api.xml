@@ -32,13 +32,21 @@
     <dubbo:reference id="smartHouseholdsInfoApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdsInfoApiService" group="pro"/>
     <dubbo:reference id="apartmentLayoutApiService" interface="cn.lehome.base.pro.api.service.house.ApartmentLayoutApiService" group="pro"/>
     <dubbo:reference id="dataImportApiService" interface="cn.lehome.base.pro.api.service.data.DataImportApiService" group="pro"/>
+    <dubbo:reference id="houseInfoIndexApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoIndexApiService" group="pro"/>
+    <dubbo:reference id="householdIndexApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdIndexApiService" group="pro"/>
 
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
     <dubbo:reference id="pushSendInformationApiService" interface="cn.lehome.base.api.common.operation.service.push.PushSendInformationApiService" group="com"/>
     <dubbo:reference id="pushTemplatePropertyApiService" interface="cn.lehome.base.api.common.operation.service.push.PushTemplatePropertyApiService" group="com"/>
     <dubbo:reference id="stationLetterApiService" interface="cn.lehome.base.api.common.operation.service.push.StationLetterApiService" group="com"/>
 
+    <dubbo:reference id="businessUserAccountApiService" interface="cn.lehome.base.api.common.business.oauth2.service.user.UserAccountApiService" group="com"/>
+    <dubbo:reference id="businessUserAccountIndexApiService" interface="cn.lehome.base.api.common.business.oauth2.service.user.UserAccountIndexApiService" group="com"/>
+
+    <dubbo:reference id="controlRegionsApiService" interface="cn.lehome.base.pro.api.service.regions.ControlRegionsApiService" group="pro"/>
+
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
+    <import resource="classpath*:provider/base-api/base-entrance-service.xml"/>
 
 </beans>

@@ -12,6 +12,7 @@ import cn.lehome.base.pro.api.bean.data.*;
 import cn.lehome.base.pro.api.bean.house.*;
 import cn.lehome.base.pro.api.bean.house.layout.ApartmentLayout;
 import cn.lehome.base.pro.api.bean.house.layout.QApartmentLayout;
+import cn.lehome.base.pro.api.bean.households.settings.Household;
 import cn.lehome.base.pro.api.event.DataImportEvent;
 import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
 import cn.lehome.base.pro.api.service.area.ManagerAreaApiService;
@@ -29,6 +30,7 @@ import cn.lehome.bean.pro.enums.house.OccupancyStatus;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
+import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
@@ -82,6 +84,7 @@ public class ImportDataListener extends AbstractJobListener {
 
     @Autowired
     private UserAccountApiService userAccountApiService;
+
 
     private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
 
@@ -156,14 +159,18 @@ public class ImportDataListener extends AbstractJobListener {
                 }
             }
         } else {
-            dataImportApiService.addImportNum(dataImport.getId(), dataImport.getType(), dataImportEvent.getObjectId().intValue());
+
             Long nextId = 0L;
             if (dataImportEvent.getType().equals(DataImportType.HOUSE)) {
+                dataImportApiService.addImportHouseNum(dataImport.getId(), dataImportEvent.getObjectId().intValue());
                 ApiResponse<DataImportHouseInfo> response = dataImportApiService.findHouseAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport.getId()).filterGreaterThan(QDataImportHouseInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
                 if (!CollectionUtils.isEmpty(response.getPagedData())) {
                     nextId = Lists.newArrayList(response.getPagedData()).get(0).getId().longValue();
                 }
             } else {
+                Household household = dataImportApiService.addImportHouseholdNum(dataImport.getId(), dataImportEvent.getObjectId().intValue());
+                logger.info("发送添加住户, id = " + household.getId());
+                eventBusComponent.sendEventMessage(new LongEventMessage(EventConstants.HOUSEHOLD_ENTRANCE_AUTH_EVENT, household.getId()));
                 ApiResponse<DataImportHouseholdsInfo> response = dataImportApiService.findHouseholdAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport.getId()).filterGreaterThan(QDataImportHouseholdsInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
                 if (!CollectionUtils.isEmpty(response.getPagedData())) {
                     nextId = Lists.newArrayList(response.getPagedData()).get(0).getId().longValue();
