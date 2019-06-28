@@ -67,7 +67,7 @@ public class AddControlMessageListener extends AbstractJobListener {
         List<User> userList = autoEntranceService.loadAllUser(controlRegions);
 
         if (!CollectionUtils.isEmpty(userList)) {
-            regionApiService.batchAddUserRegion(region.getId(), userList.stream().map(User::getId).collect(Collectors.toList()));
+            regionApiService.batchDeleteUserRegion(region.getId(), userList.stream().map(User::getId).collect(Collectors.toList()));
         }
     }
 

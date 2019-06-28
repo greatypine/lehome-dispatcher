@@ -1,7 +1,9 @@
 package cn.lehome.dispatcher.queue.listener.entrance;
 
+import cn.lehome.base.api.acs.bean.device.Device;
 import cn.lehome.base.api.acs.bean.region.Region;
 import cn.lehome.base.api.acs.bean.user.User;
+import cn.lehome.base.api.acs.service.device.DeviceApiService;
 import cn.lehome.base.api.acs.service.region.RegionApiService;
 import cn.lehome.base.pro.api.bean.regions.ControlRegions;
 import cn.lehome.base.pro.api.bean.regions.QControlRegions;
@@ -10,7 +12,7 @@ import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.entrance.AutoEntranceService;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
-import cn.lehome.framework.base.api.core.event.LongEventMessage;
+import cn.lehome.framework.base.api.core.event.StringEventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -34,31 +36,39 @@ public class BindDeviceMessageListener extends AbstractJobListener {
     @Autowired
     private AutoEntranceService autoEntranceService;
 
+    @Autowired
+    private DeviceApiService acsDeviceApiService;
+
 
 
     @Override
     public void execute(IEventMessage eventMessage) throws Exception {
-        if (!(eventMessage instanceof LongEventMessage)) {
+        if (!(eventMessage instanceof StringEventMessage)) {
             logger.error("消息类型不对");
             return;
         }
-        LongEventMessage longEventMessage = (LongEventMessage) eventMessage;
+        StringEventMessage stringEventMessage = (StringEventMessage) eventMessage;
 
-        ControlRegions controlRegions = controlRegionsApiService.get(longEventMessage.getData());
-
-        if (controlRegions == null) {
-            logger.error("管控区域未找到, id = " + longEventMessage.getData());
-            return;
+        Device device = acsDeviceApiService.findBySn(stringEventMessage.getData());
+        if (device == null) {
+            logger.error("设备信息未找到, deviceUuid = {}", stringEventMessage.getData());
         }
 
-        Region region = regionApiService.findByTraceId(controlRegions.getId().toString());
+        Region region = regionApiService.findByDeviceUuid(stringEventMessage.getData());
         if (region == null) {
-            logger.error("管控区域未找到, id = " + longEventMessage.getData());
+            logger.error("设备未绑定管控区域, deviceUuid = {}", stringEventMessage.getData());
+        }
+
+
+        ControlRegions controlRegions = controlRegionsApiService.get(Long.valueOf(region.getTraceId()));
+
+        if (controlRegions == null) {
+            logger.error("管控区域未找到, id = " + region.getTraceId());
             return;
         }
 
         if (!region.getAutoAccept()) {
-            logger.error("未设置自动授权, 不进行自动授权操作, id = " + longEventMessage.getData());
+            logger.error("未设置自动授权, 不进行自动授权操作, id = " + region.getId());
             return;
         }
 

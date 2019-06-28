@@ -24,7 +24,7 @@ public class BindDeviceAutoEntranceAuthMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer addControlAutoEntranceAuthMessageJob() {
+    public DefaultMessageListenerContainer bindDeviceInfoAutoEntranceAuthMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.BIND_DEVIDE_EVENT.getTopicName()));

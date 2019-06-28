@@ -32,7 +32,7 @@
     <dubbo:reference id="smartHouseholdsInfoApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdsInfoApiService" group="pro"/>
     <dubbo:reference id="apartmentLayoutApiService" interface="cn.lehome.base.pro.api.service.house.ApartmentLayoutApiService" group="pro"/>
     <dubbo:reference id="dataImportApiService" interface="cn.lehome.base.pro.api.service.data.DataImportApiService" group="pro"/>
-    <dubbo:reference id="houseInfoIndexApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoIndexApiService" group="pro"/>
+    <!--<dubbo:reference id="houseInfoIndexApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoIndexApiService" group="pro"/>-->
     <dubbo:reference id="householdIndexApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdIndexApiService" group="pro"/>
 
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
@@ -47,6 +47,10 @@
 
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
-    <import resource="classpath*:provider/base-api/base-entrance-service.xml"/>
+    <dubbo:reference id="regionApiService" interface="cn.lehome.base.api.acs.service.region.RegionApiService" group="pro"/>
+    <dubbo:reference id="parkApiService" interface="cn.lehome.base.api.acs.service.region.ParkApiService" group="pro"/>
+    <dubbo:reference id="userApiService" interface="cn.lehome.base.api.acs.service.user.UserApiService" group="pro"/>
+    <dubbo:reference id="grantApiService" interface="cn.lehome.base.api.acs.service.grant.GrantApiService" group="pro"/>
+    <dubbo:reference id="acsDeviceApiService" interface="cn.lehome.base.api.acs.service.device.DeviceApiService" group="pro"/>
 
 </beans>

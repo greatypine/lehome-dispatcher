@@ -24,7 +24,7 @@ public class DeleteControlAutoEntranceAuthMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer deleteControlAutoEntranceAuthMessageJob() {
+    public DefaultMessageListenerContainer delControlAutoEntranceAuthMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.DELETE_CONTROL_EVENT.getTopicName()));

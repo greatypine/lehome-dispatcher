@@ -24,7 +24,7 @@ public class AddControlAutoEntranceAuthMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer addControlAutoEntranceAuthMessageJob() {
+    public DefaultMessageListenerContainer addControlInfoAutoEntranceAuthMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.ADD_CONTROL_EVENT.getTopicName()));

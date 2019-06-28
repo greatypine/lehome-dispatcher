@@ -24,7 +24,7 @@ public class HouseholdAutoEntranceAuthMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer householdAutoEntranceAuthMessageJob() {
+    public DefaultMessageListenerContainer householdInfoAutoEntranceAuthMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.HOUSEHOLD_ENTRANCE_AUTH_EVENT.getTopicName()));

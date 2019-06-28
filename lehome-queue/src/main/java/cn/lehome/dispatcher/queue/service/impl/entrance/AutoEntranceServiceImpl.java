@@ -70,7 +70,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             user = new User();
             user.setTraceId(householdIndex.getOpenId());
             user.setUserType(UserType.Resident);
-            user.setUserId(householdIndex.getUserId().longValue());
+            user.setUserId(householdIndex.getUserId() == null ? 0L : householdIndex.getUserId().longValue());
             user = userApiService.create(user);
         }
         return user;

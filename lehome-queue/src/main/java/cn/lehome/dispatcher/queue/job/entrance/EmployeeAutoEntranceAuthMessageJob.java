@@ -24,7 +24,7 @@ public class EmployeeAutoEntranceAuthMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer employeeAutoEntranceAuthMessageJob() {
+    public DefaultMessageListenerContainer userAutoEntranceAuthMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.EMPLOYEE_ENTRANCE_AUTH_EVENT.getTopicName()));
