@@ -79,10 +79,12 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
     @Override
     public User getUserByAccount(Oauth2AccountIndex oauth2AccountIndex) {
         User user = null;
-        for (String openId : oauth2AccountIndex.getMutiOpenId()) {
-            user = userApiService.findByTraceId(UserType.StaffMember, openId);
-            if (user != null) {
-                break;
+        if (oauth2AccountIndex.getMutiOpenId() != null) {
+            for (String openId : oauth2AccountIndex.getMutiOpenId()) {
+                user = userApiService.findByTraceId(UserType.StaffMember, openId);
+                if (user != null) {
+                    break;
+                }
             }
         }
         if (user == null) {
