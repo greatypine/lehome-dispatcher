@@ -86,6 +86,8 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
                     break;
                 }
             }
+        } else {
+            user = userApiService.findByTraceId(UserType.StaffMember, oauth2AccountIndex.getUserOpenId());
         }
         if (user == null) {
             user = new User();
