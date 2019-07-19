@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Created by wuzhao on 2019/5/31.
  */
-public class WorkOrderDispatchReturnVisitUserListener extends AbstractJobListener {
+public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
 
     @Autowired
     private BusinessAcceptOrderApiService businessAcceptOrderApiService;

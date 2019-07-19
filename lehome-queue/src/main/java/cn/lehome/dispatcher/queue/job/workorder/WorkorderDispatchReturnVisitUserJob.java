@@ -1,8 +1,7 @@
 package cn.lehome.dispatcher.queue.job.workorder;
 
 import cn.lehome.base.api.common.constant.EventConstants;
-import cn.lehome.dispatcher.queue.listener.dataImport.ImportDataListener;
-import cn.lehome.dispatcher.queue.listener.workorder.WorkOrderDispatchReturnVisitUserListener;
+import cn.lehome.dispatcher.queue.listener.workorder.WorkOrderDispatchVisitUserListener;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,13 +27,13 @@ public class WorkorderDispatchReturnVisitUserJob {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.WORK_ORDER_RETURN_EVENT.getTopicName()));
-        defaultMessageListenerContainer.setMessageListener(workOrderDispatchReturnVisitUserListener());
+        defaultMessageListenerContainer.setMessageListener(workOrderDispatchVisitUserListener());
         defaultMessageListenerContainer.setSessionTransacted(true);
         return defaultMessageListenerContainer;
     }
 
     @Bean
-    public WorkOrderDispatchReturnVisitUserListener workOrderDispatchReturnVisitUserListener() {
-        return new WorkOrderDispatchReturnVisitUserListener();
+    public WorkOrderDispatchVisitUserListener workOrderDispatchVisitUserListener() {
+        return new WorkOrderDispatchVisitUserListener();
     }
 }
