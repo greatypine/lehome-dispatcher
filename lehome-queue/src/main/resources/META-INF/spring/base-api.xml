@@ -36,6 +36,8 @@
     <dubbo:reference id="householdIndexApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdIndexApiService" group="pro"/>
 
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
+    <dubbo:reference id="resourceApiService" interface="cn.lehome.base.api.common.operation.service.resource.ResourceApiService" group="com"/>
+    <dubbo:reference id="sysRoleApiService" interface="cn.lehome.base.api.common.business.oauth2.service.sys.SysRoleApiService" group="com"/>
     <dubbo:reference id="pushSendInformationApiService" interface="cn.lehome.base.api.common.operation.service.push.PushSendInformationApiService" group="com"/>
     <dubbo:reference id="pushTemplatePropertyApiService" interface="cn.lehome.base.api.common.operation.service.push.PushTemplatePropertyApiService" group="com"/>
     <dubbo:reference id="stationLetterApiService" interface="cn.lehome.base.api.common.operation.service.push.StationLetterApiService" group="com"/>
@@ -47,6 +49,7 @@
 
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
+    <import resource="classpath*:provider/base-api/workorder-service.xml"/>
     <dubbo:reference id="regionApiService" interface="cn.lehome.base.api.acs.service.region.RegionApiService" group="pro"/>
     <dubbo:reference id="parkApiService" interface="cn.lehome.base.api.acs.service.region.ParkApiService" group="pro"/>
     <dubbo:reference id="userApiService" interface="cn.lehome.base.api.acs.service.user.UserApiService" group="pro"/>

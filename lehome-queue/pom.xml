@@ -54,6 +54,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>workerorder-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>workorder-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-common-operation-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>

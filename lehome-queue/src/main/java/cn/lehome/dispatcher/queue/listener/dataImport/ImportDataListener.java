@@ -207,36 +207,46 @@ public class ImportDataListener extends AbstractJobListener {
         }
         ManagerArea managerArea = managerAreaList.get(0);
         String floorNo = rowDatas.get(2);
-        List<FloorInfo> floorInfoList = smartFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
-        if (floorInfoList == null || floorInfoList.size() < 1) {
-            return new ImmutablePair<>(false, "未找到小区楼宇信息");
+        FloorInfo floorInfo = null;
+        if (StringUtils.isNotEmpty(floorNo)) {
+            List<FloorInfo> floorInfoList = smartFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorInfo.manageAreaId, managerArea.getId()).filterEqual(QFloorInfo.floorNo, floorNo).filterEqual(QFloorInfo.enabledStatus, EnabledStatus.Enabled));
+            if (floorInfoList == null || floorInfoList.size() < 1) {
+                return new ImmutablePair<>(false, "未找到小区楼宇信息");
+            }
+            floorInfo = floorInfoList.get(0);
         }
-        FloorInfo floorInfo = floorInfoList.get(0);
+
         String unitNo = rowDatas.get(4);
-        List<FloorUnitInfo> floorUnitInfoList = floorUnitInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorUnitInfo.floorId, floorInfo.getId()).filterEqual(QFloorUnitInfo.unitNo, unitNo).filterEqual(QFloorUnitInfo.enabledStatus, EnabledStatus.Enabled));
-        if (floorUnitInfoList == null || floorUnitInfoList.size() < 1) {
-            return new ImmutablePair<>(false, "未找到小区单元信息");
+        FloorUnitInfo unitInfo = null;
+        FloorLayerInfo floorLayerInfo = null;
+        if (floorInfo != null && StringUtils.isNotEmpty(unitNo)) {
+            List<FloorUnitInfo> floorUnitInfoList = floorUnitInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorUnitInfo.floorId, floorInfo.getId()).filterEqual(QFloorUnitInfo.unitNo, unitNo).filterEqual(QFloorUnitInfo.enabledStatus, EnabledStatus.Enabled));
+            if (floorUnitInfoList == null || floorUnitInfoList.size() < 1) {
+                return new ImmutablePair<>(false, "未找到小区单元信息");
+            }
+            unitInfo = floorUnitInfoList.get(0);
+            String upLayer = rowDatas.get(6);
+            String downLayer = rowDatas.get(7);
+            if (StringUtils.isEmpty(upLayer) && StringUtils.isEmpty(downLayer)) {
+                return new ImmutablePair<>(false, "楼层信息不能为空");
+            }
+            List<FloorLayerInfo> layerInfoList = null;
+            if (StringUtils.isNotEmpty(upLayer)) {
+                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+            }
+            if (StringUtils.isNotEmpty(downLayer)) {
+                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, downLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+            }
+            if (layerInfoList == null || layerInfoList.size() < 1) {
+                return new ImmutablePair<>(false, "未找到小区楼层信息");
+            }
+            floorLayerInfo = layerInfoList.get(0);
         }
-        FloorUnitInfo unitInfo = floorUnitInfoList.get(0);
-        String upLayer = rowDatas.get(6);
-        String downLayer = rowDatas.get(7);
-        if (StringUtils.isEmpty(upLayer) && StringUtils.isEmpty(downLayer)) {
-            return new ImmutablePair<>(false, "楼层信息不能为空");
-        }
-        List<FloorLayerInfo> layerInfoList = null;
-        if (StringUtils.isNotEmpty(upLayer)) {
-            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
-        }
-        if (StringUtils.isNotEmpty(downLayer)) {
-            layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, downLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
-        }
-        if (layerInfoList == null || layerInfoList.size() < 1) {
-            return new ImmutablePair<>(false, "未找到小区楼层信息");
-        }
-        FloorLayerInfo floorLayerInfo = layerInfoList.get(0);
+
+
         String roomId = rowDatas.get(8);
         String roomName = rowDatas.get(9);
-        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
+        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
         if (!CollectionUtils.isEmpty(houseInfoList)) {
             return new ImmutablePair<>(false, "房间信息已经存在");
         }
@@ -299,10 +309,25 @@ public class ImportDataListener extends AbstractJobListener {
         dataImportHouseInfo.setDataImportId(dataImportId);
         dataImportHouseInfo.setManageAreaId(managerArea.getId());
         dataImportHouseInfo.setManagerAreaName(managerArea.getAreaName());
-        dataImportHouseInfo.setFloorId(floorInfo.getId());
-        dataImportHouseInfo.setFloorNo(floorInfo.getFloorNo());
-        dataImportHouseInfo.setUnitId(unitInfo.getId());
-        dataImportHouseInfo.setUnitNo(unitInfo.getUnitNo());
+        if (floorInfo != null) {
+            dataImportHouseInfo.setFloorId(floorInfo.getId());
+            dataImportHouseInfo.setFloorNo(floorInfo.getFloorNo());
+        } else {
+            dataImportHouseInfo.setFloorId(0);
+            dataImportHouseInfo.setFloorNo("");
+        }
+        if (unitInfo != null) {
+            dataImportHouseInfo.setUnitId(unitInfo.getId());
+            dataImportHouseInfo.setUnitNo(unitInfo.getUnitNo());
+        } else {
+            dataImportHouseInfo.setUnitId(0);
+            dataImportHouseInfo.setUnitNo("");
+        }
+        if (floorLayerInfo != null) {
+            dataImportHouseInfo.setLayerId(floorLayerInfo.getId());
+        } else {
+            dataImportHouseInfo.setLayerId(0);
+        }
         dataImportHouseInfo.setRoomId(roomId);
         dataImportHouseInfo.setRoomName(roomName);
         if (apartmentLayout == null) {
@@ -310,14 +335,37 @@ public class ImportDataListener extends AbstractJobListener {
         } else {
             dataImportHouseInfo.setLayoutId(apartmentLayout.getId().intValue());
         }
-        dataImportHouseInfo.setLayerId(floorLayerInfo.getId());
+
         dataImportHouseInfo.setAcreage(acreage);
         dataImportHouseInfo.setUsedAcreage(useAcreage);
         dataImportHouseInfo.setOccupancyStatus(occupancyStatus);
         dataImportHouseInfo.setDecorationStatus(decorationStatus);
         dataImportHouseInfo.setOccupancyTime(occupancyTime);
         dataImportHouseInfo.setStartChargingTime(startChargingTime);
-        dataImportHouseInfo.setRoomAddress(String.format("%s-%s%s-%s%s-%s%s-%s%s", managerArea.getAreaName(), floorInfo.getFloorNo(), floorInfo.getFloorName(), unitInfo.getUnitNo(), unitInfo.getUnitName(), floorLayerInfo.getNumber(), floorLayerInfo.getName(), dataImportHouseInfo.getRoomId(), dataImportHouseInfo.getRoomName()));
+        String fullAddress = managerArea.getAreaName();
+        if (floorInfo != null) {
+            fullAddress = "-" + floorInfo.getFloorNo();
+            if (StringUtils.isNotEmpty(floorInfo.getFloorName())) {
+                fullAddress += floorInfo.getFloorName();
+            }
+        }
+        if (unitInfo != null) {
+            fullAddress = "-" + unitInfo.getUnitNo();
+            if (StringUtils.isNotEmpty(unitInfo.getUnitName())) {
+                fullAddress += unitInfo.getUnitName();
+            }
+        }
+        if (floorLayerInfo != null) {
+            fullAddress = "-" + floorLayerInfo.getNumber();
+            if (StringUtils.isNotEmpty(floorLayerInfo.getName())) {
+                fullAddress += floorLayerInfo.getName();
+            }
+        }
+        fullAddress = "-" + roomId;
+        if (StringUtils.isNotEmpty(roomName)) {
+            fullAddress += roomName;
+        }
+        dataImportHouseInfo.setRoomAddress(fullAddress);
         dataImportApiService.saveHouseInfo(dataImportHouseInfo);
         return new ImmutablePair<>(true, "");
     }
