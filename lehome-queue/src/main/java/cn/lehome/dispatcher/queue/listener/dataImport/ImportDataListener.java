@@ -344,24 +344,24 @@ public class ImportDataListener extends AbstractJobListener {
         dataImportHouseInfo.setStartChargingTime(startChargingTime);
         String fullAddress = managerArea.getAreaName();
         if (floorInfo != null) {
-            fullAddress = "-" + floorInfo.getFloorNo();
+            fullAddress = fullAddress + "-" + floorInfo.getFloorNo();
             if (StringUtils.isNotEmpty(floorInfo.getFloorName())) {
                 fullAddress += floorInfo.getFloorName();
             }
         }
         if (unitInfo != null) {
-            fullAddress = "-" + unitInfo.getUnitNo();
+            fullAddress = fullAddress +  "-" + unitInfo.getUnitNo();
             if (StringUtils.isNotEmpty(unitInfo.getUnitName())) {
                 fullAddress += unitInfo.getUnitName();
             }
         }
         if (floorLayerInfo != null) {
-            fullAddress = "-" + floorLayerInfo.getNumber();
+            fullAddress = fullAddress + "-" + floorLayerInfo.getNumber();
             if (StringUtils.isNotEmpty(floorLayerInfo.getName())) {
                 fullAddress += floorLayerInfo.getName();
             }
         }
-        fullAddress = "-" + roomId;
+        fullAddress = fullAddress + "-" + roomId;
         if (StringUtils.isNotEmpty(roomName)) {
             fullAddress += roomName;
         }
