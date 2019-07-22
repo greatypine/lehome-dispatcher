@@ -232,10 +232,10 @@ public class ImportDataListener extends AbstractJobListener {
             }
             List<FloorLayerInfo> layerInfoList = null;
             if (StringUtils.isNotEmpty(upLayer)) {
-                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, upLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
             }
             if (StringUtils.isNotEmpty(downLayer)) {
-                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.aboveground).filterEqual(QFloorLayerInfo.number, downLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
+                layerInfoList = floorLayerInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QFloorLayerInfo.unitId, unitInfo.getId()).filterEqual(QFloorLayerInfo.type, FloorsType.underground).filterEqual(QFloorLayerInfo.number, downLayer).filterEqual(QFloorLayerInfo.deleteStatus, DeleteStatus.Normal));
             }
             if (layerInfoList == null || layerInfoList.size() < 1) {
                 return new ImmutablePair<>(false, "未找到小区楼层信息");
