@@ -356,10 +356,7 @@ public class ImportDataListener extends AbstractJobListener {
             }
         }
         if (floorLayerInfo != null) {
-            fullAddress = fullAddress + "-" + floorLayerInfo.getNumber();
-            if (StringUtils.isNotEmpty(floorLayerInfo.getName())) {
-                fullAddress += floorLayerInfo.getName();
-            }
+            fullAddress += floorLayerInfo.getName();
         }
         fullAddress = fullAddress + "-" + roomId;
         if (StringUtils.isNotEmpty(roomName)) {
