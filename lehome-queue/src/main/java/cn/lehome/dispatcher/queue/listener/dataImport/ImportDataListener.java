@@ -264,14 +264,14 @@ public class ImportDataListener extends AbstractJobListener {
         String useAcreageStr = rowDatas.get(12);
         Double acreage = 0D;
         Double useAcreage = 0D;
-        if (StringUtils.isEmpty(acreageStr)) {
+        if (StringUtils.isNotEmpty(acreageStr)) {
             try {
                 acreage = Double.valueOf(acreageStr);
             } catch (Exception e) {
                 return new ImmutablePair<>(false, "建筑面积数值转换失败");
             }
         }
-        if (StringUtils.isEmpty(useAcreageStr)) {
+        if (StringUtils.isNotEmpty(useAcreageStr)) {
             try {
                 useAcreage = Double.valueOf(useAcreageStr);
             } catch (Exception e) {
@@ -340,7 +340,7 @@ public class ImportDataListener extends AbstractJobListener {
         dataImportHouseInfo.setUsedAcreage(useAcreage);
         dataImportHouseInfo.setOccupancyStatus(occupancyStatus);
         dataImportHouseInfo.setDecorationStatus(decorationStatus);
-        dataImportHouseInfo.setOccupancyTime(occupancyTime);
+        dataImportHouseInfo.setTransferDate(occupancyTime);
         dataImportHouseInfo.setStartChargingTime(startChargingTime);
         String fullAddress = managerArea.getAreaName();
         if (floorInfo != null) {
