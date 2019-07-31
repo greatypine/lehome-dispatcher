@@ -18,6 +18,7 @@ import cn.lehome.base.pro.api.bean.data.*;
 import cn.lehome.base.pro.api.bean.house.*;
 import cn.lehome.base.pro.api.bean.house.layout.ApartmentLayout;
 import cn.lehome.base.pro.api.bean.house.layout.QApartmentLayout;
+import cn.lehome.base.pro.api.bean.households.HouseholdCertification;
 import cn.lehome.base.pro.api.bean.households.HouseholdIndex;
 import cn.lehome.base.pro.api.bean.households.settings.Household;
 import cn.lehome.base.pro.api.event.DataImportEvent;
@@ -25,16 +26,18 @@ import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
 import cn.lehome.base.pro.api.service.area.ManagerAreaApiService;
 import cn.lehome.base.pro.api.service.data.DataImportApiService;
 import cn.lehome.base.pro.api.service.house.*;
+import cn.lehome.base.pro.api.service.households.HouseholdCertificationApiService;
 import cn.lehome.base.pro.api.service.households.HouseholdIndexApiService;
-import cn.lehome.bean.pro.enums.DeleteStatus;
-import cn.lehome.bean.pro.enums.EnabledStatus;
-import cn.lehome.bean.pro.enums.Gender;
-import cn.lehome.bean.pro.enums.Identity;
+import cn.lehome.bean.pro.enums.*;
 import cn.lehome.bean.pro.enums.data.DataImportStatus;
 import cn.lehome.bean.pro.enums.data.DataImportType;
 import cn.lehome.bean.pro.enums.house.DecorationStatus;
 import cn.lehome.bean.pro.enums.house.FloorsType;
 import cn.lehome.bean.pro.enums.house.OccupancyStatus;
+import cn.lehome.bean.pro.enums.household.ApprovalStatus;
+import cn.lehome.bean.pro.enums.household.CertifiedClientType;
+import cn.lehome.bean.pro.enums.household.CertifiedSourceType;
+import cn.lehome.bean.pro.enums.household.IdentifyType;
 import cn.lehome.bean.user.entity.enums.user.HouseType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
@@ -59,6 +62,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by wuzhao on 2019/5/31.
@@ -109,6 +113,9 @@ public class ImportDataListener extends AbstractJobListener {
 
     @Autowired
     private UserHouseRelationshipApiService userHouseRelationshipApiService;
+
+    @Autowired
+    private HouseholdCertificationApiService householdCertificationApiService;
 
 
     private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
@@ -197,6 +204,7 @@ public class ImportDataListener extends AbstractJobListener {
                 logger.info("发送添加住户, id = " + household.getId());
                 HouseholdIndex householdIndex = householdIndexApiService.get(household.getId());
                 if (householdIndex != null) {
+                    this.syncHouseholdCertification(householdIndex);
                     UserInfoIndex userInfoIndex = userInfoIndexApiService.findByPhone(householdIndex.getTelephone());
                     CommunityExt communityExt = communityApiService.findByPropertyAreaId(householdIndex.getAreaId());
                     if (communityExt != null && userInfoIndex != null) {
@@ -552,5 +560,50 @@ public class ImportDataListener extends AbstractJobListener {
         } else {
             return HouseType.OTHER;
         }
+    }
+
+    private void syncHouseholdCertification(HouseholdIndex household) {
+        HouseholdCertification bean = new HouseholdCertification();
+        bean.setAreaId(household.getAreaId());
+        bean.setHouseId(household.getHouseId());
+        bean.setUserId(household.getUserId() != null ? household.getUserId().longValue() : null);
+        bean.setUserName(household.getName());
+        bean.setMobile(org.springframework.util.StringUtils.isEmpty(household.getTelephone()) ? "" : household.getTelephone());
+        bean.setIdentifyType(convertType(household.getHouseholdsTypeId()));
+        bean.setApplyTime(new Date());
+        bean.setApprovalStatus(ApprovalStatus.PASSED);
+        bean.setApplyChannel(ApplyChannel.ApplyBySystem);
+        bean.setCancelChannel(CancelChannel.CancelDefault);
+        bean.setApprovalUserId(0L);
+        bean.setApprovalTime(new Date());
+        bean.setHouseholdId(household.getId());
+        bean.setHouseholdSettingId(household.getHouseholdSettingId().longValue());
+        bean.setClientType(CertifiedClientType.WEB);
+        bean.setSourceType(CertifiedSourceType.ADD_HOUSEHOLD);
+        householdCertificationApiService.save(bean);
+    }
+
+    private IdentifyType convertType(Integer householdTypeId) {
+        if (householdTypeId == null || householdTypeId <= 0) {
+            return IdentifyType.OTHER;
+        }
+        switch (getType(householdTypeId.intValue())) {
+            case Owner:
+                return IdentifyType.OWNER;
+            case Merchant:
+                return IdentifyType.MERCHANT;
+            case Household:
+                return IdentifyType.HOUSEHOLD;
+            case Tenant:
+                return IdentifyType.TENANT;
+            case RELATIVE:
+                return IdentifyType.RELATIVE;
+            default:
+                return IdentifyType.OTHER;
+        }
+    }
+
+    private HouseholdsType getType(Integer id) {
+        return Stream.of(HouseholdsType.values()).filter(t -> t.index().equals(id)).findFirst().orElse(null);
     }
 }
