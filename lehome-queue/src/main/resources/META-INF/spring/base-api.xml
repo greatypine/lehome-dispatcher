@@ -21,6 +21,7 @@
     <import resource="classpath*:provider/base-api/ec-service.xml"/>
     <import resource="classpath*:provider/base-api/content-service.xml"/>
     <import resource="classpath*:provider/base-api/property-service.xml"/>
+    <import resource="classpath*:provider/base-api/old-pro-service.xml"/>
 
     <dubbo:reference id="addressBaseApiService" interface="cn.lehome.base.pro.api.service.address.AddressBaseApiService" group="pro"/>
     <dubbo:reference id="smartAreaInfoApiService" interface="cn.lehome.base.pro.api.service.area.AreaInfoApiService" group="pro"/>
@@ -32,7 +33,7 @@
     <dubbo:reference id="smartHouseholdsInfoApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdsInfoApiService" group="pro"/>
     <dubbo:reference id="apartmentLayoutApiService" interface="cn.lehome.base.pro.api.service.house.ApartmentLayoutApiService" group="pro"/>
     <dubbo:reference id="dataImportApiService" interface="cn.lehome.base.pro.api.service.data.DataImportApiService" group="pro"/>
-    <!--<dubbo:reference id="houseInfoIndexApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoIndexApiService" group="pro"/>-->
+    <dubbo:reference id="smartHouseInfoIndexApiService" interface="cn.lehome.base.pro.api.service.house.HouseInfoIndexApiService" group="pro"/>
     <dubbo:reference id="householdIndexApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdIndexApiService" group="pro"/>
 
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>

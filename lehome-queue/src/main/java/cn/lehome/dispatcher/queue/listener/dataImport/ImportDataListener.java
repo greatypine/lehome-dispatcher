@@ -1,9 +1,15 @@
 package cn.lehome.dispatcher.queue.listener.dataImport;
 
+import cn.lehome.base.api.common.bean.community.CommunityExt;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.base.api.common.custom.oauth2.bean.user.UserAccount;
 import cn.lehome.base.api.common.custom.oauth2.service.user.UserAccountApiService;
+import cn.lehome.base.api.common.service.community.CommunityApiService;
+import cn.lehome.base.api.user.bean.user.UserHouseRelationship;
+import cn.lehome.base.api.user.bean.user.UserInfoIndex;
+import cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService;
+import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
 import cn.lehome.base.pro.api.bean.area.AreaInfo;
 import cn.lehome.base.pro.api.bean.area.ManagerArea;
 import cn.lehome.base.pro.api.bean.area.QAreaInfo;
@@ -12,12 +18,14 @@ import cn.lehome.base.pro.api.bean.data.*;
 import cn.lehome.base.pro.api.bean.house.*;
 import cn.lehome.base.pro.api.bean.house.layout.ApartmentLayout;
 import cn.lehome.base.pro.api.bean.house.layout.QApartmentLayout;
+import cn.lehome.base.pro.api.bean.households.HouseholdIndex;
 import cn.lehome.base.pro.api.bean.households.settings.Household;
 import cn.lehome.base.pro.api.event.DataImportEvent;
 import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
 import cn.lehome.base.pro.api.service.area.ManagerAreaApiService;
 import cn.lehome.base.pro.api.service.data.DataImportApiService;
 import cn.lehome.base.pro.api.service.house.*;
+import cn.lehome.base.pro.api.service.households.HouseholdIndexApiService;
 import cn.lehome.bean.pro.enums.DeleteStatus;
 import cn.lehome.bean.pro.enums.EnabledStatus;
 import cn.lehome.bean.pro.enums.Gender;
@@ -27,6 +35,7 @@ import cn.lehome.bean.pro.enums.data.DataImportType;
 import cn.lehome.bean.pro.enums.house.DecorationStatus;
 import cn.lehome.bean.pro.enums.house.FloorsType;
 import cn.lehome.bean.pro.enums.house.OccupancyStatus;
+import cn.lehome.bean.user.entity.enums.user.HouseType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
@@ -37,6 +46,7 @@ import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.base.api.core.util.ExcelUtils;
 import cn.lehome.framework.base.api.core.util.OssFileDownloadUtil;
+import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import cn.lehome.framework.bean.core.enums.SexType;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.google.common.collect.Lists;
@@ -84,6 +94,21 @@ public class ImportDataListener extends AbstractJobListener {
 
     @Autowired
     private UserAccountApiService userAccountApiService;
+
+    @Autowired
+    private HouseholdIndexApiService householdIndexApiService;
+
+    @Autowired
+    private UserInfoIndexApiService userInfoIndexApiService;
+
+    @Autowired
+    private CommunityApiService communityApiService;
+
+    @Autowired
+    private HouseInfoIndexApiService smartHouseInfoIndexApiService;
+
+    @Autowired
+    private UserHouseRelationshipApiService userHouseRelationshipApiService;
 
 
     private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
@@ -170,6 +195,34 @@ public class ImportDataListener extends AbstractJobListener {
             } else {
                 Household household = dataImportApiService.addImportHouseholdNum(dataImport.getId(), dataImportEvent.getObjectId().intValue());
                 logger.info("发送添加住户, id = " + household.getId());
+                HouseholdIndex householdIndex = householdIndexApiService.get(household.getId());
+                if (householdIndex != null) {
+                    UserInfoIndex userInfoIndex = userInfoIndexApiService.findByPhone(householdIndex.getTelephone());
+                    CommunityExt communityExt = communityApiService.findByPropertyAreaId(householdIndex.getAreaId());
+                    if (communityExt != null && userInfoIndex != null) {
+                        UserHouseRelationship userHouseRelationship = userHouseRelationshipApiService.findByRemark(household.getTelephone(), communityExt.getId(), householdIndex.getHouseId());
+                        if (userHouseRelationship != null) {
+                            userHouseRelationship.setHouseType(convert(householdIndex.getHouseholdsTypeId()));
+                            userHouseRelationship.setEnableStatus(EnableDisableStatus.ENABLE);
+                        } else {
+                            HouseInfoIndex houseInfoIndex = smartHouseInfoIndexApiService.get(householdIndex.getHouseId());
+                            if (userInfoIndex != null && houseInfoIndex != null) {
+                                userHouseRelationship = new UserHouseRelationship();
+                                userHouseRelationship.setEnableStatus(EnableDisableStatus.ENABLE);
+                                userHouseRelationship.setOperatorId(0L);
+                                userHouseRelationship.setHouseType(convert(householdIndex.getHouseholdsTypeId()));
+                                userHouseRelationship.setRemark(householdIndex.getTelephone());
+                                userHouseRelationship.setFamilyMemberName(householdIndex.getName());
+                                userHouseRelationship.setCommunityExtId(communityExt.getId());
+                                userHouseRelationship.setHouseId(householdIndex.getHouseId());
+                                userHouseRelationship.setUserId(userInfoIndex.getId());
+                                userHouseRelationship.setHouseAddress(houseInfoIndex.getRoomAddress());
+                                userHouseRelationship.setFullHouseAddress(String.format("%s%s", communityExt.getName(), houseInfoIndex.getRoomAddress()));
+                                userHouseRelationshipApiService.saveUserHouse(userHouseRelationship);
+                            }
+                        }
+                    }
+                }
                 eventBusComponent.sendEventMessage(new LongEventMessage(EventConstants.HOUSEHOLD_ENTRANCE_AUTH_EVENT, household.getId()));
                 ApiResponse<DataImportHouseholdsInfo> response = dataImportApiService.findHouseholdAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImport.getId()).filterGreaterThan(QDataImportHouseholdsInfo.id, dataImportEvent.getObjectId().intValue()), ApiRequestPage.newInstance().paging(0, 1).addOrder(QDataImportHouseInfo.id, PageOrderType.ASC));
                 if (!CollectionUtils.isEmpty(response.getPagedData())) {
@@ -487,5 +540,17 @@ public class ImportDataListener extends AbstractJobListener {
     private Date dateConvert(String str) throws Exception {
         Date date = sdf.parse(str);
         return date;
+    }
+
+    private HouseType convert(int type) {
+        if (type == 1) {
+            return HouseType.MAIN;
+        } else if (type == 9) {
+            return HouseType.HOME;
+        } else if (type == 6) {
+            return HouseType.RENTER;
+        } else {
+            return HouseType.OTHER;
+        }
     }
 }

@@ -74,6 +74,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>old-pro-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>old-pro-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>common-tool-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
