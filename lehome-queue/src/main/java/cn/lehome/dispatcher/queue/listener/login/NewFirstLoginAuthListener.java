@@ -143,6 +143,7 @@ public class NewFirstLoginAuthListener extends AbstractJobListener {
                         if (userHouseRelationship != null) {
                             userHouseRelationships.add(userHouseRelationship);
                         }
+                        oldHouseholdsInfoApiService.bindUserId(oldHouseholdsInfo.getId(), userInfoIndex.getId().intValue());
                     }
                 }
             }
@@ -171,6 +172,7 @@ public class NewFirstLoginAuthListener extends AbstractJobListener {
         userHouseRelationship.setHouseId(householdIndex.getHouseId());
         userHouseRelationship.setCommunityExtId(communityExt.getId());
         userHouseRelationship.setFamilyMemberName(householdIndex.getName());
+        userHouseRelationship.setRemark(householdIndex.getTelephone());
         userHouseRelationship.setEnableStatus(EnableDisableStatus.ENABLE);
         userHouseRelationship.setHouseType(convertType(householdIndex.getHouseholdsTypeId()));
         userHouseRelationship.setHouseAddress(houseInfoIndex.getRoomAddress());
@@ -201,6 +203,7 @@ public class NewFirstLoginAuthListener extends AbstractJobListener {
         userHouseRelationship.setHouseId(oldHouseInfo.getId().longValue());
         userHouseRelationship.setCommunityExtId(communityExt.getId());
         userHouseRelationship.setFamilyMemberName(oldHouseholdsInfo.getName());
+        userHouseRelationship.setRemark(oldHouseholdsInfo.getTelephone());
         userHouseRelationship.setEnableStatus(EnableDisableStatus.ENABLE);
         userHouseRelationship.setHouseType(convertType(oldHouseholdsInfo.getOldHouseholdsSettingsInfo().getHouseholdsTypeId()));
         userHouseRelationship.setHouseAddress(roomAddress);

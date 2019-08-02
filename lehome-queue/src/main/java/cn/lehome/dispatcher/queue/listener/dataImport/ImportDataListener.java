@@ -553,7 +553,7 @@ public class ImportDataListener extends AbstractJobListener {
     private HouseType convert(int type) {
         if (type == 1) {
             return HouseType.MAIN;
-        } else if (type == 9) {
+        } else if (type == 9 || type == 5) {
             return HouseType.HOME;
         } else if (type == 6) {
             return HouseType.RENTER;
