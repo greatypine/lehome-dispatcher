@@ -5,7 +5,6 @@ import cn.lehome.dispatcher.queue.listener.house.SyncUserHouseholdMessageListene
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import javax.jms.ConnectionFactory;
@@ -13,7 +12,7 @@ import javax.jms.ConnectionFactory;
 /**
  * Created by zuoguodong on 2018/6/4
  */
-@Configuration
+//@Configuration
 public class SyncUserHouseholdMessageJob {
 
     @Autowired
