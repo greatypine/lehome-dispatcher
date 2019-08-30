@@ -12,7 +12,10 @@ import cn.lehome.base.api.business.content.bean.comment.CommentInfoIndex;
 import cn.lehome.base.api.business.content.bean.post.PostInfoIndex;
 import cn.lehome.base.api.business.content.service.comment.CommentInfoIndexApiService;
 import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
-import cn.lehome.base.api.common.bean.device.ClientDeviceIndex;
+import cn.lehome.base.api.common.custom.oauth2.bean.device.MobileDevice;
+import cn.lehome.base.api.common.custom.oauth2.bean.user.AccountOauth;
+import cn.lehome.base.api.common.custom.oauth2.service.device.ClientDeviceApiService;
+import cn.lehome.base.api.common.custom.oauth2.service.user.UserAccountIndexApiService;
 import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
@@ -64,6 +67,12 @@ public class JoinRewardActivityListener extends AbstractJobListener {
 
     @Autowired
     private ClientDeviceIndexApiService clientDeviceIndexApiService;
+
+    @Autowired
+    private UserAccountIndexApiService userAccountIndexApiService;
+
+    @Autowired
+    private ClientDeviceApiService clientDeviceApiService;
 
     @Override
     public void execute(IEventMessage eventMessage) {
@@ -704,15 +713,18 @@ public class JoinRewardActivityListener extends AbstractJobListener {
 
     private boolean isUpdateVersion(Long userId){
         UserInfoIndex userInfoIndex = userInfoIndexApiService.findByUserId(userId);
-        String clientId = userInfoIndex.getClientId();
-        if (StringUtils.isBlank(clientId)) {
-            clientId = userInfoIndex.getLastClientId();
-        }
-        ClientDeviceIndex clientDeviceIndex = clientDeviceIndexApiService.get(clientId, ClientType.SQBJ);
-        if(ClientOSType.IOS.equals(clientDeviceIndex.getClientOSType())){
-            return IOS_MIN_VERSION_CODE <= clientDeviceIndex.getAppVersionCode();
-        }else if(ClientOSType.ANDROID.equals(clientDeviceIndex.getClientOSType())){
-            return ANDROID_MIN_VERSION_CODE <= clientDeviceIndex.getAppVersionCode();
+        AccountOauth accountOauth = userAccountIndexApiService.getAccountOauth(userInfoIndex.getUserOpenId(), "sqbj-server");
+        if (accountOauth != null && (accountOauth.getDeviceType().equals(DeviceType.IPHONE) || accountOauth.getDeviceType().equals(DeviceType.ANDROID))) {
+            MobileDevice mobileDevice = clientDeviceApiService.getMobileDevice(accountOauth.getDeviceId());
+            if (mobileDevice != null) {
+                logger.info("设备信息, type = {}, verionCode = {}", mobileDevice.getType(), mobileDevice.getAppVersionCode());
+                if(DeviceType.IPHONE.equals(mobileDevice.getType())){
+                    return IOS_MIN_VERSION_CODE <= mobileDevice.getAppVersionCode();
+                }else if(ClientOSType.ANDROID.equals(mobileDevice.getType())){
+                    return ANDROID_MIN_VERSION_CODE <= mobileDevice.getAppVersionCode();
+                }
+            }
+
         }
         return false;
     }
