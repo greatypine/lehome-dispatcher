@@ -99,6 +99,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>bpp-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>bpp-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-business-activity-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
