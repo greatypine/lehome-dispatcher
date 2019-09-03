@@ -7,5 +7,5 @@ public interface GoodsService {
 
     void initMerchantIndex(String input[]);
 
-    void refreshGoodsNum(String[] input);
+
 }

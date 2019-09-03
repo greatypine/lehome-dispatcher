@@ -58,4 +58,5 @@
     <dubbo:reference id="grantApiService" interface="cn.lehome.base.api.acs.service.grant.GrantApiService" group="pro"/>
     <dubbo:reference id="acsDeviceApiService" interface="cn.lehome.base.api.acs.service.device.DeviceApiService" group="pro"/>
 
+
 </beans>

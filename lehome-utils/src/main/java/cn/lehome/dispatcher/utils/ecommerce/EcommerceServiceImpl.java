@@ -189,7 +189,7 @@ public class EcommerceServiceImpl implements EcommerceService{
                 });
             });
             EsFlushUtil.getInstance().batchInsert(goodsSpuIndexEntities);
-            EsFlushUtil.getInstance().batchInsertChild(goodsSkuIndexEntities,QGoodsSkuIndex.goodsId);
+            //EsFlushUtil.getInstance().batchInsertChild(goodsSkuIndexEntities,QGoodsSkuIndex.goodsId);
 
             pageIndex++;
             apiRequestPage.paging(pageIndex,pageSize);
@@ -283,7 +283,7 @@ public class EcommerceServiceImpl implements EcommerceService{
                     }
                 });
 
-                EsFlushUtil.getInstance().batchInsertChild(orderDetailIndexEntityList, QOrderDetailIndex.orderId);
+                //EsFlushUtil.getInstance().batchInsertChild(orderDetailIndexEntityList, QOrderDetailIndex.orderId);
             }catch (Exception e){
                 e.printStackTrace();
                 continue;

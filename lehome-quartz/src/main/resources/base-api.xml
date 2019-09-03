@@ -31,6 +31,6 @@
     <dubbo:reference id="stationLetterApiService" interface="cn.lehome.base.api.common.operation.service.push.StationLetterApiService" group="com"/>
 
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
-
+    
 
 </beans>

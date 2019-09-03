@@ -2,19 +2,20 @@ package cn.lehome.dispatcher.utils;
 
 import cn.lehome.base.api.user.service.asset.UserBeanFlowApiService;
 import cn.lehome.dispatcher.utils.activity.CalculateKeepActivityService;
+import cn.lehome.dispatcher.utils.activity.GainPrizeService;
 import cn.lehome.dispatcher.utils.community.CommunityService;
 import cn.lehome.dispatcher.utils.community.SmartDataService;
 import cn.lehome.dispatcher.utils.content.ContentService;
 import cn.lehome.dispatcher.utils.contribution.ContributionService;
 import cn.lehome.dispatcher.utils.device.DeviceInfoSync;
 import cn.lehome.dispatcher.utils.distribution.CalculateUserDistributionService;
-import cn.lehome.dispatcher.utils.ecommerce.EcommerceService;
 import cn.lehome.dispatcher.utils.house.HouseService;
 import cn.lehome.dispatcher.utils.merchant.GoodsService;
 import cn.lehome.dispatcher.utils.operation.OperationService;
 import cn.lehome.dispatcher.utils.push.PushService;
 import cn.lehome.dispatcher.utils.robot.PostMaterielService;
 import cn.lehome.dispatcher.utils.robot.RobotService;
+import cn.lehome.dispatcher.utils.smart.SmartUserImportService;
 import cn.lehome.dispatcher.utils.task.DailyConversionAccountService;
 import cn.lehome.dispatcher.utils.user.UserMessageService;
 import cn.lehome.dispatcher.utils.user.UserService;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static java.lang.System.exit;
+import static java.lang.System.in;
 
 /**
  * 工具类调入口
@@ -101,13 +103,16 @@ public class Main implements CommandLineRunner {
     private OperationService operationService;
 
     @Autowired
-    private EcommerceService ecommerceService;
-
-    @Autowired
     private DeviceInfoSync deviceInfoSync;
 
     @Autowired
     private UserSync userSync;
+
+    @Autowired
+    private GainPrizeService gainPrizeService;
+
+    @Autowired
+    private SmartUserImportService smartUserImportService;
 
     public static void main(String args[]) {
         SpringApplication.run(Main.class, args);
@@ -167,14 +172,14 @@ public class Main implements CommandLineRunner {
                         "updateAllCommunityExt                                      --刷新communityExt表缓存数据\n" +
                         "updateAllCommunity                                      --刷新Community表缓存数据\n" +
                         "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
-                        "updateEcommerceData <[updateGoodsInfoIndex][updateOrderInfoIndex]>      --电商es数据刷新\n" +
-                        "updateUserIndexFromExcel                                --从excel中刷新用户缓存\n" +
-                        "updatePostCommunityId<sourceCommunityId><targetCommunityId>         --更新post表communityId\n" +
-                        "refreshPrizeRedis [advertId]                           --刷新奖励金额\n" +
+                        "updateEcommerceData                                --电商es数据迁移\n" +
+                        "updateUserIndexFromExcel                           --从excel中刷新用户缓存\n" +
+                        "refreshPrizeRedis [advertId]                       --刷新奖励金额\n" +
                         "syncDevice                                         --同步设备\n" +
-                        "syncUser                                         --同步用户\n" +
-                        "syncWechatUser                                         --同步微信用户\n" +
-                        "refreshGoodsNum [advertId]                           --刷新商品分类商品数\n" +
+                        "syncUser                                           --同步用户\n" +
+                        "syncWechatUser                                     --同步微信用户\n" +
+                        "gainPrizeFromExcel <excelUrl> <activityId>         --重新获取集卡瓜分金豆\n" +
+                        "smartDataImport <baseURL> <token> <excelPath>      --智社区数据导入\n" +
                         "exit                                               --退出\n" +
                         "help                                               --帮助\n"
 
@@ -349,7 +354,7 @@ public class Main implements CommandLineRunner {
                 contentService.createCancelTopPostTask();
                 break;
             case "updatePostSelectedStatus":
-                contentService.updatePostSelectedStatus(input) ;
+                contentService.updatePostSelectedStatus(input);
                 break;
             case "updateCommentIsAnonymousStatus":
                 contentService.updateCommentIsAnonymousStatus(input);
@@ -372,12 +377,6 @@ public class Main implements CommandLineRunner {
             case "updateUserIndexFromExcel":
                 userService.updateUserIndexFromExcel(input);
                 break;
-            case "updatePostCommunityId":
-                contentService.updatePostCommunityId(input);
-                break;
-            case "updateEcommerceData":
-                ecommerceService.updateEcommerceData(input);
-                break;
             case "refreshPrizeRedis":
                 dailyConversionAccountService.refreshPrizeRedis(input);
                 break;
@@ -396,14 +395,13 @@ public class Main implements CommandLineRunner {
                 userSync.sync(startId);
                 break;
             case "syncWechatUser":
-                String wxUnionId = null;
-                if (input.length == 2) {
-                    wxUnionId = input[1];
-                }
-                userSync.wechatSync(wxUnionId);
+                userSync.wechatSync();
                 break;
-            case "refreshGoodsNum":
-                goodsService.refreshGoodsNum(input);
+            case "gainPrizeFromExcel":
+                gainPrizeService.gainPrize(input);
+                break;
+            case "smartDataImport":
+
                 break;
             default:
                 if (!"".equals(command)) {

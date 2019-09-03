@@ -1,7 +1,10 @@
 package cn.lehome.dispatcher.utils.user;
 
 import cn.lehome.base.api.oauth2.bean.device.MobileDevice;
-import cn.lehome.base.api.oauth2.bean.user.*;
+import cn.lehome.base.api.oauth2.bean.user.AnonymousAccount;
+import cn.lehome.base.api.oauth2.bean.user.Oauth2Account;
+import cn.lehome.base.api.oauth2.bean.user.UserAccount;
+import cn.lehome.base.api.oauth2.bean.user.UserAccountDetails;
 import cn.lehome.base.api.oauth2.service.device.ClientDeviceApiService;
 import cn.lehome.base.api.oauth2.service.user.UserAccountApiService;
 import cn.lehome.base.api.tool.bean.device.ClientDevice;
@@ -9,10 +12,6 @@ import cn.lehome.base.api.tool.service.device.DeviceApiService;
 import cn.lehome.base.api.user.bean.user.QUserInfo;
 import cn.lehome.base.api.user.bean.user.UserDeviceRelationship;
 import cn.lehome.base.api.user.bean.user.UserInfo;
-import cn.lehome.base.api.user.service.user.UserDeviceRelationshipApiService;
-import cn.lehome.base.api.user.service.user.UserInfoApiService;
-import cn.lehome.bean.oauth2.enums.user.SexType;
-import cn.lehome.bean.user.entity.enums.wechat.UserRegisterType;
 import cn.lehome.base.api.user.bean.wechat.QUserWeChatRelation;
 import cn.lehome.base.api.user.bean.wechat.QWeChatInfo;
 import cn.lehome.base.api.user.bean.wechat.UserWeChatRelation;
@@ -134,13 +133,9 @@ public class UserSyncImpl implements UserSync {
     }
 
     @Override
-    public void wechatSync(String wxUnionId) {
-
+    public void wechatSync() {
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100).addOrder(QWeChatInfo.createdTime, PageOrderType.ASC);
         ApiRequest apiRequest = ApiRequest.newInstance();
-        if (StringUtils.isNotEmpty(wxUnionId)) {
-            apiRequest.filterEqual(QWeChatInfo.wxUnionId, wxUnionId);
-        }
 
         int i = 0;
         int j = 0;
@@ -164,7 +159,6 @@ public class UserSyncImpl implements UserSync {
                         if (retryTimes == 3) {
                             k++;
                             failedList.add(weChatInfo.getWxUnionId());
-                            e.printStackTrace();
                             logger.error("用户信息同步失败:" + weChatInfo.getWxUnionId(), e);
                         }
                     }
@@ -204,16 +198,6 @@ public class UserSyncImpl implements UserSync {
             }
             oauth2Account = userAccountApiService.createAccount(anonymousAccount, clientId, userWeChatRelation.getWxOpenId(), userWeChatRelation.getUserOpenId());
         }
-        WechatAccountDetails wechatAccountDetails = new WechatAccountDetails();
-        wechatAccountDetails.setNickName(weChatInfo.getNickName());
-        wechatAccountDetails.setHeadUrl(weChatInfo.getIconUrl());
-        wechatAccountDetails.setSexType(SexType.valueOf(weChatInfo.getSex().toString()));
-        wechatAccountDetails.setCity(weChatInfo.getCity());
-        wechatAccountDetails.setCountry(weChatInfo.getCountry());
-        wechatAccountDetails.setLanguage(weChatInfo.getLanguage());
-        wechatAccountDetails.setProvince(weChatInfo.getProvince());
-        wechatAccountDetails.setUnionId(weChatInfo.getWxUnionId());
-        userAccountApiService.updateWechatAccountDetails(wechatAccountDetails);
         if (weChatInfo.getUserId() != null && weChatInfo.getUserId() != 0L) {
             UserInfo userInfo = userInfoApiService.findUserByUserId(weChatInfo.getUserId());
             if (userInfo != null && oauth2Account != null) {
@@ -292,17 +276,5 @@ public class UserSyncImpl implements UserSync {
         } else  {
             return "sqbj-news-small";
         }
-    }
-
-    private SexType convertSex(String gender) {
-        if (gender == null) {
-            return SexType.Unknown;
-        }
-        switch (gender) {
-            case "0" : return SexType.Unknown;
-            case "1" : return SexType.Male;
-            case "2" : return SexType.Female;
-        }
-        return SexType.Unknown;
     }
 }

@@ -1,7 +1,5 @@
 package cn.lehome.dispatcher.utils.content;
 
-import java.text.ParseException;
-
 /**
  * Created by zuoguodong on 2018/4/3
  */
@@ -19,9 +17,7 @@ public interface ContentService {
 
     void createCancelTopPostTask();
 
-    void updatePostSelectedStatus(String[] input) throws ParseException;
+    void updatePostSelectedStatus(String[] input);
 
     void updateCommentIsAnonymousStatus(String[] input);
-
-    void updatePostCommunityId(String[] input);
 }

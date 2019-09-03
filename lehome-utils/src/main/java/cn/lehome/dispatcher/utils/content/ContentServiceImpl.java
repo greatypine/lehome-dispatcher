@@ -40,7 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -590,7 +589,7 @@ public class ContentServiceImpl implements ContentService{
     }
 
     @Override
-    public void updatePostSelectedStatus(String[] input) throws ParseException {
+    public void updatePostSelectedStatus(String[] input) {
         if(input.length < 2){
             System.out.println("参数错误");
             return;
@@ -622,10 +621,9 @@ public class ContentServiceImpl implements ContentService{
         System.out.println("帖子数据处理完成！");
     }
 
-    private List<PostInfoIndexEntity> setDefaultPostSelectedValue(List<PostInfoIndexEntity> postInfoIndexEntityList) throws ParseException {
+    private List<PostInfoIndexEntity> setDefaultPostSelectedValue(List<PostInfoIndexEntity> postInfoIndexEntityList){
         for (PostInfoIndexEntity postInfoIndexEntity : postInfoIndexEntityList){
-            //postInfoIndexEntity.setIsSelected(YesNoStatus.NO);
-            postInfoIndexEntity.setTopTime(new Date());
+            postInfoIndexEntity.setIsSelected(YesNoStatus.NO);
         }
         return postInfoIndexEntityList;
 
@@ -664,23 +662,6 @@ public class ContentServiceImpl implements ContentService{
         System.out.println("评论数据处理完成！");
     }
 
-    @Override
-    public void updatePostCommunityId(String[] input) {
-        if (input.length<2){
-            System.out.println("参数错误");
-            return;
-        }
-        String sourceCommunityId = input[0];
-        String targetCommunityId = input[1];
-        System.out.println("sourceCommunityId: "+sourceCommunityId+"\n targetCommunityId: "+targetCommunityId);
-        List<PostInfo> postInfos = postInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QPostInfo.communityId,sourceCommunityId));
-        postInfos.forEach(postInfo -> {
-            postInfo.setCommunityId(targetCommunityId);
-            postInfoApiService.update(postInfo);
-            postInfoIndexApiService.updatePostCommunityId(postInfo.getPostId(),targetCommunityId);
-        });
-
-    }
 
     private List<CommentInfoIndexEntity> setDefaultCommentIsAnonymousValue(List<CommentInfoIndexEntity> commentInfoIndexEntities){
         for (CommentInfoIndexEntity commentInfoIndexEntity : commentInfoIndexEntities){

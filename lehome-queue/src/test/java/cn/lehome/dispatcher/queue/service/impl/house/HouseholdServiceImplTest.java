@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringBootTest(classes = ServiceApplication.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = ServiceApplication.class)
 public class HouseholdServiceImplTest {
 
 
