@@ -15,6 +15,7 @@ import cn.lehome.dispatcher.utils.operation.OperationService;
 import cn.lehome.dispatcher.utils.push.PushService;
 import cn.lehome.dispatcher.utils.robot.PostMaterielService;
 import cn.lehome.dispatcher.utils.robot.RobotService;
+import cn.lehome.dispatcher.utils.smart.SmartUserImportService;
 import cn.lehome.dispatcher.utils.task.DailyConversionAccountService;
 import cn.lehome.dispatcher.utils.user.UserMessageService;
 import cn.lehome.dispatcher.utils.user.UserService;
@@ -110,6 +111,9 @@ public class Main implements CommandLineRunner {
     @Autowired
     private GainPrizeService gainPrizeService;
 
+    @Autowired
+    private SmartUserImportService smartUserImportService;
+
     public static void main(String args[]) {
         SpringApplication.run(Main.class, args);
     }
@@ -175,6 +179,7 @@ public class Main implements CommandLineRunner {
                         "syncUser                                           --同步用户\n" +
                         "syncWechatUser                                     --同步微信用户\n" +
                         "gainPrizeFromExcel <excelUrl> <activityId>         --重新获取集卡瓜分金豆\n" +
+                        "smartDataImport <baseURL> <token> <excelPath>      --智社区数据导入\n" +
                         "exit                                               --退出\n" +
                         "help                                               --帮助\n"
 
@@ -394,6 +399,9 @@ public class Main implements CommandLineRunner {
                 break;
             case "gainPrizeFromExcel":
                 gainPrizeService.gainPrize(input);
+                break;
+            case "smartDataImport":
+
                 break;
             default:
                 if (!"".equals(command)) {
