@@ -24,6 +24,7 @@ import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.util.AuthPermissionValueUtils;
+import cn.lehome.framework.bean.core.enums.DeleteStatus;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -83,7 +84,7 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
                 // Todo 按照部门获取用户信息
             } else {
                 for (BusinessTypeUserSetting businessTypeUserSetting : businessTypeUserSettingList) {
-                    List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("oauth2_account", ApiRequest.newInstance().filterIn(QOauth2AccountIndex.mutiOpenId, Lists.newArrayList(businessTypeUserSetting.getObjectId()))));
+                    List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("oauth2_account", ApiRequest.newInstance().filterEqual(QOauth2AccountIndex.userOpenId, businessTypeUserSetting.getObjectId())));
                     if (!CollectionUtils.isEmpty(userAccountIndices)) {
                         userOpenIds.put(businessTypeUserSetting.getObjectId(), userAccountIndices.get(0));
                     }
@@ -114,7 +115,7 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
                     }
                 }
             }
-            List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("user_area", ApiRequest.newInstance().filterEqual(QUserAccountAreaIndex.areaId, businessAcceptOrder.getAreaId())).cascadeChild("user_roles", ApiRequest.newInstance().filterIn(QUserRolesIndex.sysRolesId, roleIdSet)));
+            List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("user_area", ApiRequest.newInstance().filterEqual(QUserAccountAreaIndex.areaId, businessAcceptOrder.getAreaId())).cascadeChild("user_roles", ApiRequest.newInstance().filterIn(QUserRolesIndex.sysRolesId, roleIdSet).filterEqual(QUserRolesIndex.deleteStatus, DeleteStatus.NORMAL.toString())));
             if (!CollectionUtils.isEmpty(userAccountIndices)) {
                 Map<String, UserAccountIndex> userAccountIndexMap = userAccountIndices.stream().collect(Collectors.toMap(UserAccountIndex::getId, userAccountIndex -> userAccountIndex));
                 List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterIn(QOauth2AccountIndex.accountId, userAccountIndices.stream().map(UserAccountIndex::getId).collect(Collectors.toList())).filterEqual(QOauth2AccountIndex.clientId, "sqbj-smart"));
