@@ -109,7 +109,7 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
             for (Long sysRoleId : listMap.keySet()) {
                 List<SysRolesAuth> sysRolesAuthList = listMap.get(sysRoleId);
                 for (SysRolesAuth sysRolesAuth : sysRolesAuthList) {
-                    if (AuthPermissionValueUtils.checkAuth(sysRolesAuth.getPermissionValue(), Lists.newArrayList(resourcesList.get(0).getAuthValue()))) {
+                    if (sysRolesAuth.getModelKey().startsWith(resourcesList.get(0).getAppKey()) && AuthPermissionValueUtils.checkAuth(sysRolesAuth.getPermissionValue(), Lists.newArrayList(resourcesList.get(0).getAuthValue()))) {
                         roleIdSet.add(sysRoleId);
                         break;
                     }
