@@ -70,69 +70,76 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             logger.error("未找到预生成任务, id = " + longEventMessage.getData());
             return;
         }
-        List<Integer> addressIds = JSON.parseArray(preBuildBppBill.getAddressIds(), Integer.class);
-        List<BppBillScale> bppBillScales = JSON.parseArray(preBuildBppBill.getScaleTime(), BppBillScale.class);
-        if (CollectionUtils.isEmpty(addressIds)) {
-            logger.error("没有地址集合, addressIds = " + preBuildBppBill.getAddressIds());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        AreaInfo areaInfo = smartAreaInfoApiService.findOne(preBuildBppBill.getAreaId());
-        if (areaInfo == null) {
-            logger.error("小区信息未找到, areaId = {}", preBuildBppBill.getAreaId());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        if (CollectionUtils.isEmpty(bppBillScales)) {
-            logger.error("没有费标设置, scaleTime = " + preBuildBppBill.getScaleTime());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        Map<Integer, BppBillScale> bppBillScaleMap = bppBillScales.stream().collect(Collectors.toMap(BppBillScale::getFeeScaleId, bppBillScale -> bppBillScale));
-        BppFee bppFee = bppFeeApiService.getFee(preBuildBppBill.getFeeId());
-        if (bppFee == null) {
-            logger.error("费项信息未找到, feeId = " + preBuildBppBill.getFeeId());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        DefaultBppFeeModify defaultBppFeeModify = bppFeeApiService.findByTenantIdAndFeeId(areaInfo.getUniqueCode(), bppFee.getId());
-        if (defaultBppFeeModify != null) {
-            bppFee.setBillCycle(defaultBppFeeModify.getBillCycle());
-            bppFee.setChargeObjectType(defaultBppFeeModify.getChargeObjectType());
-        }
-        Map<Integer, BppFeeScale> feeScaleMap = bppFeeApiService.findScaleAll(bppBillScales.stream().map(BppBillScale::getFeeScaleId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(feeScaleMap) || feeScaleMap.size() != bppBillScales.size()) {
-            logger.error("费标信息未找到, scaleIds = " + StringUtils.join(bppBillScales.stream().map(BppBillScale::getFeeScaleId).collect(Collectors.toList()), ","));
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        List<BppRefScaleAddress> bppRefScaleAddressList = bppFeeApiService.findScaleAddressAll(ApiRequest.newInstance().filterEqual(QBppRefScaleAddress.feeId, preBuildBppBill.getFeeId()));
-        if (CollectionUtils.isEmpty(bppRefScaleAddressList)) {
-            logger.error("费标与房子关系信息未找到, feeId = " + preBuildBppBill.getFeeId());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
-        }
-        Map<Integer, BppRefScaleAddress> bppRefScaleAddressMap = bppRefScaleAddressList.stream().collect(Collectors.toMap(BppRefScaleAddress::getAddressId, bppRefScaleAddress -> bppRefScaleAddress));
-        if (bppRefScaleAddressMap.size() != addressIds.size()) {
-            logger.error("费标与房子关系信息未找到, size = {}, addressId.size = {}", bppRefScaleAddressMap.size(), addressIds.size());
-            preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
-            return;
+        try {
+            List<Integer> addressIds = JSON.parseArray(preBuildBppBill.getAddressIds(), Integer.class);
+            List<BppBillScale> bppBillScales = JSON.parseArray(preBuildBppBill.getScaleTime(), BppBillScale.class);
+            if (CollectionUtils.isEmpty(addressIds)) {
+                logger.error("没有地址集合, addressIds = " + preBuildBppBill.getAddressIds());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            AreaInfo areaInfo = smartAreaInfoApiService.findOne(preBuildBppBill.getAreaId());
+            if (areaInfo == null) {
+                logger.error("小区信息未找到, areaId = {}", preBuildBppBill.getAreaId());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            if (CollectionUtils.isEmpty(bppBillScales)) {
+                logger.error("没有费标设置, scaleTime = " + preBuildBppBill.getScaleTime());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            Map<Integer, BppBillScale> bppBillScaleMap = bppBillScales.stream().collect(Collectors.toMap(BppBillScale::getFeeScaleId, bppBillScale -> bppBillScale));
+            BppFee bppFee = bppFeeApiService.getFee(preBuildBppBill.getFeeId());
+            if (bppFee == null) {
+                logger.error("费项信息未找到, feeId = " + preBuildBppBill.getFeeId());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            DefaultBppFeeModify defaultBppFeeModify = bppFeeApiService.findByTenantIdAndFeeId(areaInfo.getUniqueCode(), bppFee.getId());
+            if (defaultBppFeeModify != null) {
+                bppFee.setBillCycle(defaultBppFeeModify.getBillCycle());
+                bppFee.setChargeObjectType(defaultBppFeeModify.getChargeObjectType());
+            }
+            Map<Integer, BppFeeScale> feeScaleMap = bppFeeApiService.findScaleAll(bppBillScales.stream().map(BppBillScale::getFeeScaleId).collect(Collectors.toList()));
+            if (CollectionUtils.isEmpty(feeScaleMap) || feeScaleMap.size() != bppBillScales.size()) {
+                logger.error("费标信息未找到, scaleIds = " + StringUtils.join(bppBillScales.stream().map(BppBillScale::getFeeScaleId).collect(Collectors.toList()), ","));
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            List<BppRefScaleAddress> bppRefScaleAddressList = bppFeeApiService.findScaleAddressAll(ApiRequest.newInstance().filterEqual(QBppRefScaleAddress.feeId, preBuildBppBill.getFeeId()));
+            if (CollectionUtils.isEmpty(bppRefScaleAddressList)) {
+                logger.error("费标与房子关系信息未找到, feeId = " + preBuildBppBill.getFeeId());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+            Map<Integer, BppRefScaleAddress> bppRefScaleAddressMap = bppRefScaleAddressList.stream().collect(Collectors.toMap(BppRefScaleAddress::getAddressId, bppRefScaleAddress -> bppRefScaleAddress));
+            if (bppRefScaleAddressMap.size() != addressIds.size()) {
+                logger.error("费标与房子关系信息未找到, size = {}, addressId.size = {}", bppRefScaleAddressMap.size(), addressIds.size());
+                preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
+                return;
+            }
+
+            for (Integer addressId : addressIds) {
+                BppRefScaleAddress bppRefScaleAddress = bppRefScaleAddressMap.get(addressId);
+                BppFeeScale bppFeeScale = feeScaleMap.get(bppRefScaleAddress.getScaleId());
+                BppBillScale bppBillScale = bppBillScaleMap.get(bppFeeScale.getId());
+                Date startTime = getStartTime(bppRefScaleAddress.getStartDate(), bppFeeScale);
+                List<Date> startTimes = getStartTimes(startTime, bppFeeScale.getChargeCycle(), bppBillScale.getEndTime());
+                if ((bppFee.getBillCycle().equals(BillCycle.MONTH) && bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) ||
+                        (bppFee.getBillCycle().equals(BillCycle.YEAR) && bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR))) {
+                    List<PreBppBill> list = isSameCycle(bppFeeScale, startTimes, addressId, preBuildBppBill, bppFee, areaInfo);
+                    preBppBillApiService.batchPreBill(preBuildBppBill.getId(), list);
+                } else {
+                    List<PreBppBill> list = isNotCycle(bppFeeScale, startTimes, addressId, preBuildBppBill, bppFee, areaInfo);
+                    preBppBillApiService.batchPreBill(preBuildBppBill.getId(), list);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("预导入账单任务失败 : ", e);
+            preBppBillApiService.deletePreBill(preBuildBppBill.getId());
         }
 
-        for (Integer addressId : addressIds) {
-            BppRefScaleAddress bppRefScaleAddress = bppRefScaleAddressMap.get(addressId);
-            BppFeeScale bppFeeScale = feeScaleMap.get(bppRefScaleAddress.getScaleId());
-            BppBillScale bppBillScale = bppBillScaleMap.get(bppFeeScale.getId());
-            List<Date> startTimes = getStartTimes(bppRefScaleAddress.getStartDate(), bppFeeScale.getChargeCycle(), bppBillScale.getEndTime());
-            if ((bppFee.getBillCycle().equals(BillCycle.MONTH) && bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) ||
-                    (bppFee.getBillCycle().equals(BillCycle.YEAR) && bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR))) {
-                List<PreBppBill> list = isSameCycle(bppFeeScale, startTimes, addressId, preBuildBppBill, bppFee, areaInfo);
-                preBppBillApiService.batchPreBill(preBuildBppBill.getId(), list);
-            } else {
-                List<PreBppBill> list = isNotCycle(bppFeeScale, startTimes, addressId, preBuildBppBill, bppFee, areaInfo);
-                preBppBillApiService.batchPreBill(preBuildBppBill.getId(), list);
-            }
-        }
 
     }
 
@@ -170,9 +177,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
         for (Integer month = 1; month <= 12; month++) {
             bigDecimalMap.put(month, perAmount);
         }
-        Integer billMonth = 12;
-        boolean isDiffYear = false;
-        Integer startMonth = 1;
+        BppFeeScaleCycle bppFeeScaleCycle = null;
         if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
             if (bppFeeScale.getSplitType().equals(SplitType.LAST_MONTH)) {
                 bigDecimalMap.put(12, specialAmount);
@@ -180,15 +185,12 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 bigDecimalMap.put(1, specialAmount);
             }
         } else {
-            BppFeeScaleCycle bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
+            bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
             if (bppFeeScale.getSplitType().equals(SplitType.LAST_MONTH)) {
                 bigDecimalMap.put(bppFeeScaleCycle.getEndMonth(), specialAmount);
             } else {
                 bigDecimalMap.put(bppFeeScaleCycle.getStartMonth(), specialAmount);
             }
-            startMonth = bppFeeScaleCycle.getStartMonth();
-            isDiffYear = true;
-            billMonth = bppFeeScaleCycle.getEndMonth();
         }
         List<PreBppBill> list = Lists.newArrayList();
         String batchCode = RandomIdentifiesUtils.getBillBatchCode();
@@ -196,25 +198,38 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             String name = DateUtils.toCalendar(startTime).get(Calendar.YEAR) + "年" + (DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1) + "月";;
             Date endTime = DateUtils.addDays(DateUtils.addMonths(startTime, 1), -1);
             Date billTime = new Date();
-            if (!isDiffYear) {
+            if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
                 billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR));
-                billTime = DateUtils.setMonths(billTime, 12);
+                billTime = DateUtils.setMonths(billTime, 11);
                 billTime = DateUtils.setDays(billTime, 31);
                 billTime = DateUtils.setHours(billTime, 23);
                 billTime = DateUtils.setMinutes(billTime, 59);
                 billTime = DateUtils.setSeconds(billTime, 59);
+                billTime = DateUtils.setMilliseconds(billTime, 0);
             } else {
-                if (DateUtils.toCalendar(startTime).get(Calendar.MONTH) < startMonth) {
-                    billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR) + 1);
-                } else {
+                if (bppFeeScaleCycle == null) {
                     billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR));
+                    billTime = DateUtils.setMonths(billTime, 11);
+                    billTime = DateUtils.setDays(billTime, 31);
+                    billTime = DateUtils.setHours(billTime, 23);
+                    billTime = DateUtils.setMinutes(billTime, 59);
+                    billTime = DateUtils.setSeconds(billTime, 59);
+                    billTime = DateUtils.setMilliseconds(billTime, 0);
+                } else {
+                    Integer currentStartMonth = DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1;
+                    if (currentStartMonth < bppFeeScaleCycle.getStartMonth()) {
+                        billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR));
+                    } else {
+                        billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR) + 1);
+                    }
+                    billTime = DateUtils.setMonths(billTime, bppFeeScaleCycle.getEndMonth());
+                    billTime = DateUtils.setDays(billTime, 1);
+                    billTime = DateUtils.setHours(billTime, 23);
+                    billTime = DateUtils.setMinutes(billTime, 59);
+                    billTime = DateUtils.setSeconds(billTime, 59);
+                    billTime = DateUtils.setMilliseconds(billTime, 0);
+                    billTime = DateUtils.addDays(billTime, -1);
                 }
-                billTime = DateUtils.setMonths(billTime, billMonth + 1);
-                billTime = DateUtils.setDays(billTime, 1);
-                billTime = DateUtils.addDays(billTime, -1);
-                billTime = DateUtils.setHours(billTime, 23);
-                billTime = DateUtils.setMinutes(billTime, 59);
-                billTime = DateUtils.setSeconds(billTime, 59);
             }
             BigDecimal payAmount = bigDecimalMap.get(DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1);
             name += bppFee.getName();
@@ -308,8 +323,27 @@ public class PreBuildBppBillListener extends AbstractJobListener {
 
     }
 
+    private Date getStartTime(Date startTime, BppFeeScale bppFeeScale) {
+        if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
+            return DateUtils.setDays(startTime, 1);
+        } else if (bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR)) {
+            if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
+                startTime = DateUtils.setMonths(startTime, 0);
+                startTime = DateUtils.setDays(startTime, 1);
+                return startTime;
+            } else if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.UNNATURAL_YEAR)) {
+                BppFeeScaleCycle bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
+                startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
+                startTime = DateUtils.setDays(startTime, 1);
+                return startTime;
+            }
+        }
+        return startTime;
+    }
+
     private List<Date> getStartTimes(Date startTime, ChargeCycle chargeCycle, Integer endTime) {
         List<Date> list = Lists.newArrayList();
+        DateUtils.setDays(startTime, 1);
         while (getTime(startTime, chargeCycle) <= endTime) {
             list.add(startTime);
             if (chargeCycle.equals(ChargeCycle.MONTH)) {
