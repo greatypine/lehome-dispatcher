@@ -17,6 +17,7 @@
     <dubbo:consumer check="false" timeout="10000"/>
 
     <import resource="classpath*:provider/base-api/activity-service.xml"/>
+    <import resource="classpath*:provider/base-api/pay-service.xml"/>
     <import resource="classpath*:provider/base-api/common-service.xml"/>
     <import resource="classpath*:provider/base-api/ec-service.xml"/>
     <import resource="classpath*:provider/base-api/common-bigdata-service.xml"/>

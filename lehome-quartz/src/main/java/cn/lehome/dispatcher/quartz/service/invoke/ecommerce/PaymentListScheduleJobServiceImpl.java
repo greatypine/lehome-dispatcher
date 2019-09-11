@@ -1,7 +1,8 @@
 package cn.lehome.dispatcher.quartz.service.invoke.ecommerce;
 
 import cn.lehome.base.api.business.ec.bean.ecommerce.order.OrderIndex;
-import cn.lehome.base.api.business.ec.bean.ecommerce.pay.*;
+import cn.lehome.base.api.business.ec.bean.ecommerce.pay.PayRecord;
+import cn.lehome.base.api.business.ec.bean.ecommerce.pay.QPayRecord;
 import cn.lehome.base.api.business.ec.bean.ecommerce.store.Store;
 import cn.lehome.base.api.business.ec.enums.PayStatus;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderApiService;
@@ -12,6 +13,10 @@ import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordIndexApiSer
 import cn.lehome.base.api.business.ec.service.ecommerce.store.StoreApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.base.api.common.pay.bean.CommonResponse;
+import cn.lehome.base.api.common.pay.bean.trade.QueryOrderResponse;
+import cn.lehome.base.api.common.pay.service.alipay.merchant.MerchantAlipayApiService;
+import cn.lehome.base.api.common.pay.service.wxpay.merchant.WXPayMerchantApiService;
 import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderType;
@@ -20,11 +25,11 @@ import cn.lehome.bean.business.ec.enums.ecommerce.pay.PayType;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.TransactionProgress;
 import cn.lehome.bean.business.ec.enums.ecommerce.store.StoreStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.store.StoreType;
+import cn.lehome.bean.pay.enums.PaySource;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.actionlog.core.ActionLogRequest;
 import cn.lehome.framework.actionlog.core.bean.ActionLog;
 import cn.lehome.framework.actionlog.core.bean.AppActionLog;
-import cn.lehome.framework.base.api.core.bean.HttpResponseBean;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.compoment.request.ApiPageRequestHelper;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
@@ -32,6 +37,7 @@ import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -67,6 +73,19 @@ public class PaymentListScheduleJobServiceImpl extends AbstractInvokeServiceImpl
     @Autowired
     private OrderApiService orderApiService;
 
+    @Autowired
+    protected MerchantAlipayApiService merchantAlipayApiService;
+
+    @Autowired
+    protected WXPayMerchantApiService wxPayMerchantApiService;
+
+
+    @Value("${wx.app.appId}")
+    protected String wxAppAppId;
+
+    @Value("${wx.small.appId}")
+    protected String wxSmallAppId;
+
     @Override
     public void doInvoke(Map<String, String> params) {
 
@@ -84,20 +103,22 @@ public class PaymentListScheduleJobServiceImpl extends AbstractInvokeServiceImpl
         for (PayRecord payRecordIndex : payRecordIndexList) {
             logger.error("支付单" + payRecordIndex.getId());
             try {
-                HttpResponseBean<PayQueryResponse> payQueryResponse = payApiService.payQuery(payRecordIndex.getId(), payRecordIndex.getPayType());
-                logger.error("查询账单结果" + JSON.toJSONString(payQueryResponse));
-                if (payQueryResponse.getHttpCode() != 200) {
-                    logger.error("查询账单错误编发 ：" + payQueryResponse.getHttpCode() + ", responseBody : " + payQueryResponse.getResponseBody());
-                    continue;
+                QueryOrderResponse queryOrderResponse = null;
+                if (payRecordIndex.getPayType().equals(PayType.WECHAT)) {
+                    if (payRecordIndex.getClientId().equals("sqbj-ecommerce-small")) {
+                        queryOrderResponse = wxPayMerchantApiService.queryOrder(payRecordIndex.getId(), PaySource.SQBJ, wxSmallAppId);
+                    } else {
+                        queryOrderResponse = wxPayMerchantApiService.queryOrder(payRecordIndex.getId(), PaySource.SQBJ, wxAppAppId);
+                    }
+                } else {
+                    queryOrderResponse = merchantAlipayApiService.queryOrder(payRecordIndex.getId(), PaySource.SQBJ);
                 }
-                PayQueryResponse response = payQueryResponse.getResponse();
-                logger.error("查询账单结果" + JSON.toJSONString(response));
-                if (response == null || response.getResStatus().booleanValue() != true) {
-                    logger.error("查询账单错误编发 ：" + payQueryResponse.getHttpCode() + ", responseBody : " + payQueryResponse.getResponseBody());
-                    continue;
+                if (!queryOrderResponse.isResStatus()) {
+                    logger.error("查询账单错误 ：" + JSON.toJSONString(queryOrderResponse));
+                    return;
                 }
 
-                PayStatus payStatus = response.getPayStatus();
+                PayStatus payStatus = PayStatus.valueOf(queryOrderResponse.getPayStatus().toString());
                 TransactionProgress transactionProgress = null;
                 switch (payStatus) {
                     case SUCCESS:
@@ -162,27 +183,20 @@ public class PaymentListScheduleJobServiceImpl extends AbstractInvokeServiceImpl
     }
 
     private void payNopay(PayRecord payRecordIndex) {
+        CommonResponse commonResponse = null;
         if (payRecordIndex.getPayType().equals(PayType.WECHAT)) {
-            PayCloseOrderRequest payCloseOrderRequest = new PayCloseOrderRequest();
-            payCloseOrderRequest.setOrderId(payRecordIndex.getId());
-            payCloseOrderRequest.setPayChannel(PayType.WECHAT);
-            HttpResponseBean<PrePayResponse> responseBean = payApiService.closeOrder(payCloseOrderRequest);
-            if (responseBean.getHttpCode() == 200) {
-                PrePayResponse prePayResponse = responseBean.getResponse();
-                if (prePayResponse != null && prePayResponse.getResStatus()) {
-                    if (!payRecordApiService.updateStatus(payRecordIndex.getId(), TransactionProgress.PAY_CANCEL)) {
-                        logger.error("修改支付单状态失败, id = " + payRecordIndex.getId());
-                    }
-                } else {
-                    logger.error("关闭订单错误 :" + JSON.toJSONString(responseBean));
-                }
+            if (payRecordIndex.getClientId().equals("sqbj-ecommerce-small")) {
+                commonResponse = wxPayMerchantApiService.closeOrder(payRecordIndex.getId(), PaySource.SQBJ, wxSmallAppId);
             } else {
-                logger.error("关闭订单错误 : " + JSON.toJSONString(responseBean));
+                commonResponse = wxPayMerchantApiService.closeOrder(payRecordIndex.getId(), PaySource.SQBJ, wxAppAppId);
             }
-//        } else {
-//            if (!payRecordApiService.updateStatus(payRecordIndex.getId(), TransactionProgress.PAY_CANCEL)) {
-//                logger.error("修改支付单状态失败, id = " + payRecordIndex.getId());
-//            }
+        } else {
+            commonResponse = merchantAlipayApiService.closeOrder(payRecordIndex.getId(), PaySource.SQBJ);
+        }
+        if (commonResponse.isResStatus()) {
+            if (!payRecordApiService.updateStatus(payRecordIndex.getId(), TransactionProgress.PAY_CANCEL)) {
+                logger.error("修改支付单状态失败, id = " + payRecordIndex.getId());
+            }
         }
     }
 
