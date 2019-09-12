@@ -108,41 +108,48 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
 
     private List<Map<String,Long>> getAreaData(){
         List<Map<String,Long>> result = new ArrayList<>();
+
         Map<String,Long> d1 = new HashMap<>();
-        d1.put("houseTypeId",22567L);
-        d1.put("oldAreaId",291L);
-        d1.put("newAreaId",11796L);
+        d1.put("houseTypeId",22569L);
+        d1.put("oldAreaId",292L);
+        d1.put("newAreaId",11798L);
         result.add(d1);
 
         Map<String,Long> d2 = new HashMap<>();
-        d2.put("houseTypeId",22571L);
-        d2.put("oldAreaId",270L);
-        d2.put("newAreaId",11805L);
+        d2.put("houseTypeId",22573L);
+        d2.put("oldAreaId",463L);
+        d2.put("newAreaId",11803L);
         result.add(d2);
 
         Map<String,Long> d3 = new HashMap<>();
-        d3.put("houseTypeId",22572L);
-        d3.put("oldAreaId",301L);
-        d3.put("newAreaId",11802L);
+        d3.put("houseTypeId",22574L);
+        d3.put("oldAreaId",303L);
+        d3.put("newAreaId",11810L);
         result.add(d3);
 
-//        Map<String,Long> d4 = new HashMap<>();
-//        d4.put("houseTypeId",22566L);
-//        d4.put("oldAreaId",62L);
-//        d4.put("newAreaId",11795L);
-//        result.add(d4);
-//
-//        Map<String,Long> d5 = new HashMap<>();
-//        d5.put("houseTypeId",22568L);
-//        d5.put("oldAreaId",290L);
-//        d5.put("newAreaId",11797L);
-//        result.add(d5);
-//
-//        Map<String,Long> d6 = new HashMap<>();
-//        d6.put("houseTypeId",22570L);
-//        d6.put("oldAreaId",293L);
-//        d6.put("newAreaId",11799L);
-//        result.add(d6);
+        Map<String,Long> d4 = new HashMap<>();
+        d4.put("houseTypeId",22604L);
+        d4.put("oldAreaId",302L);
+        d4.put("newAreaId",11817L);
+        result.add(d4);
+
+        Map<String,Long> d5 = new HashMap<>();
+        d5.put("houseTypeId",22605L);
+        d5.put("oldAreaId",297L);
+        d5.put("newAreaId",11811L);
+        result.add(d5);
+
+        Map<String,Long> d6 = new HashMap<>();
+        d6.put("houseTypeId",22605L);
+        d6.put("oldAreaId",295L);
+        d6.put("newAreaId",11811L);
+        result.add(d6);
+
+        Map<String,Long> d7 = new HashMap<>();
+        d7.put("houseTypeId",22605L);
+        d7.put("oldAreaId",296L);
+        d7.put("newAreaId",11811L);
+        result.add(d7);
 
         return result;
     }
@@ -542,7 +549,7 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
                 log = log.concat(m.toString()).concat(":");
             }
         }
-        System.out.println(log);
+        logger.info(log);
     }
 
     private void error(String bus,Exception e,Object ... message){
