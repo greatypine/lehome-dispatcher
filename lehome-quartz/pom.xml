@@ -13,6 +13,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-common-pay-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>common-pay-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
             <optional>true</optional>
@@ -59,6 +70,7 @@
             <artifactId>base-common-tool-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
+
 
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>

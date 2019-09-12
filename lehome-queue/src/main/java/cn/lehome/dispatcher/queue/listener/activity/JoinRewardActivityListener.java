@@ -6,7 +6,6 @@ import cn.lehome.base.api.business.activity.bean.task.UserTaskAccount;
 import cn.lehome.base.api.business.activity.constant.JoinActivityTypeConstants;
 import cn.lehome.base.api.business.activity.constant.JoinRewardActivityTypeConstants;
 import cn.lehome.base.api.business.activity.constant.PubConstant;
-import cn.lehome.base.api.business.activity.event.JoinActivityEventBean;
 import cn.lehome.base.api.business.activity.service.task.UserTaskAccountApiService;
 import cn.lehome.base.api.business.content.bean.comment.CommentInfoIndex;
 import cn.lehome.base.api.business.content.bean.post.PostInfoIndex;
@@ -14,6 +13,7 @@ import cn.lehome.base.api.business.content.service.comment.CommentInfoIndexApiSe
 import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.common.custom.oauth2.service.device.ClientDeviceApiService;
 import cn.lehome.base.api.common.custom.oauth2.service.user.UserAccountIndexApiService;
+import cn.lehome.base.api.common.event.JoinActivityEventBean;
 import cn.lehome.base.api.common.service.device.ClientDeviceIndexApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;

@@ -6,7 +6,6 @@ import cn.lehome.base.api.business.activity.bean.activity.MasterApprenticeRelati
 import cn.lehome.base.api.business.activity.bean.activity.QContributeSetting;
 import cn.lehome.base.api.business.activity.constant.JoinRewardActivityTypeConstants;
 import cn.lehome.base.api.business.activity.constant.PubConstant;
-import cn.lehome.base.api.business.activity.event.JoinActivityEventBean;
 import cn.lehome.base.api.business.activity.service.activity.ApprenticeContributionStatisticsApiService;
 import cn.lehome.base.api.business.activity.service.activity.ContributeSettingApiService;
 import cn.lehome.base.api.business.activity.service.activity.MasterApprenticeRelationshipApiService;
@@ -20,6 +19,7 @@ import cn.lehome.base.api.business.content.service.post.PostInfoIndexApiService;
 import cn.lehome.base.api.business.content.service.silent.UserSilentApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.base.api.common.event.JoinActivityEventBean;
 import cn.lehome.base.api.common.util.DateUtil;
 import cn.lehome.base.api.user.bean.user.QUserInfoIndex;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
