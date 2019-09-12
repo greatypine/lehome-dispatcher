@@ -26,6 +26,7 @@
     <import resource="classpath*:provider/base-api/business-service.xml"/>
     <import resource="classpath*:provider/base-api/property-service.xml"/>
     <import resource="classpath*:provider/base-api/operation-service.xml"/>
+    <import resource="classpath*:provider/base-api/old-pro-service.xml"/>
 
     <dubbo:reference id="userHouseRelationshipApiService" interface="cn.lehome.base.api.user.service.user.UserHouseRelationshipApiService"/>
     <dubbo:reference id="contributeSettingApiService" interface="cn.lehome.base.api.advertising.service.activity.ContributeSettingApiService"/>

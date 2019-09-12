@@ -18,10 +18,27 @@
         </encoder>
     </appender>
 
+    <appender name="error"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/importError.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>logs/importError-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <root>
         <level value="INFO"/>
         <appender-ref ref="stdout"/>
         <appender-ref ref="file" />
     </root>
+
+    <logger name="cn.lehome.dispatcher.utils" level="ERROR" additivity="false">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="error" />
+    </logger>
 
 </configuration>
