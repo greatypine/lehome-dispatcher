@@ -4,6 +4,7 @@ import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.component.message.push.PushComponent;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
+import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.configuration.properties.jms.ActiveMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,5 +40,10 @@ public class QuartzBeanConfig {
     @Bean
     public PushComponent pushComponent() {
         return new PushComponent();
+    }
+
+    @Bean
+    public LoaderServiceComponent loaderServiceComponent() {
+        return new LoaderServiceComponent();
     }
 }

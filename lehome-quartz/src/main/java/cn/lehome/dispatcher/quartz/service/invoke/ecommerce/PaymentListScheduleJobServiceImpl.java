@@ -17,7 +17,6 @@ import cn.lehome.base.api.common.pay.bean.CommonResponse;
 import cn.lehome.base.api.common.pay.bean.trade.QueryOrderResponse;
 import cn.lehome.base.api.common.pay.service.alipay.merchant.MerchantAlipayApiService;
 import cn.lehome.base.api.common.pay.service.wxpay.merchant.WXPayMerchantApiService;
-import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderType;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.BillType;
@@ -27,9 +26,6 @@ import cn.lehome.bean.business.ec.enums.ecommerce.store.StoreStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.store.StoreType;
 import cn.lehome.bean.pay.enums.PaySource;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
-import cn.lehome.framework.actionlog.core.ActionLogRequest;
-import cn.lehome.framework.actionlog.core.bean.ActionLog;
-import cn.lehome.framework.actionlog.core.bean.AppActionLog;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.compoment.request.ApiPageRequestHelper;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
@@ -67,8 +63,8 @@ public class PaymentListScheduleJobServiceImpl extends AbstractInvokeServiceImpl
     @Autowired
     private LoaderServiceComponent loaderServiceComponent;
 
-    @Autowired
-    private ActionLogRequest actionLogRequest;
+//    @Autowired
+//    private ActionLogRequest actionLogRequest;
 
     @Autowired
     private OrderApiService orderApiService;
@@ -157,17 +153,17 @@ public class PaymentListScheduleJobServiceImpl extends AbstractInvokeServiceImpl
             }
         }
 
-        if (!CollectionUtils.isEmpty(successList)) {
-            ActionLog.Builder builder = ActionLog.newBuilder();
-            for (OrderIndex orderIndex : successList) {
-                builder.addActionLogBean(AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, orderIndex.getUserOpenId(), orderIndex.getClientId())
-                        .addMap("orderId", orderIndex.getId())
-                        .addMap("prevOrderStatus", OrderStatus.OBLIGATION)
-                        .addMap("orderStatus", OrderStatus.WAIT_SHIPMENTS).build()
-                );
-            }
-            builder.send(actionLogRequest);
-        }
+//        if (!CollectionUtils.isEmpty(successList)) {
+//            ActionLog.Builder builder = ActionLog.newBuilder();
+//            for (OrderIndex orderIndex : successList) {
+//                builder.addActionLogBean(AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, orderIndex.getUserOpenId(), orderIndex.getClientId())
+//                        .addMap("orderId", orderIndex.getId())
+//                        .addMap("prevOrderStatus", OrderStatus.OBLIGATION)
+//                        .addMap("orderStatus", OrderStatus.WAIT_SHIPMENTS).build()
+//                );
+//            }
+//            builder.send(actionLogRequest);
+//        }
     }
 
     private void payFailed(PayRecord payRecordIndex) {

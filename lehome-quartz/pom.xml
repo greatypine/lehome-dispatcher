@@ -14,6 +14,26 @@
     <dependencies>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>bpp-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>bpp-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>property-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>pro-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-common-pay-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
@@ -160,6 +180,18 @@
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-custom-oauth2-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-business-oauth2-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>business-oauth2-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
 

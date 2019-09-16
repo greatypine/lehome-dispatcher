@@ -10,7 +10,6 @@ import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderIndexApiServi
 import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.service.idgenerator.RedisIdGeneratorApiService;
-import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.goods.SaleStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.BackReason;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.GroupbuyStatus;
@@ -18,8 +17,6 @@ import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderBackStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.TransactionProgress;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
-import cn.lehome.framework.actionlog.core.ActionLogRequest;
-import cn.lehome.framework.actionlog.core.bean.AppActionLog;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.exception.RestfulApiException;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
@@ -60,8 +57,8 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
     @Autowired
     private RedisIdGeneratorApiService redisIdGeneratorApiService;
 
-    @Autowired
-    private ActionLogRequest actionLogRequest;
+//    @Autowired
+//    private ActionLogRequest actionLogRequest;
 
     @Autowired
     private OrderBackApiService orderBackApiService;
@@ -133,12 +130,12 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
         if (!result) {
             throw new RestfulApiException("取消订单失败");
         }
-        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
-                .addMap("orderId", orderIndex.getId())
-                .addMap("prevOrderStatus", OrderStatus.OBLIGATION)
-                .addMap("orderStatus", OrderStatus.CANCEL)
-                //.addMap 添加多个属性信息
-                .send(actionLogRequest);
+//        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
+//                .addMap("orderId", orderIndex.getId())
+//                .addMap("prevOrderStatus", OrderStatus.OBLIGATION)
+//                .addMap("orderStatus", OrderStatus.CANCEL)
+//                //.addMap 添加多个属性信息
+//                .send(actionLogRequest);
     }
 
     private void cancelOrder(OrderIndex orderIndex) {
@@ -149,12 +146,12 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
             return;
         }
 
-        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
-                .addMap("orderId", orderIndex.getId())
-                .addMap("prevOrderStatus", OrderStatus.WAIT_RECEIVE)
-                .addMap("orderStatus", OrderStatus.CANCEL_AND_WAIT_AUDIT)
-                //.addMap 添加多个属性信息
-                .send(actionLogRequest);
+//        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
+//                .addMap("orderId", orderIndex.getId())
+//                .addMap("prevOrderStatus", OrderStatus.WAIT_RECEIVE)
+//                .addMap("orderStatus", OrderStatus.CANCEL_AND_WAIT_AUDIT)
+//                //.addMap 添加多个属性信息
+//                .send(actionLogRequest);
 
         result = orderApiService.updateStatusForSys(orderIndex.getId(), OrderStatus.CANCEL);
 
@@ -163,12 +160,12 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
             return;
         }
 
-        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
-                .addMap("orderId", orderIndex.getId())
-                .addMap("prevOrderStatus", OrderStatus.CANCEL_AND_WAIT_AUDIT)
-                .addMap("orderStatus", OrderStatus.CANCEL)
-                //.addMap 添加多个属性信息
-                .send(actionLogRequest);
+//        AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, "", "cms")
+//                .addMap("orderId", orderIndex.getId())
+//                .addMap("prevOrderStatus", OrderStatus.CANCEL_AND_WAIT_AUDIT)
+//                .addMap("orderStatus", OrderStatus.CANCEL)
+//                //.addMap 添加多个属性信息
+//                .send(actionLogRequest);
 
         List<OrderBack> orderBackList = orderBackApiService.findByOrderId(orderIndex.getId());
         if (orderBackList == null) {

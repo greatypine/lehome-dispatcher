@@ -2,19 +2,14 @@ package cn.lehome.dispatcher.quartz.service.invoke.ecommerce;
 
 import cn.lehome.base.api.business.ec.bean.ecommerce.order.Order;
 import cn.lehome.base.api.business.ec.bean.ecommerce.order.OrderBack;
-import cn.lehome.base.api.business.ec.bean.ecommerce.order.OrderDetailIndex;
 import cn.lehome.base.api.business.ec.bean.ecommerce.order.QOrderIndex;
-import cn.lehome.base.api.business.ec.bean.ecommerce.store.BrokerageRecordIndex;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderBackApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderDetailIndexApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.store.BrokerageRecordApiService;
-import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderBackStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
-import cn.lehome.framework.actionlog.core.ActionLogRequest;
-import cn.lehome.framework.actionlog.core.bean.AppActionLog;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
@@ -36,8 +31,8 @@ public class ConfirmReceiptScheduleJobServiceImpl extends AbstractInvokeServiceI
     @Autowired
     private OrderApiService orderApiService;
 
-    @Autowired
-    private ActionLogRequest actionLogRequest;
+//    @Autowired
+//    private ActionLogRequest actionLogRequest;
 
     @Autowired
     private BrokerageRecordApiService brokerageRecordApiService;
@@ -113,14 +108,14 @@ public class ConfirmReceiptScheduleJobServiceImpl extends AbstractInvokeServiceI
         }
 
         boolean updateStatusForSys = orderApiService.updateStatusForSys(order.getId(), OrderStatus.COMPLETE);
-        if (updateStatusForSys) {
-            List<OrderDetailIndex> orderDetails = orderDetailIndexApiService.findByOrderId(order.getId());
-            for (OrderDetailIndex orderDetailIndex : orderDetails) {
-                BrokerageRecordIndex brokerageRecordIndex = brokerageRecordApiService.orderCompleteBrokerage(orderDetailIndex);
-                AppActionLog.newBuilder(BusinessActionKey.BROKERAGE_RECORD_STATUS_CHANGE).addMap("brokerageRecordId", brokerageRecordIndex.getId()).send(actionLogRequest);
-            }
-            AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, order.getUserOpenId(), order.getClientId()).addMap("orderId", order.getId()).addMap("orderStatus",OrderStatus.COMPLETE).send(actionLogRequest);
-        }
+//        if (updateStatusForSys) {
+//            List<OrderDetailIndex> orderDetails = orderDetailIndexApiService.findByOrderId(order.getId());
+//            for (OrderDetailIndex orderDetailIndex : orderDetails) {
+//                BrokerageRecordIndex brokerageRecordIndex = brokerageRecordApiService.orderCompleteBrokerage(orderDetailIndex);
+////                AppActionLog.newBuilder(BusinessActionKey.BROKERAGE_RECORD_STATUS_CHANGE).addMap("brokerageRecordId", brokerageRecordIndex.getId()).send(actionLogRequest);
+//            }
+////            AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE, order.getUserOpenId(), order.getClientId()).addMap("orderId", order.getId()).addMap("orderStatus",OrderStatus.COMPLETE).send(actionLogRequest);
+//        }
     }
 
     public static void main(String[] args) {

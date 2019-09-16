@@ -53,8 +53,8 @@ public class CancelOrderScheduleJobServiceImpl extends AbstractInvokeServiceImpl
     @Autowired
     private PayRecordIndexApiService payRecordIndexApiService;
 
-    @Autowired
-    private ActionLogRequest actionLogRequest;
+//    @Autowired
+//    private ActionLogRequest actionLogRequest;
 
     @Autowired
     private LoaderServiceComponent loaderServiceComponent;
@@ -76,7 +76,6 @@ public class CancelOrderScheduleJobServiceImpl extends AbstractInvokeServiceImpl
             ApiResponse<OrderIndex> apiResponse = orderIndexApiService.findAll(ApiRequest.newInstance().filterLike(QOrderIndex.status, OrderStatus.OBLIGATION).filterLessEqual(QOrderIndex.createdTime, time.getTime()).filterGreaterThan(QOrderIndex.id, maxId), ApiRequestPage.newInstance().paging(0, pageSize).addOrder(QOrderIndex.id, PageOrderType.ASC));
             if (!CollectionUtils.isEmpty(apiResponse.getPagedData())) {
                 List<OrderIndex> orderIndexList = Lists.newArrayList(apiResponse.getPagedData());
-                ActionLog.Builder builder = ActionLog.newBuilder();
 
                 loaderServiceComponent.loadAllBatch(orderIndexList, OrderIndex.class);
 
@@ -106,11 +105,9 @@ public class CancelOrderScheduleJobServiceImpl extends AbstractInvokeServiceImpl
                     }
 
 
-                    builder.addActionLogBean(AppActionLog.newBuilder(BusinessActionKey.ORDER_STATUS_CHANGE).addMap("orderId", p.getId()).addMap("prevOrderStatus", p.getStatus()).addMap("orderStatus", status).build());
                 });
 
 
-                builder.send(actionLogRequest);
                 maxId = orderIndexList.get(orderIndexList.size() - 1).getId();
             } else {
                 flag = false;

@@ -11,15 +11,12 @@ import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.base.api.common.pay.bean.trade.RefundResponse;
 import cn.lehome.base.api.common.pay.service.alipay.merchant.MerchantAlipayApiService;
 import cn.lehome.base.api.common.pay.service.wxpay.merchant.WXPayMerchantApiService;
-import cn.lehome.bean.business.ec.constants.BusinessActionKey;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderBackStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.BillType;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.PayType;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.TransactionProgress;
 import cn.lehome.bean.pay.enums.PaySource;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
-import cn.lehome.framework.actionlog.core.ActionLogRequest;
-import cn.lehome.framework.actionlog.core.bean.AppActionLog;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import com.alibaba.fastjson.JSON;
@@ -51,8 +48,8 @@ public class OrderBackScheduleJobServiceImpl extends AbstractInvokeServiceImpl {
     private OrderBackApiService orderBackApiService;
     @Autowired
     private EventBusComponent eventBusComponent;
-    @Autowired
-    private ActionLogRequest actionLogRequest;
+//    @Autowired
+//    private ActionLogRequest actionLogRequest;
 
 
     @Autowired
@@ -145,7 +142,7 @@ public class OrderBackScheduleJobServiceImpl extends AbstractInvokeServiceImpl {
                     if (updateStatusForSys && transactionProgress.equals(TransactionProgress.PAY_SUCCESS)) {
                         eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.PAYRECORD_STATUS_CHANGE_EVENT, new HashMap.SimpleEntry<>(record.getId(), TransactionProgress.PAY_SUCCESS)));
                     }
-                    AppActionLog.newBuilder(BusinessActionKey.ORDER_BACK_STATUS_CHANGE).addMap("orderBackId", orderBack.getOrderDetailId()).addMap("prevOrderBackStatus", prevStatus).addMap("orderBackStatus", orderBackStatus).send(actionLogRequest);
+//                    AppActionLog.newBuilder(BusinessActionKey.ORDER_BACK_STATUS_CHANGE).addMap("orderBackId", orderBack.getOrderDetailId()).addMap("prevOrderBackStatus", prevStatus).addMap("orderBackStatus", orderBackStatus).send(actionLogRequest);
                 }
             }
         }
