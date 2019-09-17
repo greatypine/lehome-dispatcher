@@ -292,7 +292,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                             list.add(bppOrderDetailIndex);
                         }
                     }
-                    if (bppOrder.getOrderStatus().equals(OrderStatus.CREATE) || bppOrder.getOrderStatus().equals(OrderStatus.PAYING)) {
+                    if (bppOrder.getOrderStatus().equals(OrderStatus.CREATE) || bppOrder.getOrderStatus().equals(OrderStatus.PAYING) || bppOrder.getOrderStatus().equals(OrderStatus.REFUNDING)) {
                         bppOrderIndexApiService.crateOrder(bppOrderIndex, list, orderTransactions, false);
                         fileNum++;
                     } else {
