@@ -284,17 +284,12 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                     List<BppOrderDetail> bppOrderDetails = bppOrderApiService.findByOrderId(bppOrder.getId());
                     List<BppOrderDetailIndex> list = Lists.newArrayList();
                     if (!CollectionUtils.isEmpty(bppOrderDetails)) {
-                        List<BppBill> bppBills = bppBillApiService.findAll(ApiRequest.newInstance().filterIn(QBppBill.id, bppOrderDetails.stream().map(BppOrderDetail::getBillId).collect(Collectors.toList())));
-                        if (!CollectionUtils.isEmpty(bppBills)) {
-                            list = BeanMapping.mapList(bppBills, BppOrderDetailIndex.class);
-                            BppFeeScale bppFeeScale = bppFeeApiService.getFeeScale(bppBills.get(0).getScaleId());
-                            for (BppOrderDetailIndex bppOrderDetailIndex : list) {
-                                bppOrderDetailIndex.setFeeName(bppFee.getName());
-                                if (bppFeeScale != null) {
-                                    bppOrderDetailIndex.setScaleName(bppFeeScale.getName());
-                                }
-                            }
-
+                        BppFeeScale bppFeeScale = bppFeeApiService.getFeeScale(bppOrderDetails.get(0).getScaleId());
+                        for (BppOrderDetail bppOrderDetail : bppOrderDetails) {
+                            BppOrderDetailIndex bppOrderDetailIndex = BeanMapping.map(bppOrderDetail, BppOrderDetailIndex.class);
+                            bppOrderDetailIndex.setFeeName(bppFee.getName());
+                            bppOrderDetailIndex.setScaleName(bppFeeScale.getName());
+                            list.add(bppOrderDetailIndex);
                         }
                     }
                     if (bppOrder.getOrderStatus().equals(OrderStatus.CREATE) || bppOrder.getOrderStatus().equals(OrderStatus.PAYING)) {
