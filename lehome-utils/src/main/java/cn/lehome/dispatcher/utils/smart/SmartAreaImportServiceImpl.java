@@ -25,6 +25,7 @@ import cn.lehome.framework.base.api.core.util.CoreHttpUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,8 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
     private static final String baseUrl = DOMAIN.concat("/api/basic/json-rpc/views");
     private static final String savefacilityUrl = DOMAIN.concat("/pro_app_api/control_regions");
 
-    private static final String authorization = "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk5ZGYxYzAyNTk4YWVkZGY1ZjQ1M2JlZTQ4NzMyMmNlIiwidHlwIjoiSldUIn0.eyJhdWQiOiI5OWRmMWMwMjU5OGFlZGRmNWY0NTNiZWU0ODczMjJjZSIsImV4cCI6MTU2ODMwOTI2OCwiaWF0IjoxNTY4MjY2MDY4LCJpc3MiOiJiYnAtdXNlcnMiLCJqdGkiOiIzMTlhNzU4OTQ1NWI0Y2Q0ZTBjODJlYzBmMDFjZjk4MyIsInN1YiI6ImZjY2ExMmIwY2JiMDgzYmNjNDVlNTlmZWE1ZWJlMjU1IiwidWdpIjoiZjNiZjg4ZmFkYzdiMzI0YjNiNTYxZmUzOWZlYTU2ZTciLCJ1dGkiOiJmM2JmODhmYWRjN2IzMjRiM2I1NjFmZTM5ZmVhNTZlNyJ9.dLa_r5iehiKsscyKZcReZ4mYzzo3WOfYxuYIs9uKnhjJs2vXTzdcrcatOuzwjRi1GEywptaJ4ShClE6JbHEiUzjTdBh4UrnO2iiyam1uQ33UR8Nx6f3UKprTTbXF538XAHGGKa4T42CSZRazKDIQbQEdT-5KzJVyFudNc7XiMf9vKR5IAevNiJAO9AQFphXBA8K8XxqNAXA3q-ReJbpW03e6SPidrMbDF2HzWEJ3CNYFtT3Kz06sBovQtaSaWgnqfGQDtpjicz-aesRNgyb9Mdm91nlRJXA2b4fYdNGRF2uKbMeSiLeQ6OAOgIDfwXObMYvAf9XRmYD0KHCbMJ3KpQ";
-    private static final String x_user_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjgzMDM3NTcsImlhdCI6MTU2ODI2MDU1NywiaXNzIjoiYmJwLXVzZXJzIiwianRpIjoiNWYwMWU2OTg4YzJmNTE5OWFlZjAyNzI1MmI1ZjkwNDAiLCJzdWIiOiIwNGYyYmY0MWU5YjNkZmMzYzY3NjExNWY0ZThlYzY1ZCIsInV0aSI6ImYzYmY4OGZhZGM3YjMyNGIzYjU2MWZlMzlmZWE1NmU3In0.hTWn8EURoPXWJXu6nj6VBF4PGlqQOo8gr7c2kf_F_c8";
+    private static final String authorization = "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk5ZGYxYzAyNTk4YWVkZGY1ZjQ1M2JlZTQ4NzMyMmNlIiwidHlwIjoiSldUIn0.eyJhdWQiOiI5OWRmMWMwMjU5OGFlZGRmNWY0NTNiZWU0ODczMjJjZSIsImV4cCI6MTU2ODcyNzU2MiwiaWF0IjoxNTY4Njg0MzYyLCJpc3MiOiJiYnAtdXNlcnMiLCJqdGkiOiI2NDM2ZTRmOTc2NmQ1MGFkMmUwYmZhZWRiZmYxYjcyMSIsInN1YiI6ImZjY2ExMmIwY2JiMDgzYmNjNDVlNTlmZWE1ZWJlMjU1IiwidWdpIjoiZjNiZjg4ZmFkYzdiMzI0YjNiNTYxZmUzOWZlYTU2ZTciLCJ1dGkiOiJmM2JmODhmYWRjN2IzMjRiM2I1NjFmZTM5ZmVhNTZlNyJ9.gdG5RioXwZP1jpyFjGZCat5c-MQZbV0pUwpAthgRYUCvHEhPNXdM8QiGEH7DiVJ6GzO5j4UMXNJl85BuwJslBKylp24rJAtQcZ6rIT9nrNBAtWxUkWmNIVVDkAz2vozBOP-1e7qR3NG7GwaQDt0uhjYLYyn-nN0Ccqfl-BJpMO2VVvq3ykgUq4ih4OpcQM-33wP7lNVehhGUekyzxb4HZvcymas4q4zXH0ZyD3d_J5hu-hwxKxYP9SMvUyoKswWoLfczSiHDS-STYewFASkE0b7qIrf1OwM_ESOV-0bUUMal1o2cqKQ4qZpz5JtvOJUmSRh2ra0ikiTafi1iCfJJUA";
+    private static final String x_user_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Njg3Mjc1NTEsImlhdCI6MTU2ODY4NDM1MSwiaXNzIjoiYmJwLXVzZXJzIiwianRpIjoiZjdjOTJmY2Q5YmYxN2ZkZWUwZjI5MjlkZTg0NTMwY2UiLCJzdWIiOiIwNGYyYmY0MWU5YjNkZmMzYzY3NjExNWY0ZThlYzY1ZCIsInV0aSI6ImYzYmY4OGZhZGM3YjMyNGIzYjU2MWZlMzlmZWE1NmU3In0.sv_llLuwau6q7_YkUcS4FqgwzpUifV3AHSnXRPFFkvQ";
 
     private Long oldAreaId;
     private Long newAreaId;
@@ -91,14 +92,14 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
                 oldAreaId = data.get("oldAreaId");
                 newAreaId = data.get("newAreaId");
                 houseTypeId = data.get("houseTypeId");
-                importBase = true;
+                //importBase = true;
                 log("开始导入基础数据");
                 importManagerAreaInfo();
-                log("基础数据导入完成，开始导入管控区域");
-                importExtendFacility();
-                log("管控区域导入完成，开始导入房产、用户数据");
-                importBase = false;
-                importManagerAreaInfo();
+                //log("基础数据导入完成，开始导入管控区域");
+                //importExtendFacility();
+                //log("管控区域导入完成，开始导入房产、用户数据");
+                //importBase = false;
+                //importManagerAreaInfo();
                 log("数据导入完成");
             }catch(Exception e){
                 error("数据导入出错",e,data.get("oldAreaId"));
@@ -110,46 +111,46 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
         List<Map<String,Long>> result = new ArrayList<>();
 
         Map<String,Long> d1 = new HashMap<>();
-        d1.put("houseTypeId",22569L);
-        d1.put("oldAreaId",292L);
-        d1.put("newAreaId",11798L);
+        d1.put("houseTypeId",22556L);
+        d1.put("oldAreaId",448L);
+        d1.put("newAreaId",11813L);
         result.add(d1);
 
-        Map<String,Long> d2 = new HashMap<>();
-        d2.put("houseTypeId",22573L);
-        d2.put("oldAreaId",463L);
-        d2.put("newAreaId",11803L);
-        result.add(d2);
+//        Map<String,Long> d2 = new HashMap<>();
+//        d2.put("houseTypeId",22573L);
+//        d2.put("oldAreaId",463L);
+//        d2.put("newAreaId",11803L);
+//        result.add(d2);
+//
+//        Map<String,Long> d3 = new HashMap<>();
+//        d3.put("houseTypeId",22574L);
+//        d3.put("oldAreaId",303L);
+//        d3.put("newAreaId",11810L);
+//        result.add(d3);
+//
+//        Map<String,Long> d4 = new HashMap<>();
+//        d4.put("houseTypeId",22604L);
+//        d4.put("oldAreaId",302L);
+//        d4.put("newAreaId",11817L);
+//        result.add(d4);
+//
+//        Map<String,Long> d5 = new HashMap<>();
+//        d5.put("houseTypeId",22605L);
+//        d5.put("oldAreaId",297L);
+//        d5.put("newAreaId",11811L);
+//        result.add(d5);
+//
+//        Map<String,Long> d6 = new HashMap<>();
+//        d6.put("houseTypeId",22605L);
+//        d6.put("oldAreaId",295L);
+//        d6.put("newAreaId",11811L);
+//        result.add(d6);
 
-        Map<String,Long> d3 = new HashMap<>();
-        d3.put("houseTypeId",22574L);
-        d3.put("oldAreaId",303L);
-        d3.put("newAreaId",11810L);
-        result.add(d3);
-
-        Map<String,Long> d4 = new HashMap<>();
-        d4.put("houseTypeId",22604L);
-        d4.put("oldAreaId",302L);
-        d4.put("newAreaId",11817L);
-        result.add(d4);
-
-        Map<String,Long> d5 = new HashMap<>();
-        d5.put("houseTypeId",22605L);
-        d5.put("oldAreaId",297L);
-        d5.put("newAreaId",11811L);
-        result.add(d5);
-
-        Map<String,Long> d6 = new HashMap<>();
-        d6.put("houseTypeId",22605L);
-        d6.put("oldAreaId",295L);
-        d6.put("newAreaId",11811L);
-        result.add(d6);
-
-        Map<String,Long> d7 = new HashMap<>();
-        d7.put("houseTypeId",22605L);
-        d7.put("oldAreaId",296L);
-        d7.put("newAreaId",11811L);
-        result.add(d7);
+//        Map<String,Long> d7 = new HashMap<>();
+//        d7.put("houseTypeId",22605L);
+//        d7.put("oldAreaId",296L);
+//        d7.put("newAreaId",11811L);
+//        result.add(d7);
 
         return result;
     }
@@ -206,53 +207,59 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
     }
 
     private void importManagerAreaInfo(){
-        log("跟据小区查找原项目");
-        List<OldManagerArea> oldManagerAreas = oldManagerAreaApiService.findAll(ApiRequest.newInstance().filterEqual(QOldManagerArea.areaId,oldAreaId));
-        for(OldManagerArea oldManagerArea : oldManagerAreas){
-            if(oldManagerArea.getAreaName().contains("删除")){
-                continue;
-            }
-            if(importBase) {
-                saveManagerAreaInfo(oldManagerArea.getAreaName());
-            }
+//        log("跟据小区查找原项目");
+//        List<OldManagerArea> oldManagerAreas = oldManagerAreaApiService.findAll(ApiRequest.newInstance().filterEqual(QOldManagerArea.areaId,oldAreaId));
+//        for(OldManagerArea oldManagerArea : oldManagerAreas){
+          //  if(oldManagerArea.getAreaName().contains("删除")){
+            //    continue;
+            //}
+            //if(importBase) {
+                //saveManagerAreaInfo(oldManagerArea.getAreaName());
+            //}
             log("获取新项目ID");
-            Long projectId = findManagerAreaInfo(oldManagerArea.getAreaName());
-            projectCache.put(oldManagerArea.getId().longValue(),projectId);
-            log("查找原始楼宇列表",projectId);
-            List<OldFloorInfo> oldFloorInfos = oldFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QOldFloorInfo.manageAreaId,oldManagerArea.getId()));
-            oldFloorInfos.forEach(oldFloorInfo -> {
-                if(importBase) {
+//            Long projectId = findManagerAreaInfo(oldManagerArea.getAreaName());
+                Long projectId = 1305L;
+                //projectCache.put(oldManagerArea.getId().longValue(),projectId);
+                log("查找原始楼宇列表", projectId);
+//            List<OldFloorInfo> oldFloorInfos = oldFloorInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QOldFloorInfo.manageAreaId,oldManagerArea.getId()));
+                List<OldFloorInfo> oldFloorInfos = oldFloorInfoApiService.findAll(ApiRequest.newInstance().filterIn(QOldFloorInfo.manageAreaId, Lists.newArrayList(1086,527)));
+                oldFloorInfos.forEach(oldFloorInfo -> {
+                    //  if(importBase) {
                     saveFloorInfo(projectId, oldFloorInfo.getFloorNo());
-                }
-                log("获取新楼宇ID");
-                Long buildingId = findFloorInfo(projectId,oldFloorInfo.getFloorNo());
-                buildingCache.put(oldFloorInfo.getId().longValue(),buildingId);
-                log("查找原始单元列表",buildingId);
-                List<OldFloorUnitInfo> oldFloorUnitInfos = oldFloorUnitInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QOldFloorUnitInfo.floorId,oldFloorInfo.getId()));
-                oldFloorUnitInfos.forEach(oldFloorUnitInfo -> {
-                    if(importBase) {
+                    //}
+                    log("获取新楼宇ID");
+                    Long buildingId = findFloorInfo(projectId, oldFloorInfo.getFloorNo());
+                    log("新楼宇ID", buildingId);
+//                Long buildingId = 12635L;
+                    //buildingCache.put(oldFloorInfo.getId().longValue(),buildingId);
+                    log("查找原始单元列表");
+                    List<OldFloorUnitInfo> oldFloorUnitInfos = oldFloorUnitInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QOldFloorUnitInfo.floorId, oldFloorInfo.getId()));
+                    oldFloorUnitInfos.forEach(oldFloorUnitInfo -> {
+//                    if(importBase) {
                         saveUnitInfo(buildingId, oldFloorUnitInfo);
-                    }
-                    log("获取新单元ID");
-                    Long unitId = findUnitInfo(buildingId,oldFloorUnitInfo.getUnitNo());
-                    unitCache.put(oldFloorUnitInfo.getId().longValue(),unitId);
-                    if(!importBase) {
+//                    }
+                        log("获取新单元ID");
+                        Long unitId = findUnitInfo(buildingId, oldFloorUnitInfo.getUnitNo());
+                        log("新单元ID", unitId);
+//                    Long unitId = 14899L;
+                        //unitCache.put(oldFloorUnitInfo.getId().longValue(),unitId);
+                        //if(!importBase) {
                         log("查找原始房屋列表", unitId);
                         List<OldHouseInfo> oldHouseInfos = oldHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QOldHouseInfo.unitId, oldFloorUnitInfo.getId()));
                         oldHouseInfos.forEach(oldHouseInfo -> {
                             saveHouseInfo(projectId, buildingId, unitId, oldHouseInfo);
                             log("获取新的房屋ID");
                             Long houseId = findHouseInfo(projectId, buildingId, unitId, oldHouseInfo.getRoomId());
+                            log("新的房屋ID", houseId);
                             log("查找原始人员信息", houseId);
                             List<OldHouseholdsInfo> oldHouseholdsInfos = oldHouseholdsInfoApiService.findByHouseId(oldHouseInfo.getId(), null);
                             oldHouseholdsInfos.forEach(oldHouseholdsInfo -> {
                                 saveOldhouseHoldsInfo(projectId, buildingId, unitId, houseId, oldHouseholdsInfo);
                             });
                         });
-                    }
+                    });
                 });
-            });
-        }
+//        }
     }
 
     private void saveOldhouseHoldsInfo(Long projectId,Long buildingId,Long unitId,Long houseId,OldHouseholdsInfo oldHouseholdsInfo){
@@ -464,15 +471,13 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
 
     private void saveFloorInfo(Long projectId,String floorNo){
         try {
-            String number = getFloorNo(floorNo);
-            String name = getFloorName(floorNo, number);
             RpcRequest request = new RpcRequest();
             request.setMethod("GP:MAINWEBB:BuildingSetting:CreateBuilding");
             Map<String, Object> params = new HashMap<>();
             params.put("projectId", projectId);
             params.put("type", "building");
-            params.put("number", number);
-            params.put("name", name);
+            params.put("number", floorNo);
+            params.put("name", "");
             request.getParams().add(params);
             String response = CoreHttpUtils.post(baseUrl, getHeader(), JSON.toJSONString(request), String.class).getResponse();
             log("保存楼宇", floorNo, response);
@@ -560,7 +565,9 @@ public class SmartAreaImportServiceImpl implements SmartAreaImportService{
         log.append("新小区ID:").append(newAreaId).append("\n");
         log.append("参数:");
         for(Object m : message){
-            log.append(m.toString()).append(":");
+            if(m!=null) {
+                log.append(m.toString()).append(":");
+            }
         }
         log.append("\n");
 
