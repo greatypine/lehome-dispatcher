@@ -20,6 +20,7 @@ import cn.lehome.base.pro.api.bean.house.layout.ApartmentLayout;
 import cn.lehome.base.pro.api.bean.house.layout.QApartmentLayout;
 import cn.lehome.base.pro.api.bean.households.HouseholdCertification;
 import cn.lehome.base.pro.api.bean.households.HouseholdIndex;
+import cn.lehome.base.pro.api.bean.households.QHouseholdIndex;
 import cn.lehome.base.pro.api.bean.households.settings.Household;
 import cn.lehome.base.pro.api.event.DataImportEvent;
 import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
@@ -474,6 +475,10 @@ public class ImportDataListener extends AbstractJobListener {
         String typeStr = rowDatas.get(7);
         if (StringUtils.isEmpty(typeStr)) {
             return new ImmutablePair<>(false, "住户类型为空");
+        }
+        List<HouseholdIndex> householdIndices = householdIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseholdIndex.telephone, telephone).filterEqual(QHouseholdIndex.houseId, houseInfo.getId()));
+        if (!CollectionUtils.isEmpty(householdIndices)) {
+            return new ImmutablePair<>(false, "住户已经存在");
         }
         Identity identity = Identity.resident_others;
         if ("租户".equals(typeStr)) {
