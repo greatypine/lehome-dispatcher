@@ -168,9 +168,7 @@ public class ImportDataListener extends AbstractJobListener {
                 isSuccess = false;
                 errorMsg = "系统错误";
             } finally {
-                if (isSuccess) {
-                    dataImportApiService.addPreSuccess(dataImport.getId());
-                } else {
+                if (!isSuccess) {
                     DataImportFailedRecord dataImportFailedRecord = new DataImportFailedRecord();
                     dataImportFailedRecord.setDataImportId(dataImport.getId());
                     dataImportFailedRecord.setErrorMsg(errorMsg);
@@ -310,6 +308,10 @@ public class ImportDataListener extends AbstractJobListener {
         String roomName = rowDatas.get(9);
         List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
         if (!CollectionUtils.isEmpty(houseInfoList)) {
+            return new ImmutablePair<>(false, "房间信息已经存在");
+        }
+        List<DataImportHouseInfo> dataImportHouseInfos = dataImportApiService.findHouseAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImportId).filterEqual(QDataImportHouseInfo.areaId, areaInfo.getId()).filterEqual(QDataImportHouseInfo.roomId, roomId));
+        if (!CollectionUtils.isEmpty(dataImportHouseInfos)) {
             return new ImmutablePair<>(false, "房间信息已经存在");
         }
         String roomType = rowDatas.get(10);
@@ -478,6 +480,10 @@ public class ImportDataListener extends AbstractJobListener {
         }
         List<HouseholdIndex> householdIndices = householdIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseholdIndex.telephone, telephone).filterEqual(QHouseholdIndex.houseId, houseInfo.getId()));
         if (!CollectionUtils.isEmpty(householdIndices)) {
+            return new ImmutablePair<>(false, "住户已经存在");
+        }
+        List<DataImportHouseholdsInfo> dataImportHouseholdsInfos = dataImportApiService.findHouseholdAll(ApiRequest.newInstance().filterEqual(QDataImportHouseholdsInfo.dataImportId, dataImportId).filterEqual(QDataImportHouseholdsInfo.telephone, telephone).filterEqual(QDataImportHouseholdsInfo.houseId, houseInfo.getId()));
+        if (!CollectionUtils.isEmpty(dataImportHouseholdsInfos)) {
             return new ImmutablePair<>(false, "住户已经存在");
         }
         Identity identity = Identity.resident_others;
