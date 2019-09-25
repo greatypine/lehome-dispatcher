@@ -187,6 +187,16 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-iot-common-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>iot-common-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>com.sqbj.asrt</groupId>-->
             <!--<artifactId>oauth2-sdk</artifactId>-->
