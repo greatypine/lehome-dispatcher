@@ -306,11 +306,25 @@ public class ImportDataListener extends AbstractJobListener {
 
         String roomId = rowDatas.get(8);
         String roomName = rowDatas.get(9);
-        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
+        ApiRequest apiRequest = ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled);
+        ApiRequest dataApiRequest = ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImportId).filterEqual(QDataImportHouseInfo.areaId, areaInfo.getId()).filterEqual(QDataImportHouseInfo.roomId, roomId);
+        if (unitInfo != null) {
+            apiRequest.filterEqual(QHouseInfo.unitId, unitInfo.getId());
+            dataApiRequest.filterEqual(QDataImportHouseInfo.unitId, unitInfo.getId());
+        } else {
+            if (floorInfo != null) {
+                apiRequest.filterEqual(QHouseInfo.floorId, floorInfo.getId());
+                dataApiRequest.filterEqual(QDataImportHouseInfo.unitId, floorInfo.getId());
+            } else {
+                apiRequest.filterEqual(QHouseInfo.manageAreaId, managerArea.getId());
+                dataApiRequest.filterEqual(QDataImportHouseInfo.unitId, managerArea.getId());
+            }
+        }
+        List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(apiRequest);
         if (!CollectionUtils.isEmpty(houseInfoList)) {
             return new ImmutablePair<>(false, "房间信息已经存在");
         }
-        List<DataImportHouseInfo> dataImportHouseInfos = dataImportApiService.findHouseAll(ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImportId).filterEqual(QDataImportHouseInfo.areaId, areaInfo.getId()).filterEqual(QDataImportHouseInfo.roomId, roomId));
+        List<DataImportHouseInfo> dataImportHouseInfos = dataImportApiService.findHouseAll(dataApiRequest);
         if (!CollectionUtils.isEmpty(dataImportHouseInfos)) {
             return new ImmutablePair<>(false, "房间信息已经存在");
         }
