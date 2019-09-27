@@ -114,7 +114,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 return;
             }
             Map<Integer, BppRefScaleAddress> bppRefScaleAddressMap = bppRefScaleAddressList.stream().collect(Collectors.toMap(BppRefScaleAddress::getAddressId, bppRefScaleAddress -> bppRefScaleAddress));
-            if (bppRefScaleAddressMap.size() != addressIds.size()) {
+            if (bppRefScaleAddressMap.size() < addressIds.size()) {
                 logger.error("费标与房子关系信息未找到, size = {}, addressId.size = {}", bppRefScaleAddressMap.size(), addressIds.size());
                 preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
                 return;

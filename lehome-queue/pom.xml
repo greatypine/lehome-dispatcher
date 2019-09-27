@@ -139,6 +139,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>smart-oauth2-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>smart-oauth2-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>common-user-bean</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
@@ -176,6 +186,16 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>base-iot-common-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>iot-common-bean</artifactId>
+            <classifier>${branch}</classifier>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>com.sqbj.asrt</groupId>-->
