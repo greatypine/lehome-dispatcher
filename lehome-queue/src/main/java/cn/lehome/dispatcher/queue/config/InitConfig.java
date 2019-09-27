@@ -3,6 +3,7 @@ package cn.lehome.dispatcher.queue.config;
 import cn.lehome.base.api.common.component.idgenerator.RedisIdGeneratorComponent;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.component.message.push.PushComponent;
+import cn.lehome.base.api.common.component.storage.AliyunOSSComponent;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.jms.SimpleJmsQueueFactoryBean;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
@@ -52,6 +53,11 @@ public class InitConfig {
     @Bean
     public LoaderServiceComponent loaderServiceComponent() {
         return new LoaderServiceComponent();
+    }
+
+    @Bean
+    public AliyunOSSComponent aliyunOSSComponent() {
+        return new AliyunOSSComponent();
     }
 
 
