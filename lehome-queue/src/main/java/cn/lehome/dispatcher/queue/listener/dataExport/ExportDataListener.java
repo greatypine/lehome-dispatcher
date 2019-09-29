@@ -40,6 +40,10 @@ public class ExportDataListener extends AbstractJobListener {
             return;
         }
         DataExportService dataExportService = SpringContextHolder.getBean(DataExportServiceEnum.getServiceName(dataExportRecord.getBusinessKey()),DataExportService.class);
+        if(dataExportService == null){
+            logger.error("没有找到对应的导出服务");
+            return;
+        }
         dataExportRecord = dataExportService.exportData(dataExportRecord,pageIndex);
         logger.info(String.format("成功导出%s数据第%s页%s条",dataExportRecord.getBusinessKey(),pageIndex,dataExportRecord.getExportRecordNum()));
         dataExportRecord = dataExportRecordApiService.update(dataExportRecord);
