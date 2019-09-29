@@ -7,7 +7,8 @@ import cn.lehome.base.api.common.constant.ExportDataBusinessConstants;
  */
 public enum DataExportServiceEnum {
 
-    ORDER_BACK(ExportDataBusinessConstants.ORDER_BACK,"orderBackDataExportService");
+    ORDER_BACK(ExportDataBusinessConstants.ORDER_BACK,"orderBackDataExportService"),
+    POST_COMMENT_USER(ExportDataBusinessConstants.POST_COMMENT_USER,"postCommentUserDataExportService");
 
     DataExportServiceEnum(String key,String name){
         this.key = key;
