@@ -319,7 +319,7 @@ public class AreaFlushListener extends AbstractJobListener {
                                     userAccount = userAccountApiService.createBySmartPro(household.getTelephone(), household.getName(), sexType);
                                 }
                                 if (StringUtils.isNotEmpty(household.getTelephone())) {
-                                    HouseholdsUser householdsUser = householdsUserApiService.findOne(household.getTelephone(), household.getUniqueCode());
+                                    HouseholdsUser householdsUser = householdsUserApiService.findOne(household.getTelephone(), areaInfo.getUniqueCode());
                                     if (householdsUser == null) {
                                         householdsUser = new HouseholdsUser();
                                         householdsUser.setOpenId(household.getOpenId());
