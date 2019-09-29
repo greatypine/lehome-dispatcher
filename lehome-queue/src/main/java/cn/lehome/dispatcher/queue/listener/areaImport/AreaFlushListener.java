@@ -600,6 +600,8 @@ public class AreaFlushListener extends AbstractJobListener {
                 importEventBean.setStartId(lastId);
                 eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.FLUSH_AREA_DATA_EVENT, importEventBean));
             }
+        } else {
+            importTaskApiService.updateStatus(importTask.getId(), ImportTaskStatus.FINISHED, "");
         }
     }
 
