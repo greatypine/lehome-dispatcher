@@ -11,10 +11,12 @@ import cn.lehome.dispatcher.queue.service.entrance.AutoEntranceService;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +69,8 @@ public class AddControlMessageListener extends AbstractJobListener {
         List<User> userList = autoEntranceService.loadAllUser(controlRegions);
 
         if (!CollectionUtils.isEmpty(userList)) {
-            regionApiService.batchAddUserRegion(region.getId(), userList.stream().map(User::getId).collect(Collectors.toList()));
+            Set<Long> userSet = userList.stream().map(User::getId).collect(Collectors.toSet());
+            regionApiService.batchAddUserRegion(region.getId(), Lists.newArrayList(userSet));
         }
     }
 
