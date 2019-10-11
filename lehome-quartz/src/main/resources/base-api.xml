@@ -25,7 +25,6 @@
     <import resource="classpath*:provider/base-api/common-user-service.xml"/>
     <import resource="classpath*:provider/base-api/workorder-service.xml"/>
     <import resource="classpath*:provider/base-api/base-finance-service.xml"/>
-    <import resource="classpath*:provider/base-api/iot-common-service.xml"/>
 
     <dubbo:reference id="shareRecordApiService" interface="cn.lehome.base.api.common.operation.service.mkt.ShareRecordApiService" group="com"/>
     <dubbo:reference id="subassemblyDetailApiService" interface="cn.lehome.base.api.common.operation.service.module.subassembly.SubassemblyDetailApiService" group="com"/>
@@ -41,6 +40,11 @@
     <dubbo:reference id="applicationsTenantApiService" interface="cn.lehome.base.api.common.operation.service.application.ApplicationsTenantApiService" group="com"/>
 
     <dubbo:reference id="businessUserAccountIndexApiService" interface="cn.lehome.base.api.common.business.oauth2.service.user.UserAccountIndexApiService" group="com"/>
+
+    <dubbo:reference id="parkDeviceApiService" interface="cn.lehome.base.api.iot.common.service.park.ParkDeviceApiService" group="iot"/>
+    <dubbo:reference id="zKZHDeviceApiService" interface="cn.lehome.base.api.iot.common.service.zkzh.ZKZHDeviceApiService" group="iot"/>
+    <dubbo:reference id="attDeviceApiService" interface="cn.lehome.base.api.iot.common.service.att.AttDeviceApiService" group="iot"/>
+    <dubbo:reference id="entranceDeviceApiService" interface="cn.lehome.base.api.iot.common.service.entrance.EntranceDeviceApiService" group="iot"/>
 
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
     
