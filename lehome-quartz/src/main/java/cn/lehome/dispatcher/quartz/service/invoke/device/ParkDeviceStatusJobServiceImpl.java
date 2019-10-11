@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Created by wuzhao on 2019/10/11.
  */
-@Service("attDeviceStatusJobService")
+@Service("parkDeviceStatusJobService")
 public class ParkDeviceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
 
     @Autowired
