@@ -7,11 +7,14 @@ import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
+import cn.lehome.iot.bean.common.enums.entrance.EntranceDeviceType;
 import cn.lehome.iot.bean.common.enums.gateway.OnlineStatus;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +28,9 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
 
     @Autowired
     private EntranceDeviceApiService entranceDeviceApiService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     private static int ONLINE_INTERVAL = -2;
 
@@ -43,9 +49,24 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
 
             List<EntranceDevice> entranceDeviceList = Lists.newArrayList(apiResponse.getPagedData());
 
-            entranceDeviceList.forEach(entranceDevice -> entranceDevice.setOnlineStatus(OnlineStatus.OFFLINE));
+            List<EntranceDevice> updateList = Lists.newArrayList();
 
-            entranceDeviceApiService.batchSave(entranceDeviceList);
+            for (EntranceDevice entranceDevice : entranceDeviceList) {
+                if (entranceDevice.getDeviceType().equals(EntranceDeviceType.NFC_2G)) {
+                    String key = String.format("%s_%s", "base", entranceDevice.getDeviceUuid());
+                    if (!stringRedisTemplate.hasKey(key)) {
+                        entranceDevice.setOnlineStatus(OnlineStatus.OFFLINE);
+                        updateList.add(entranceDevice);
+                    }
+                } else {
+                    updateList.add(entranceDevice);
+                }
+            }
+            
+            if (!CollectionUtils.isEmpty(updateList)) {
+                entranceDeviceApiService.batchSave(updateList);
+            }
+
 
             if (apiResponse.getCount() < apiRequestPage.getPageSize()) {
                 break;
