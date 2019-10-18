@@ -107,7 +107,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
                 return;
             }
-            List<BppRefScaleAddress> bppRefScaleAddressList = bppFeeApiService.findScaleAddressAll(ApiRequest.newInstance().filterEqual(QBppRefScaleAddress.feeId, preBuildBppBill.getFeeId()));
+            List<BppRefScaleAddress> bppRefScaleAddressList = bppFeeApiService.findScaleAddressAll(ApiRequest.newInstance().filterEqual(QBppRefScaleAddress.feeId, preBuildBppBill.getFeeId()).filterIn(QBppRefScaleAddress.addressId, addressIds));
             if (CollectionUtils.isEmpty(bppRefScaleAddressList)) {
                 logger.error("费标与房子关系信息未找到, feeId = " + preBuildBppBill.getFeeId());
                 preBppBillApiService.deletePreBill(longEventMessage.getData().intValue());
