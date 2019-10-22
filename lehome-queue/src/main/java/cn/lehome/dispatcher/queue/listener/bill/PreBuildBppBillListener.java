@@ -124,7 +124,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 BppRefScaleAddress bppRefScaleAddress = bppRefScaleAddressMap.get(addressId);
                 BppFeeScale bppFeeScale = feeScaleMap.get(bppRefScaleAddress.getScaleId());
                 BppBillScale bppBillScale = bppBillScaleMap.get(bppFeeScale.getId());
-                Date startTime = getStartTime(bppRefScaleAddress.getStartDate(), bppFeeScale);
+                Date startTime = bppRefScaleAddress.getStartDate();
                 List<Date> startTimes = getStartTimes(startTime, bppFeeScale.getChargeCycle(), bppBillScale.getEndTime());
                 if ((bppFee.getBillCycle().equals(BillCycle.MONTH) && bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) ||
                         (bppFee.getBillCycle().equals(BillCycle.YEAR) && bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR))) {
@@ -250,6 +250,17 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             preBppBill.setScaleId(bppFeeScale.getId());
             preBppBill.setStatus(BillStatus.UNRECEIVE);
             preBppBill.setTenantCode(areaInfo.getUniqueCode());
+            BigDecimal reDiscountAmount = BigDecimal.ZERO;
+            Integer startDay = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.DAY_OF_MONTH);
+            if (startDay != 1) {
+                if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(30), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startDay)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                } else {
+                    Integer startMonth = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.MONTH) + 1;
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(12), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startMonth)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                }
+            }
+            preBppBill.setReDiscountAmount(reDiscountAmount);
             list.add(preBppBill);
         }
         return list;
@@ -284,6 +295,8 @@ public class PreBuildBppBillListener extends AbstractJobListener {
         if (bppFeeScale.getOperateMode().equals(OperateMode.ROUND_DOWN)) {
             roundMode = BigDecimal.ROUND_DOWN;
         }
+        BppFeeScaleCycle bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
+
         amount = amount.setScale(bppFeeScale.getKeepFigures(), roundMode);
         List<PreBppBill> list = Lists.newArrayList();
         String batchCode = RandomIdentifiesUtils.getBillBatchCode();
@@ -296,7 +309,27 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 name += (DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1) + "月";
                 billTime = new Date(endTime.getTime());
             } else {
-                endTime = DateUtils.addDays(DateUtils.addYears(endTime, 1), -1);
+                if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
+                    endTime = DateUtils.addYears(endTime, 1);
+                    endTime = DateUtils.setMonths(endTime, 0);
+                    endTime = DateUtils.setDays(endTime, 1);
+                    endTime = DateUtils.addDays(endTime, -1);
+                } else {
+                    if (bppFeeScaleCycle == null) {
+                        endTime = DateUtils.addYears(endTime, 1);
+                        endTime = DateUtils.setMonths(endTime, 0);
+                        endTime = DateUtils.setDays(endTime, 1);
+                        endTime = DateUtils.addDays(endTime, -1);
+                    } else {
+                        endTime = DateUtils.addYears(endTime, 1);
+                        endTime = DateUtils.setMonths(endTime, bppFeeScaleCycle.getEndMonth() - 1);
+                        endTime = DateUtils.setDays(endTime, 1);
+                        endTime = DateUtils.addMonths(endTime, 1);
+                        endTime = DateUtils.addDays(endTime, -1);
+                    }
+
+                }
+
                 billTime = new Date(endTime.getTime());
             }
             name += bppFee.getName();
@@ -313,43 +346,57 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             preBppBill.setPaidAmount(amount);
             preBppBill.setPayableAmount(amount);
             preBppBill.setPreBuildId(preBuildBppBill.getId());
+            preBppBill.setReDiscountAmount(BigDecimal.ZERO);
             preBppBill.setReceivableDate(billTime);
             preBppBill.setScaleId(bppFeeScale.getId());
             preBppBill.setStatus(BillStatus.UNRECEIVE);
             preBppBill.setTenantCode(areaInfo.getUniqueCode());
+            Integer startDay = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.DAY_OF_MONTH);
+            BigDecimal reDiscountAmount = BigDecimal.ZERO;
+            if (startDay != 1) {
+                if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(30), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startDay)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                } else {
+                    Integer startMonth = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.MONTH) + 1;
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(12), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startMonth)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                }
+            }
+            preBppBill.setReDiscountAmount(reDiscountAmount);
             list.add(preBppBill);
         }
         return list;
 
     }
 
-    private Date getStartTime(Date startTime, BppFeeScale bppFeeScale) {
-        if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
-            return DateUtils.setDays(startTime, 1);
-        } else if (bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR)) {
-            if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
-                startTime = DateUtils.setMonths(startTime, 0);
-                startTime = DateUtils.setDays(startTime, 1);
-                return startTime;
-            } else if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.UNNATURAL_YEAR)) {
-                BppFeeScaleCycle bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
-                startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
-                startTime = DateUtils.setDays(startTime, 1);
-                return startTime;
-            }
-        }
-        return startTime;
-    }
+//    private Date getStartTime(Date startTime, BppFeeScale bppFeeScale) {
+//        if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
+//            return DateUtils.setDays(startTime, 1);
+//        } else if (bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR)) {
+//            if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
+//                startTime = DateUtils.setMonths(startTime, 0);
+//                startTime = DateUtils.setDays(startTime, 1);
+//                return startTime;
+//            } else if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.UNNATURAL_YEAR)) {
+//                BppFeeScaleCycle bppFeeScaleCycle = bppFeeApiService.findByScaleId(bppFeeScale.getId());
+//                startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
+//                startTime = DateUtils.setDays(startTime, 1);
+//                return startTime;
+//            }
+//        }
+//        return startTime;
+//    }
 
     private List<Date> getStartTimes(Date startTime, ChargeCycle chargeCycle, Integer endTime) {
         List<Date> list = Lists.newArrayList();
-        DateUtils.setDays(startTime, 1);
         while (getTime(startTime, chargeCycle) <= endTime) {
             list.add(startTime);
             if (chargeCycle.equals(ChargeCycle.MONTH)) {
                 startTime = DateUtils.addMonths(startTime, 1);
+                startTime = DateUtils.setDays(startTime, 1);
             } else {
                 startTime = DateUtils.addYears(startTime, 1);
+                startTime = DateUtils.setMonths(startTime, 0);
+                startTime = DateUtils.setDays(startTime, 1);
             }
         }
         return list;
