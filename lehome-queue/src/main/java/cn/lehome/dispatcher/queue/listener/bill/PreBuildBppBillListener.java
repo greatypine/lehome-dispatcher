@@ -305,7 +305,9 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             Date endTime = new Date(startTime.getTime());
             Date billTime = new Date(startTime.getTime());
             if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
-                endTime = DateUtils.addDays(DateUtils.addMonths(endTime, 1), -1);
+                endTime = DateUtils.addMonths(endTime, 1);
+                endTime = DateUtils.setDays(endTime, 1);
+                endTime = DateUtils.addDays(endTime, -1);
                 name += (DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1) + "月";
                 billTime = new Date(endTime.getTime());
             } else {
