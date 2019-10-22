@@ -389,7 +389,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                     if (startMonth >= bppFeeScaleCycle.getStartMonth()) {
                         startMonth = startMonth - bppFeeScaleCycle.getStartMonth();
                     } else {
-                        startMonth = 12 - bppFeeScaleCycle.getStartMonth() + startMonth;
+                        startMonth = 12 - bppFeeScaleCycle.getStartMonth() + startMonth - 1;
                     }
                     reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(12), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startMonth)).setScale(bppFeeScale.getKeepFigures(), roundMode);
                 }
