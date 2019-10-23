@@ -374,7 +374,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             BigDecimal reDiscountAmount = BigDecimal.ZERO;
             if (startDay != 1) {
                 if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
-                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(30), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startDay)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(30), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startDay - 1)).setScale(bppFeeScale.getKeepFigures(), roundMode);
                 } else {
                     Integer startMonth = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.MONTH) + 1;
                     if (bppFeeScaleCycle != null) {
@@ -389,7 +389,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             } else {
                 Integer startMonth = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.MONTH) + 1;
                 if ((bppFeeScaleCycle == null && startMonth != 1) ) {
-                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(12), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startMonth)).setScale(bppFeeScale.getKeepFigures(), roundMode);
+                    reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(12), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startMonth - 1)).setScale(bppFeeScale.getKeepFigures(), roundMode);
                 } else if (bppFeeScaleCycle != null && startMonth != bppFeeScaleCycle.getStartMonth()) {
                     if (startMonth >= bppFeeScaleCycle.getStartMonth()) {
                         startMonth = startMonth - bppFeeScaleCycle.getStartMonth();

@@ -18,12 +18,6 @@
 
     <artifactId>lehome-dispatcher</artifactId>
 
-    <repositories>
-        <repository>
-            <id>nexus.sqbj.info</id>
-            <url>http://nexus.sqbj.info/repository/maven-public/</url>
-        </repository>
-    </repositories>
 
     <properties>
         <rebuild.version>1.0.0-SNAPSHOT</rebuild.version>
