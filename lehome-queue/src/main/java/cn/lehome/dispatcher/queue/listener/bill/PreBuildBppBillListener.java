@@ -198,6 +198,12 @@ public class PreBuildBppBillListener extends AbstractJobListener {
         for (Date startTime : startTimes) {
             String name = DateUtils.toCalendar(startTime).get(Calendar.YEAR) + "年" + (DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1) + "月";;
             Date endTime = DateUtils.addDays(DateUtils.addMonths(startTime, 1), -1);
+            Integer startDay = DateUtils.toCalendar(startTime).get(Calendar.DAY_OF_MONTH);
+            if (startDay != 1) {
+                endTime = DateUtils.setDays(endTime, 1);
+                endTime = DateUtils.addDays(endTime, -1);
+            }
+
             Date billTime = new Date();
             if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
                 billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR));
@@ -252,7 +258,6 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             preBppBill.setStatus(BillStatus.UNRECEIVE);
             preBppBill.setTenantCode(areaInfo.getUniqueCode());
             BigDecimal reDiscountAmount = BigDecimal.ZERO;
-            Integer startDay = DateUtils.toCalendar(preBppBill.getStartDate()).get(Calendar.DAY_OF_MONTH);
             if (startDay != 1) {
                 if (bppFeeScale.getChargeCycle().equals(ChargeCycle.MONTH)) {
                     reDiscountAmount = preBppBill.getPaidAmount().divide(new BigDecimal(30), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(startDay)).setScale(bppFeeScale.getKeepFigures(), roundMode);
