@@ -11,6 +11,65 @@
 
     <artifactId>lehome-queue</artifactId>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <branch>dev</branch>
+                <config.url>123.57.24.102</config.url>
+                <exculde.first.branch>qa</exculde.first.branch>
+                <exculde.second.branch>release</exculde.second.branch>
+            </properties>
+            <activation>
+                <property>
+                    <name>!smart.hardware.build.type</name>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>devDoc</id>
+            <properties>
+                <branch>dev_doc</branch>
+            </properties>
+            <activation>
+                <property>
+                    <name>smart.hardware.build.type</name>
+                    <value>doc</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>qa</id>
+            <properties>
+                <branch>qa</branch>
+                <config.url>10.10.3.4</config.url>
+                <exculde.first.branch>dev</exculde.first.branch>
+                <exculde.second.branch>release</exculde.second.branch>
+            </properties>
+            <activation>
+                <property>
+                    <name>smart.hardware.build.type</name>
+                    <value>qa</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <branch>release</branch>
+                <config.url>172.16.201.30</config.url>
+                <exculde.first.branch>dev</exculde.first.branch>
+                <exculde.second.branch>qa</exculde.second.branch>
+            </properties>
+            <activation>
+                <property>
+                    <name>smart.hardware.build.type</name>
+                    <value>production</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.activemq</groupId>
