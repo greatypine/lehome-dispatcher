@@ -134,7 +134,8 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
     private void filePayOrder(Integer days, Integer areaId) {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessEqual(QBppPayOrder.createdAt, date).filterEqual(QBppPayOrder.areaId, areaId);
+        date = DateUtils.setDays(date, 1);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppPayOrder.createdAt, date).filterEqual(QBppPayOrder.areaId, areaId);
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
@@ -187,7 +188,8 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
     private void fileOrder(Integer days, Integer areaId) {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessEqual(QBppOrder.createdAt, date).filterEqual(QBppOrder.areaId, areaId);
+        date = DateUtils.setDays(date, 1);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppOrder.createdAt, date).filterEqual(QBppOrder.areaId, areaId);
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
@@ -317,7 +319,8 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
     private void fileBill(Integer days, Integer areaId) {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessEqual(QBppBill.receivableDate, date).filterEqual(QBppBill.areaId, areaId);
+        date = DateUtils.setDays(date, 1);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppBill.receivableDate, date).filterEqual(QBppBill.areaId, areaId);
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
