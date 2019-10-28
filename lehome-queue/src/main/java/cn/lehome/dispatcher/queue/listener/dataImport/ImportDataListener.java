@@ -527,9 +527,9 @@ public class ImportDataListener extends AbstractJobListener {
         }
         Boolean isLiv = false;
         if ("在住".equals(isLiving)) {
-            isLiv = true;
-        } else if ("不在住".equals(isLiving)) {
             isLiv = false;
+        } else if ("不在住".equals(isLiving)) {
+            isLiv = true;
         } else {
             return new ImmutablePair<>(false, "在住信息不对");
         }
