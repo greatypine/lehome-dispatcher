@@ -164,7 +164,7 @@ public class ImportDataListener extends AbstractJobListener {
                     }
                 }
             } catch (Exception e) {
-                logger.error("预导入失败, dataImportId = {}, line = {}", dataImport.getId(), dataImportEvent.getObjectId());
+                logger.error("预导入失败, dataImportId = {}, line = {}", dataImport.getId(), dataImportEvent.getObjectId(), e);
                 isSuccess = false;
                 errorMsg = "系统错误";
             } finally {
@@ -479,7 +479,7 @@ public class ImportDataListener extends AbstractJobListener {
         FloorUnitInfo unitInfo = floorUnitInfoList.get(0);
         String roomId = rowDatas.get(4);
         List<HouseInfo> houseInfoList = smartHouseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, unitInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled));
-        if (floorUnitInfoList == null || floorUnitInfoList.size() < 1) {
+        if (houseInfoList == null || houseInfoList.size() < 1) {
             return new ImmutablePair<>(false, "未找到房间信息");
         }
         HouseInfo houseInfo = houseInfoList.get(0);
