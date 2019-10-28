@@ -306,6 +306,9 @@ public class ImportDataListener extends AbstractJobListener {
 
         String roomId = rowDatas.get(8);
         String roomName = rowDatas.get(9);
+        if (StringUtils.isEmpty(roomId)) {
+            return new ImmutablePair<>(false, "未填写房间号");
+        }
         ApiRequest apiRequest = ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaInfo.getId()).filterEqual(QHouseInfo.roomId, roomId).filterEqual(QHouseInfo.enabledStatus, EnabledStatus.Enabled);
         ApiRequest dataApiRequest = ApiRequest.newInstance().filterEqual(QDataImportHouseInfo.dataImportId, dataImportId).filterEqual(QDataImportHouseInfo.areaId, areaInfo.getId()).filterEqual(QDataImportHouseInfo.roomId, roomId);
         if (unitInfo != null) {
