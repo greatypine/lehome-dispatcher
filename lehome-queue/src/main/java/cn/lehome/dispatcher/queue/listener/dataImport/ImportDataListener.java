@@ -366,11 +366,11 @@ public class ImportDataListener extends AbstractJobListener {
         if (StringUtils.isNotEmpty(startChargingTimeStr)) {
             startChargingTime = dateConvert(occupancyTimeStr);
         }
-        OccupancyStatus occupancyStatus = OccupancyStatus.OCCUPANCY;
+        OccupancyStatus occupancyStatus = OccupancyStatus.EMPTY;
         String occupancyStatusStr = rowDatas.get(15);
         if (StringUtils.isNotEmpty(occupancyStatusStr)) {
-            if ("空置".equals(occupancyStatusStr)) {
-                occupancyStatus = OccupancyStatus.EMPTY;
+            if (!"空置".equals(occupancyStatusStr)) {
+                occupancyStatus = OccupancyStatus.OCCUPANCY;
             }
         }
         DecorationStatus decorationStatus = DecorationStatus.ROUGH;
