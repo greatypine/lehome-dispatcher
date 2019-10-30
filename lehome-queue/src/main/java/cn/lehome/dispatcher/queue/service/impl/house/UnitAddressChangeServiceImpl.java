@@ -3,11 +3,11 @@ package cn.lehome.dispatcher.queue.service.impl.house;
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.QAddressBaseInfo;
 import cn.lehome.base.pro.api.bean.address.AddressBean;
-import cn.lehome.base.pro.api.bean.house.FloorLayerInfo;
-import cn.lehome.base.pro.api.bean.house.FloorUnitInfo;
-import cn.lehome.base.pro.api.bean.house.HouseInfo;
-import cn.lehome.base.pro.api.bean.house.QHouseInfo;
+import cn.lehome.base.pro.api.bean.area.ManagerArea;
+import cn.lehome.base.pro.api.bean.house.*;
 import cn.lehome.base.pro.api.service.address.AddressBaseApiService;
+import cn.lehome.base.pro.api.service.area.ManagerAreaApiService;
+import cn.lehome.base.pro.api.service.house.FloorInfoApiService;
 import cn.lehome.base.pro.api.service.house.FloorLayerInfoApiService;
 import cn.lehome.base.pro.api.service.house.FloorUnitInfoApiService;
 import cn.lehome.base.pro.api.service.house.HouseInfoApiService;
@@ -17,6 +17,7 @@ import cn.lehome.dispatcher.queue.service.impl.AbstractBaseServiceImpl;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,6 +40,12 @@ public class UnitAddressChangeServiceImpl extends AbstractBaseServiceImpl implem
 
     @Autowired
     private FloorLayerInfoApiService floorLayerInfoApiService;
+
+    @Autowired
+    private ManagerAreaApiService managerAreaApiService;
+
+    @Autowired
+    private FloorInfoApiService floorInfoApiService;
 
     @Override
     public void changeName(Integer id) {
@@ -83,11 +90,37 @@ public class UnitAddressChangeServiceImpl extends AbstractBaseServiceImpl implem
 
     private void changeHouse(FloorUnitInfo floorUnitInfo) {
         List<HouseInfo> list = houseInfoApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfo.unitId, floorUnitInfo.getId()));
+        FloorInfo floorInfo = floorInfoApiService.findOne(floorUnitInfo.getFloorId());
+        if (floorInfo == null) {
+            logger.error("楼宇未找到, floorId = " + floorUnitInfo.getFloorId());
+            return;
+        }
+        ManagerArea managerArea = managerAreaApiService.findOne(floorInfo.getManageAreaId());
+        if (managerArea == null) {
+            logger.error("管控区域未找到, managerAreaId = " + floorInfo.getManageAreaId());
+            return;
+        }
         for (HouseInfo houseInfo : list) {
             houseInfo.setUnitNo(floorUnitInfo.getUnitNo());
             houseInfo.setUnitName(floorUnitInfo.getUnitName());
-            FloorLayerInfo floorLayerInfo = floorLayerInfoApiService.findOne(houseInfo.getLayerId());
-            houseInfo.setRoomAddress(String.format("%s-%s%s-%s%s-%s%s-%s%s", houseInfo.getAreaName(), houseInfo.getFloorNo(), houseInfo.getFloorName(), floorUnitInfo.getUnitNo(), houseInfo.getUnitName(), floorLayerInfo.getNumber(), floorLayerInfo.getName(), houseInfo.getRoomId(), houseInfo.getRoomName()));
+            String roomAddress = managerArea.getAreaName();
+            if (StringUtils.isNotEmpty(houseInfo.getFloorNo())) {
+                roomAddress += "-" + houseInfo.getFloorNo();
+                if (StringUtils.isNotEmpty(floorInfo.getFloorName())) {
+                    roomAddress += floorInfo.getFloorName();
+                }
+            }
+            if (StringUtils.isNotEmpty(houseInfo.getUnitNo())) {
+                roomAddress += "-" + houseInfo.getUnitNo();
+                if (StringUtils.isNotEmpty(floorUnitInfo.getUnitName())) {
+                    roomAddress += floorUnitInfo.getUnitName();
+                }
+            }
+            roomAddress += "-" + houseInfo.getRoomId();
+            if (StringUtils.isNotEmpty(houseInfo.getRoomName())) {
+                roomAddress += houseInfo.getRoomName();
+            }
+            houseInfo.setRoomAddress(roomAddress);
             houseInfoApiService.update(houseInfo);
         }
     }
