@@ -73,7 +73,17 @@ public class FloorAddressChangeServiceImpl extends AbstractBaseServiceImpl imple
             info.setAddress(JSON.toJSONString(addressBean));
         }
         if (!CollectionUtils.isEmpty(updateList)) {
-            addressBaseApiService.batchSave(updateList);
+            List<AddressBaseInfo> tempList = Lists.newArrayList();
+            for (AddressBaseInfo addressBaseInfo1 : updateList) {
+                tempList.add(addressBaseInfo1);
+                if (tempList.size() > 30) {
+                    addressBaseApiService.batchSave(tempList);
+                    tempList.clear();
+                }
+            }
+            if (!CollectionUtils.isEmpty(tempList)) {
+                addressBaseApiService.batchSave(tempList);
+            }
         }
     }
 
