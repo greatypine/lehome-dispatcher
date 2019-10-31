@@ -229,7 +229,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                     } else {
                         billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR) + 1);
                     }
-                    billTime = DateUtils.setMonths(billTime, bppFeeScaleCycle.getEndMonth() - 1);
+                    billTime = DateUtils.setMonths(billTime, bppFeeScaleCycle.getEndMonth());
                     billTime = DateUtils.setDays(billTime, 1);
                     billTime = DateUtils.setHours(billTime, 23);
                     billTime = DateUtils.setMinutes(billTime, 59);
@@ -318,32 +318,33 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                 billTime = new Date(endTime.getTime());
             } else {
                 if (bppFeeScale.getBillCycleSettingType().equals(BillCycleSettingType.NATURAL_YEAR)) {
+                    endTime = DateUtils.setDays(endTime, 1);
                     endTime = DateUtils.addYears(endTime, 1);
                     endTime = DateUtils.setMonths(endTime, 0);
-                    endTime = DateUtils.setDays(endTime, 1);
                     endTime = DateUtils.addDays(endTime, -1);
                 } else {
                     if (bppFeeScaleCycle == null) {
+                        endTime = DateUtils.setDays(endTime, 1);
                         endTime = DateUtils.addYears(endTime, 1);
                         endTime = DateUtils.setMonths(endTime, 0);
-                        endTime = DateUtils.setDays(endTime, 1);
                         endTime = DateUtils.addDays(endTime, -1);
                     } else {
                         int startMonth = DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1;
                         if (startMonth == 1) {
-                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
                             startTime = DateUtils.setDays(startTime, 1);
+                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
                         }
                         startMonth = DateUtils.toCalendar(startTime).get(Calendar.MONTH) + 1;
                         if (startMonth >= bppFeeScaleCycle.getStartMonth()) {
+                            endTime = DateUtils.setDays(endTime, 1);
                             endTime = DateUtils.addYears(endTime, 1);
                             endTime = DateUtils.setMonths(endTime, bppFeeScaleCycle.getEndMonth() - 1);
-                            endTime = DateUtils.setDays(endTime, 1);
                             endTime = DateUtils.addMonths(endTime, 1);
                             endTime = DateUtils.addDays(endTime, -1);
                         } else {
-                            endTime = DateUtils.setMonths(endTime, bppFeeScaleCycle.getEndMonth() - 1);
                             endTime = DateUtils.setDays(endTime, 1);
+                            endTime = DateUtils.setMonths(endTime, bppFeeScaleCycle.getEndMonth() - 1);
+
                             endTime = DateUtils.addMonths(endTime, 1);
                             endTime = DateUtils.addDays(endTime, -1);
                         }
@@ -440,19 +441,21 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                     if (bppFeeScaleCycle.getStartMonth() != startMonth) {
                         if (startMonth >= bppFeeScaleCycle.getStartMonth()) {
                             startTime = DateUtils.addYears(startTime, 1);
-                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
                             startTime = DateUtils.setDays(startTime, 1);
+                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
                         } else {
-                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
                             startTime = DateUtils.setDays(startTime, 1);
+                            startTime = DateUtils.setMonths(startTime, bppFeeScaleCycle.getStartMonth() - 1);
+
                         }
                     } else {
                         startTime = DateUtils.addYears(startTime, 1);
                     }
                 } else {
+                    startTime = DateUtils.setDays(startTime, 1);
                     startTime = DateUtils.addYears(startTime, 1);
                     startTime = DateUtils.setMonths(startTime, 0);
-                    startTime = DateUtils.setDays(startTime, 1);
+
                 }
             }
         }
@@ -473,6 +476,5 @@ public class PreBuildBppBillListener extends AbstractJobListener {
     public String getConsumerId() {
         return "pre_build_bpp";
     }
-
 
 }
