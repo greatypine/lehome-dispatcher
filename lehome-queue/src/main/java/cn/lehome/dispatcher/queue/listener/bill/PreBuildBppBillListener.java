@@ -229,7 +229,7 @@ public class PreBuildBppBillListener extends AbstractJobListener {
                     } else {
                         billTime = DateUtils.setYears(billTime, DateUtils.toCalendar(startTime).get(Calendar.YEAR) + 1);
                     }
-                    billTime = DateUtils.setMonths(billTime, bppFeeScaleCycle.getEndMonth());
+                    billTime = DateUtils.setMonths(billTime, bppFeeScaleCycle.getEndMonth() - 1);
                     billTime = DateUtils.setDays(billTime, 1);
                     billTime = DateUtils.setHours(billTime, 23);
                     billTime = DateUtils.setMinutes(billTime, 59);
