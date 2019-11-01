@@ -119,7 +119,7 @@ public class ImportDataListener extends AbstractJobListener {
     private HouseholdCertificationApiService householdCertificationApiService;
 
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy");
+    private static SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 
 
 
@@ -633,5 +633,10 @@ public class ImportDataListener extends AbstractJobListener {
 
     private HouseholdsType getType(Integer id) {
         return Stream.of(HouseholdsType.values()).filter(t -> t.index().equals(id)).findFirst().orElse(null);
+    }
+
+    public static void main(String[] args) throws Exception {
+        String dateStr = "Tue Oct 01 00:00:00 CST 2019";
+        Date date = sdf.parse(dateStr);
     }
 }
