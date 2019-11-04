@@ -149,6 +149,7 @@ public class ImportDataListener extends AbstractJobListener {
                 OssFileDownloadUtil ossFileDownloadUtil = new OssFileDownloadUtil(dataImport.getExcelUrl());
                 String filePath = ossFileDownloadUtil.downloadFileFromOss();
                 ExcelUtils excelUtils = new ExcelUtils(filePath);
+                excelUtils.setPattern("yyyy-MM-dd HH:mm:ss");
                 List<List<String>> datas = excelUtils.read(0, dataImportEvent.getObjectId().intValue() - 1, dataImportEvent.getObjectId().intValue() - 1);
                 if (dataImportEvent.getType().equals(DataImportType.HOUSE)) {
                     Pair<Boolean, String> resultPair = this.preHouse(datas, dataImport.getAreaId(), dataImport.getId());
