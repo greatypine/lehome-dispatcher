@@ -521,24 +521,26 @@ public class AreaFlushListener extends AbstractJobListener {
                     if (userAccount != null) {
                         logger.error("员工信息已经存在, id = " + smartUserAccount.getId());
                         lastId = smartUserAccount.getId().intValue();
-                        continue;
-                    }
-                    userAccount = new cn.lehome.base.api.common.business.oauth2.bean.user.UserAccount();
-                    userAccount.setSalt(smartUserAccount.getSalt());
-                    userAccount.setTenantId(smartUserAccount.getTenantId());
-                    userAccount.setPhone(smartUserAccount.getPhoneNumber());
-                    userAccount.setUserKey(smartUserAccount.getPhoneNumber());
-                    userAccount.setSecret(smartUserAccount.getSecret());
-                    userAccount.setType(AccountType.EMPLOYEE_ACCOUNT);
-                    userAccount = businessUserAccountApiService.createAccount(userAccount, "sqbj-smart");
-                    Oauth2Account oauth2Account = businessUserAccountApiService.getOauth2Account(userAccount.getId(), "sqbj-smart");
-                    for (SmartOauth2Account smartOauth2Account : smartOauth2Accounts) {
-                        if (!smartOauth2Account.getClientId().equals(externalClientId)) {
-                            businessUserAccountApiService.addMutiOpenId(userAccount.getId(), oauth2Account.getId(), smartOauth2Account.getUserOpenId());
+                    } else {
+                        userAccount = new cn.lehome.base.api.common.business.oauth2.bean.user.UserAccount();
+                        userAccount.setSalt(smartUserAccount.getSalt());
+                        userAccount.setTenantId(smartUserAccount.getTenantId());
+                        userAccount.setPhone(smartUserAccount.getPhoneNumber());
+                        userAccount.setUserKey(smartUserAccount.getPhoneNumber());
+                        userAccount.setSecret(smartUserAccount.getSecret());
+                        userAccount.setType(AccountType.EMPLOYEE_ACCOUNT);
+                        userAccount = businessUserAccountApiService.createAccount(userAccount, "sqbj-smart");
+                        Oauth2Account oauth2Account = businessUserAccountApiService.getOauth2Account(userAccount.getId(), "sqbj-smart");
+                        for (SmartOauth2Account smartOauth2Account : smartOauth2Accounts) {
+                            if (!smartOauth2Account.getClientId().equals(externalClientId)) {
+                                businessUserAccountApiService.addMutiOpenId(userAccount.getId(), oauth2Account.getId(), smartOauth2Account.getUserOpenId());
+                            }
                         }
                     }
+
                     staffNum += 1;
                     List<RoleUsers> roleUserses = smartAbacApiService.findByUniqueId(smartUserAccount.getUniqueId());
+                    logger.info("角色信息数 : num = {}, uniqueId = {}", roleUserses == null ? 0 : roleUserses.size(),  smartUserAccount.getUniqueId());
                     if (!CollectionUtils.isEmpty(roleUserses)) {
                         ArrayListMultimap<Long, String> roleMultiMap = ArrayListMultimap.create();
                         for (RoleUsers roleUsers : roleUserses) {
