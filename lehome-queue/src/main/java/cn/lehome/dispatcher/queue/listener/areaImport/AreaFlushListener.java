@@ -193,6 +193,7 @@ public class AreaFlushListener extends AbstractJobListener {
 
 
     private void flushHouse(Integer startId, Integer areaId, ImportTask importTask, ImportEventBean importEventBean) {
+        logger.info("开始刷新房产, areaId = {}, startId = {}", areaId, startId);
         ApiRequest apiRequest = ApiRequest.newInstance().filterEqual(QHouseInfo.areaId, areaId).filterGreaterThan(QHouseInfo.id, startId);
         ApiResponse<HouseInfo> response = smartHouseInfoApiService.findAll(apiRequest, ApiRequestPage.newInstance().paging(0, PAGE_SIZE).addOrder(QHouseInfo.id, PageOrderType.ASC));
         int num = 0;
@@ -281,6 +282,7 @@ public class AreaFlushListener extends AbstractJobListener {
     }
 
     private void flushHousehold(Integer startId, Integer areaId, ImportTask importTask, ImportEventBean importEventBean) {
+        logger.info("开始刷新住户, areaId = {}, startId = {}", areaId, startId);
         ApiResponse<HouseholdsSettingsInfo> response = smartHouseholdsApiService.findSettingAll(ApiRequest.newInstance().filterEqual(QHouseholdsSettingsInfo.areaId, areaId).filterGreaterThan(QHouseholdsSettingsInfo.id, startId), ApiRequestPage.newInstance().paging(0, PAGE_SIZE).addOrder(QHouseholdsSettingsInfo.id, PageOrderType.ASC));
         AreaInfo areaInfo = smartAreaInfoApiService.findOne(areaId);
         if (areaInfo == null) {
@@ -388,6 +390,7 @@ public class AreaFlushListener extends AbstractJobListener {
     }
 
     private void flushFinance(Integer areaId, ImportTask importTask, ImportEventBean importEventBean) {
+        logger.info("开始财务数据, areaId = {}", areaId);
         List<Applications> applicationsList = applicationApiService.findByKey(Sets.newHashSet(BPP_KEY));
         if (CollectionUtils.isEmpty(applicationsList)) {
             logger.error("应用信息未找到");
@@ -484,6 +487,7 @@ public class AreaFlushListener extends AbstractJobListener {
     }
 
     private void flushStaff(Integer startId, Integer areaId, ImportTask importTask, ImportEventBean importEventBean) {
+        logger.info("开始员工, areaId = {}", areaId);
         AreaInfo areaInfo = smartAreaInfoApiService.findOne(areaId);
         if (areaInfo == null) {
             logger.error("小区信息未找到, id = " + areaId);
