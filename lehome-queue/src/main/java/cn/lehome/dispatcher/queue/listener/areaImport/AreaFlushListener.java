@@ -487,7 +487,7 @@ public class AreaFlushListener extends AbstractJobListener {
     }
 
     private void flushStaff(Integer startId, Integer areaId, ImportTask importTask, ImportEventBean importEventBean) {
-        logger.info("开始员工, areaId = {}", areaId);
+        logger.info("开始员工, areaId = {}, startId = {}", areaId, startId);
         AreaInfo areaInfo = smartAreaInfoApiService.findOne(areaId);
         if (areaInfo == null) {
             logger.error("小区信息未找到, id = " + areaId);
@@ -598,6 +598,7 @@ public class AreaFlushListener extends AbstractJobListener {
 
 
             if (response.getCount() == 0 || response.getCount() < PAGE_SIZE) {
+                logger.info("导入完成, id = {}", importTask.getId());
                 importTaskApiService.updateStatus(importTask.getId(), ImportTaskStatus.FINISHED, "");
             } else {
                 importEventBean.setPart(ImportDataPartConstants.STAFF);
@@ -605,6 +606,7 @@ public class AreaFlushListener extends AbstractJobListener {
                 eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.FLUSH_AREA_DATA_EVENT, importEventBean));
             }
         } else {
+            logger.info("导入完成, id = {}", importTask.getId());
             importTaskApiService.updateStatus(importTask.getId(), ImportTaskStatus.FINISHED, "");
         }
     }
