@@ -49,10 +49,7 @@ import cn.lehome.base.pro.api.service.households.HouseholdsInfoApiService;
 import cn.lehome.base.pro.api.service.households.HouseholdsUserApiService;
 import cn.lehome.base.smart.abac.bean.RoleUsers;
 import cn.lehome.base.smart.abac.service.SmartAbacApiService;
-import cn.lehome.base.smart.oauth2.bean.QSmartOauth2Account;
-import cn.lehome.base.smart.oauth2.bean.QSmartUserAccount;
-import cn.lehome.base.smart.oauth2.bean.SmartOauth2Account;
-import cn.lehome.base.smart.oauth2.bean.SmartUserAccount;
+import cn.lehome.base.smart.oauth2.bean.*;
 import cn.lehome.base.smart.oauth2.service.SmartOauth2UserAccountApiService;
 import cn.lehome.bean.acs.enums.user.UserType;
 import cn.lehome.bean.bpp.enums.fee.*;
@@ -536,6 +533,26 @@ public class AreaFlushListener extends AbstractJobListener {
                                 businessUserAccountApiService.addMutiOpenId(userAccount.getId(), oauth2Account.getId(), smartOauth2Account.getUserOpenId());
                             }
                         }
+                    }
+
+                    UserProfiles userProfiles = smartOauth2UserAccountApiService.findByAccountId(smartUserAccount.getId());
+                    if (userProfiles != null) {
+                        logger.info("修改用户基本信息, accountId = {}", userAccount.getId());
+                        cn.lehome.base.api.common.business.oauth2.bean.user.UserAccountDetails userAccountDetails = new cn.lehome.base.api.common.business.oauth2.bean.user.UserAccountDetails();
+                        userAccountDetails.setRealName(userProfiles.getName());
+                        userAccountDetails.setNickName(userProfiles.getName());
+                        userAccountDetails.setHeadUrl("");
+                        userAccountDetails.setEmail("");
+                        if (StringUtils.isNotEmpty(userProfiles.getGender())) {
+                            if (userProfiles.getGender().equals("Female")) {
+                                userAccountDetails.setSexType(SexType.Female);
+                            } else {
+                                userAccountDetails.setSexType(SexType.Male);
+                            }
+                        } else {
+                            userAccountDetails.setSexType(SexType.Unknown);
+                        }
+                        businessUserAccountApiService.updateAccountDetails(userAccount.getId(), userAccountDetails);
                     }
 
                     staffNum += 1;
