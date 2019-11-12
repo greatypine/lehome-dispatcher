@@ -401,11 +401,28 @@ public class AreaFlushListener extends AbstractJobListener {
             eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.FLUSH_AREA_DATA_EVENT, importEventBean));
             return;
         }
+        AreaInfo areaInfo = smartAreaInfoApiService.findOne(areaId);
+        if (areaInfo == null) {
+            logger.error("小区信息未找到, id = " + areaId);
+            importTaskApiService.updateStatus(importTask.getId(), ImportTaskStatus.FAILED, "刷新住户数据错误");
+            return;
+        }
+        int bppFeeNum = 0;
         int bppFeeScaleNum = 0;
         int bppBill = 0;
         int bppOrderNum = 0;
         boolean isSucess = true;
         try {
+            List<BppFee> bppFeeList = bppFeeApiService.findAll(ApiRequest.newInstance().filterEqual(QBppFee.tenantCode, areaInfo.getUniqueCode()).filterEqual(QBppFee.deleteStatus, BppFeeApiService.NORMAL_STATUS));
+            if (!CollectionUtils.isEmpty(bppFeeList)) {
+                for (BppFee bppFee : bppFeeList) {
+                    if (bppFee.getBillCycle().equals(BillCycle.APERIODIC)) {
+                        bppFee.setIsHasBill(YesNoStatus.NO);
+                        bppFeeApiService.update(bppFee);
+                        bppFeeNum++;
+                    }
+                }
+            }
             List<BppFeeScale> bppFeeScaleList = bppFeeApiService.findScaleAll(ApiRequest.newInstance().filterEqual(QBppFeeScale.areaId, areaId).filterEqual(QBppFeeScale.deleteStatus, BppFeeApiService.NORMAL_STATUS));
             Map<Integer, BppFeeScale> firstScaleMap = Maps.newHashMap();
             ArrayListMultimap<Integer, BppFeeScale> scaleArrayList = ArrayListMultimap.create();
@@ -470,6 +487,7 @@ public class AreaFlushListener extends AbstractJobListener {
         importTask.setBppFeeScaleNum(bppFeeScaleNum);
         importTask.setBillNum(bppBill);
         importTask.setOrderNum(bppOrderNum);
+        importTask.setBppFeeNum(bppFeeNum);
         importTaskApiService.updateNum(importTask);
 
         if (!isSucess) {
