@@ -78,6 +78,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -440,6 +441,14 @@ public class AreaFlushListener extends AbstractJobListener {
                     if (bppFee.getBillCycle().equals(BillCycle.MONTH)) {
                         bppFeeScale.setBillCycleSettingType(BillCycleSettingType.NONE);
                     }
+                    if (bppFeeScale.getChargeUnitPrice().compareTo(new BigDecimal(0.000000)) == 0 && bppFeeScale.getPrice().compareTo(new BigDecimal(0.000000)) != 0) {
+                        bppFeeScale.setChargeUnit(ChargeUnit.FEE_PER);
+                        bppFeeScale.setChargeUnitPrice(bppFeeScale.getPrice());
+                    }
+                    if (StringUtils.isEmpty(bppFeeScale.getName())) {
+                        String name = bppFee.getName() + "-" + bppFee.getBillCycle().getName() + "-" + bppFeeScale.getChargeCycle().getName() + "-" + bppFeeScale.getChargeCycle().getName();
+                        bppFeeScale.setName(name);
+                    }
                     bppFeeApiService.updateFeeScale(bppFeeScale);
                     bppFeeScaleNum += 1;
                     firstScaleMap.put(bppFeeScale.getId(), bppFeeScale);
@@ -460,6 +469,7 @@ public class AreaFlushListener extends AbstractJobListener {
                     if (!CollectionUtils.isEmpty(bppBillList)) {
                         billList.addAll(bppBillList.stream().map(BppBill::getId).collect(Collectors.toList()));
                     }
+                    bppFeeApiService.deleteFeeScale(bppFeeScale.getId());
                 }
                 if (!CollectionUtils.isEmpty(list)) {
                     bppFeeApiService.batchSaveOrUpdateAddress(scaleId, list);
