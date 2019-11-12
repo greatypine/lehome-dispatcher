@@ -457,7 +457,7 @@ public class AreaFlushListener extends AbstractJobListener {
                         } else {
                             name = name + "月计/";
                         }
-                        if (bppFeeScale.getChargeCycle().equals(ChargeUnitTimeCycle.YEAR)) {
+                        if (bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR)) {
                             name = name + "年账)";
                         } else {
                             name = name + "月账)";
