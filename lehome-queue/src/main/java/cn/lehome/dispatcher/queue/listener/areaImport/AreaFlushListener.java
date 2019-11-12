@@ -446,7 +446,22 @@ public class AreaFlushListener extends AbstractJobListener {
                         bppFeeScale.setChargeUnitPrice(bppFeeScale.getPrice());
                     }
                     if (StringUtils.isEmpty(bppFeeScale.getName())) {
-                        String name = bppFee.getName() + "-" + bppFee.getBillCycle().getName() + "-" + bppFeeScale.getChargeCycle().getName() + "-" + bppFeeScale.getChargeCycle().getName();
+                        String name = bppFee.getName() + "(";
+                        if (bppFee.getBillCycle().equals(BillCycle.YEAR)) {
+                            name = name + "年收/";
+                        } else {
+                            name = name + "月收/";
+                        }
+                        if (bppFeeScale.getChargeUnitTimeCycle().equals(ChargeUnitTimeCycle.YEAR)) {
+                            name = name + "年计/";
+                        } else {
+                            name = name + "月计/";
+                        }
+                        if (bppFeeScale.getChargeCycle().equals(ChargeUnitTimeCycle.YEAR)) {
+                            name = name + "年账)";
+                        } else {
+                            name = name + "月账)";
+                        }
                         bppFeeScale.setName(name);
                     }
                     bppFeeApiService.updateFeeScale(bppFeeScale);
