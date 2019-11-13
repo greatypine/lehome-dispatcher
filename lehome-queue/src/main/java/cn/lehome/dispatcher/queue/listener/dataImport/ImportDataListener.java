@@ -368,7 +368,7 @@ public class ImportDataListener extends AbstractJobListener {
             occupancyTime = dateConvert(occupancyTimeStr);
         }
         if (StringUtils.isNotEmpty(startChargingTimeStr)) {
-            startChargingTime = dateConvert(occupancyTimeStr);
+            startChargingTime = dateConvert(startChargingTimeStr);
         }
         OccupancyStatus occupancyStatus = OccupancyStatus.EMPTY;
         String occupancyStatusStr = rowDatas.get(15);
