@@ -222,7 +222,7 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
             boolean isResult = true;
             if (payRecord.getPayType().equals(PayType.ALIPAY)) {
                 AliRefundRequest aliRefundRequest = new AliRefundRequest();
-                aliRefundRequest.setOrderId(payRecord.getId());
+                aliRefundRequest.setOrderId(orderBack.getPrePayRecordId());
                 aliRefundRequest.setRefundOrderId(payRecord.getId());
                 aliRefundRequest.setRefundFee(payRecord.getPayMoney().intValue());
                 aliRefundRequest.setTotalFee(payRecord.getPayMoney().intValue());
@@ -242,7 +242,7 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
                     wxRefundRequest.setAppId(wxAppAppId);
                 }
                 wxRefundRequest.setNotifyUrl(wxRefundNotify);
-                wxRefundRequest.setOrderId(payRecord.getId());
+                wxRefundRequest.setOrderId(orderBack.getPrePayRecordId());
                 wxRefundRequest.setRefundOrderId(payRecord.getId());
                 wxRefundRequest.setRefundFee(payRecord.getPayMoney().intValue());
                 wxRefundRequest.setTotalFee(payRecord.getPayMoney().intValue());
