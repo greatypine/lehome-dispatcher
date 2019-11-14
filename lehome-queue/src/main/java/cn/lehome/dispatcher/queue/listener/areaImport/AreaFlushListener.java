@@ -213,8 +213,8 @@ public class AreaFlushListener extends AbstractJobListener {
                             AddressBean addressBean = JSON.parseObject(addressBaseInfo.getAddress(), AddressBean.class);
                             houseInfo.setManagerAreaName(addressBean.getProjectName());
                             houseInfo.setAreaName(addressBean.getAreaName());
-                            houseInfo.setFloorNo(addressBean.getFloorNumber());
-                            houseInfo.setFloorName(addressBean.getFloorName());
+                            houseInfo.setFloorNo(addressBean.getBuildingNumber());
+                            houseInfo.setFloorName(addressBean.getBuildingName());
                             houseInfo.setUnitNo(addressBean.getUnitNumber());
                             houseInfo.setUnitName(addressBean.getUnitName());
                             houseInfo.setRoomName(addressBean.getRoomName());
