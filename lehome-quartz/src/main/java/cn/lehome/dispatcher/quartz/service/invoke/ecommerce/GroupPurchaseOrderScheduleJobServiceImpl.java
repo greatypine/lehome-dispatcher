@@ -2,6 +2,7 @@ package cn.lehome.dispatcher.quartz.service.invoke.ecommerce;
 
 import cn.lehome.base.api.business.ec.bean.ecommerce.goods.GoodsSpuIndex;
 import cn.lehome.base.api.business.ec.bean.ecommerce.order.*;
+import cn.lehome.base.api.business.ec.bean.ecommerce.pay.PayRecord;
 import cn.lehome.base.api.business.ec.service.ecommerce.goods.GoodsSpuIndexApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.GoodsGroupbuyApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderApiService;
@@ -9,27 +10,34 @@ import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderBackApiServic
 import cn.lehome.base.api.business.ec.service.ecommerce.order.OrderIndexApiService;
 import cn.lehome.base.api.business.ec.service.ecommerce.pay.PayRecordApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
+import cn.lehome.base.api.common.constant.EventConstants;
+import cn.lehome.base.api.common.pay.bean.alipay.AliRefundRequest;
+import cn.lehome.base.api.common.pay.bean.trade.RefundResponse;
+import cn.lehome.base.api.common.pay.bean.wxpay.WXRefundRequest;
+import cn.lehome.base.api.common.pay.service.alipay.merchant.MerchantAlipayApiService;
+import cn.lehome.base.api.common.pay.service.wxpay.merchant.WXPayMerchantApiService;
 import cn.lehome.base.api.common.service.idgenerator.RedisIdGeneratorApiService;
 import cn.lehome.bean.business.ec.enums.ecommerce.goods.SaleStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.BackReason;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.GroupbuyStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderBackStatus;
 import cn.lehome.bean.business.ec.enums.ecommerce.order.OrderStatus;
+import cn.lehome.bean.business.ec.enums.ecommerce.pay.PayType;
 import cn.lehome.bean.business.ec.enums.ecommerce.pay.TransactionProgress;
+import cn.lehome.bean.pay.enums.PaySource;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
+import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
 import cn.lehome.framework.base.api.core.exception.RestfulApiException;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("groupPurchaseOrderScheduleJobService")
 public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServiceImpl{
@@ -65,6 +73,21 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
 
     @Autowired
     private PayRecordApiService payRecordApiService;
+
+    @Autowired
+    private MerchantAlipayApiService merchantAlipayApiService;
+
+    @Autowired
+    private WXPayMerchantApiService wxPayMerchantApiService;
+
+    @Value("${wx.refund.notify}")
+    protected String wxRefundNotify;
+
+    @Value("${wx.app.appId}")
+    protected String wxAppAppId;
+
+    @Value("${wx.small.appId}")
+    protected String wxSmallAppId;
 
     @Override
     public void doInvoke(Map<String, String> params) {
@@ -194,13 +217,50 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
             return;
         }
 
-        payRecordApiService.forcedRefund(orderBack.getPayRecordId());
+        PayRecord payRecord =  payRecordApiService.findOne(orderBack.getPayRecordId());
+        if(payRecord != null) {
+            boolean isResult = true;
+            if (payRecord.getPayType().equals(PayType.ALIPAY)) {
+                AliRefundRequest aliRefundRequest = new AliRefundRequest();
+                aliRefundRequest.setOrderId(payRecord.getId());
+                aliRefundRequest.setRefundOrderId(payRecord.getId());
+                aliRefundRequest.setRefundFee(payRecord.getPayMoney().intValue());
+                aliRefundRequest.setTotalFee(payRecord.getPayMoney().intValue());
+                aliRefundRequest.setPaySource(PaySource.SQBJ);
+                RefundResponse refundResponse = merchantAlipayApiService.refundOrder(aliRefundRequest);
+                if (!refundResponse.isResStatus()) {
+                    isResult = false;
+                } else {
+                    Map.Entry<String, TransactionProgress> entry = new HashMap.SimpleEntry<>(payRecord.getId(), TransactionProgress.PAY_SUCCESS);
+                    eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.PAYRECORD_STATUS_CHANGE_EVENT, entry));
+                }
+            } else {
+                WXRefundRequest wxRefundRequest = new WXRefundRequest();
+                if (payRecord.getClientId().equals("sqbj-ecommerce-small")) {
+                    wxRefundRequest.setAppId(wxSmallAppId);
+                } else {
+                    wxRefundRequest.setAppId(wxAppAppId);
+                }
+                wxRefundRequest.setNotifyUrl(wxRefundNotify);
+                wxRefundRequest.setOrderId(payRecord.getId());
+                wxRefundRequest.setRefundOrderId(payRecord.getId());
+                wxRefundRequest.setRefundFee(payRecord.getPayMoney().intValue());
+                wxRefundRequest.setTotalFee(payRecord.getPayMoney().intValue());
+                wxRefundRequest.setPaySource(PaySource.SQBJ);
+                RefundResponse refundResponse = wxPayMerchantApiService.refundOrder(wxRefundRequest);
+                if (!refundResponse.isResStatus()) {
+                    isResult = false;
+                }
+            }
 
-        loaderServiceComponent.load(orderIndex, QOrderIndex.orderDetailIndexList);
+            payRecordApiService.forcedRefund(orderBack.getPayRecordId(), isResult);
 
-        if (orderIndex.getOrderDetailIndexList() == null || orderIndex.getOrderDetailIndexList().size() == 0) {
-            logger.error("团购订单自订单未找到, orderId = " + orderIndex.getId());
-            return;
+            loaderServiceComponent.load(orderIndex, QOrderIndex.orderDetailIndexList);
+
+            if (orderIndex.getOrderDetailIndexList() == null || orderIndex.getOrderDetailIndexList().size() == 0) {
+                logger.error("团购订单自订单未找到, orderId = " + orderIndex.getId());
+                return;
+            }
         }
     }
 
