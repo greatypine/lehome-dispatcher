@@ -253,6 +253,7 @@ public class GroupPurchaseOrderScheduleJobServiceImpl extends AbstractInvokeServ
                 }
             }
 
+            logger.info("团购自动退款, payRecordId = {}, result = {}", orderBack.getPayRecordId(), isResult);
             payRecordApiService.forcedRefund(orderBack.getPayRecordId(), isResult);
 
             loaderServiceComponent.load(orderIndex, QOrderIndex.orderDetailIndexList);
