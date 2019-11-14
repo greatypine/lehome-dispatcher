@@ -5,7 +5,6 @@ import cn.lehome.dispatcher.queue.listener.task.UserTaskInitListener;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import javax.jms.ConnectionFactory;
@@ -13,7 +12,7 @@ import javax.jms.ConnectionFactory;
 /**
  * 新手任务数据项补偿消费
  */
-@Configuration
+//@Configuration
 public class LoginInitUserTaskMessageJob {
 
     @Autowired
