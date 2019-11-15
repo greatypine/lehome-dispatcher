@@ -122,6 +122,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                 if (!CollectionUtils.isEmpty(bppSettings)) {
                     days = Integer.valueOf(bppSettings.get(0).getConfig());
                 }
+                logger.info("时间差额 ： days = {}, areaId = {}", days, areaId);
                 this.fileBill(days, areaId);
                 this.fileOrder(days, areaId);
                 this.filePayOrder(days, areaId);
