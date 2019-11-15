@@ -394,7 +394,7 @@ public class AreaFlushListener extends AbstractJobListener {
             logger.error("应用信息未找到");
             return;
         }
-        List<ApplicationsTenant> applicationsTenants = applicationsTenantApiService.findAll(ApiRequest.newInstance().filterEqual(QApplicationsTenant.applicationId, applicationsList.get(0).getId()));
+        List<ApplicationsTenant> applicationsTenants = applicationsTenantApiService.findAll(ApiRequest.newInstance().filterEqual(QApplicationsTenant.objectId, areaId).filterEqual(QApplicationsTenant.applicationId, applicationsList.get(0).getId()));
         if (CollectionUtils.isEmpty(applicationsTenants)) {
             logger.error("没有开通财务模块不需要刷新财务数据, areaId = " + areaId);
             importEventBean.setPart(ImportDataPartConstants.STAFF);
