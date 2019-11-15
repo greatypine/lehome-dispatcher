@@ -358,6 +358,8 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                             bppBillIndex.setPaidDate(bppOrder.getPaidAt().getTime());
                             if (bppBillIndex.getPaidDate() > bppBillIndex.getReceivableDate()) {
                                 bppBillIndex.setBillPaidType(BillPaidType.OVERDUE);
+                            } else {
+                                bppBillIndex.setBillPaidType(BillPaidType.RECEIVED);
                             }
                         }
                     } else {
