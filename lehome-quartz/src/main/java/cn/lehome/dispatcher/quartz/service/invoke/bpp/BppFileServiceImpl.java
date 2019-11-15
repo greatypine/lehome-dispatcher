@@ -241,8 +241,8 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                     List<BppOrderTransaction> bppOrderTransactions = bppTransactionApiService.findAll(ApiRequest.newInstance().filterEqual(QBppOrderTransaction.orderId, bppOrder.getId()));
                     List<BppOrderTransactionIndex> orderTransactions = Lists.newArrayList();
                     if (!CollectionUtils.isEmpty(bppOrderTransactions)) {
-                        List<String> accountOpenIds = bppOrderTransactions.stream().filter(orderTransaction -> !orderTransaction.getPayType().equals(PayType.ALIPAY) && !orderTransaction.getPayType().equals(PayType.WXPAY)).map(BppOrderTransaction::getOpenId).collect(Collectors.toList());
-                        List<String> householdUserIds = bppOrderTransactions.stream().filter(orderTransaction -> orderTransaction.getPayType().equals(PayType.ALIPAY) || orderTransaction.getPayType().equals(PayType.WXPAY)).map(BppOrderTransaction::getOpenId).collect(Collectors.toList());
+                        List<String> accountOpenIds = bppOrderTransactions.stream().filter(orderTransaction -> !orderTransaction.getPayType().equals(PayType.ALIPAY) && !orderTransaction.getPayType().equals(PayType.WXPAY)).filter(bppOrderTransaction -> StringUtils.isNotEmpty(bppOrderTransaction.getOpenId())).map(BppOrderTransaction::getOpenId).collect(Collectors.toList());
+                        List<String> householdUserIds = bppOrderTransactions.stream().filter(orderTransaction -> orderTransaction.getPayType().equals(PayType.ALIPAY) || orderTransaction.getPayType().equals(PayType.WXPAY)).filter(bppOrderTransaction -> StringUtils.isNotEmpty(bppOrderTransaction.getOpenId())).map(BppOrderTransaction::getOpenId).collect(Collectors.toList());
                         Map<String, UserAccountIndex> userAccountIndexMap = Maps.newHashMap();
                         Map<String, HouseholdIndex> householdIndexMap = Maps.newHashMap();
                         if (!CollectionUtils.isEmpty(accountOpenIds)) {
