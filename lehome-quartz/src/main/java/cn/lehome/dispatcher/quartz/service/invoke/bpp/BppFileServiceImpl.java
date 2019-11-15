@@ -228,11 +228,13 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                                 bppOrderIndex.setChargeUserName(householdIndices.get(0).getName());
                             }
                         } else {
-                            List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QOauth2Account.clientId, "sqbj-smart").filterEqual(QOauth2Account.userOpenId, bppOrder.getChargeUserOpenId()));
-                            if (!CollectionUtils.isEmpty(oauth2AccountIndexList)) {
-                                UserAccountIndex userAccountIndex = businessUserAccountIndexApiService.getUserAccount(Long.valueOf(oauth2AccountIndexList.get(0).getAccountId()));
-                                if (userAccountIndex != null) {
-                                    bppOrderIndex.setChargeUserName(userAccountIndex.getRealName());
+                            if (StringUtils.isNotEmpty(bppOrder.getChargeUserOpenId())) {
+                                List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QOauth2Account.clientId, "sqbj-smart").filterEqual(QOauth2Account.userOpenId, bppOrder.getChargeUserOpenId()));
+                                if (!CollectionUtils.isEmpty(oauth2AccountIndexList)) {
+                                    UserAccountIndex userAccountIndex = businessUserAccountIndexApiService.getUserAccount(Long.valueOf(oauth2AccountIndexList.get(0).getAccountId()));
+                                    if (userAccountIndex != null) {
+                                        bppOrderIndex.setChargeUserName(userAccountIndex.getRealName());
+                                    }
                                 }
                             }
                         }
