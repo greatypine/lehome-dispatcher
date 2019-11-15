@@ -366,6 +366,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                             if (!CollectionUtils.isEmpty(bppOrderDetailIndices)) {
                                 BppOrderIndex bppOrderIndex = bppOrderIndexApiService.getOrder(bppOrderDetailIndices.get(0).getOrderId());
                                 if (bppOrderIndex != null) {
+                                    bppBillIndex.setPaidDate(bppOrderIndex.getPaidAt());
                                     if (bppBillIndex.getPaidDate() > bppBillIndex.getReceivableDate()) {
                                         bppBillIndex.setBillPaidType(BillPaidType.OVERDUE);
                                     } else {
