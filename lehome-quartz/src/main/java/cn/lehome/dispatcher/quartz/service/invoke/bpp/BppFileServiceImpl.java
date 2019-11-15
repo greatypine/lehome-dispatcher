@@ -240,6 +240,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                                     UserAccountIndex userAccountIndex = businessUserAccountIndexApiService.getUserAccount(Long.valueOf(oauth2AccountIndexList.get(0).getAccountId()));
                                     if (userAccountIndex != null) {
                                         bppOrderIndex.setChargeUserName(userAccountIndex.getRealName());
+                                        bppOrderIndex.setChargeUserPhone(userAccountIndex.getPhone());
                                     }
                                 }
                             }
