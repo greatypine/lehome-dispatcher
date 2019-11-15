@@ -608,6 +608,9 @@ public class AreaFlushListener extends AbstractJobListener {
                                 continue;
                             }
                             String[] args = roleUsers.getRegionId().split(":");
+                            if (args.length < 2) {
+                                continue;
+                            }
                             Long areaid = 0L;
                             try {
                                 areaid = Long.parseLong(args[1]);
