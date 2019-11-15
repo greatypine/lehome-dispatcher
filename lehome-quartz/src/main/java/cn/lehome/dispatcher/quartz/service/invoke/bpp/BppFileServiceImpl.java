@@ -117,7 +117,12 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
             for (ApplicationsTenant applicationsTenant : applicationsTenants) {
                 logger.error("开始财务归档任务, areaId = {}", applicationsTenant.getObjectId());
                 Integer areaId = Integer.valueOf(applicationsTenant.getObjectId());
-                List<BppSetting> bppSettings = bppSettingApiService.findAll(ApiRequest.newInstance().filterEqual(QBppSetting.type, BppSettingType.CLOSE_BILL).filterEqual(QBppSetting.areaId, areaId));
+                AreaInfo areaInfo = proAreaInfoApiService.findOne(areaId);
+                if (areaInfo == null) {
+                    logger.error("小区信息未找到, areaId = {}", areaId);
+                    return;
+                }
+                List<BppSetting> bppSettings = bppSettingApiService.findAll(ApiRequest.newInstance().filterEqual(QBppSetting.type, BppSettingType.CLOSE_BILL).filterEqual(QBppSetting.tenantCode, areaInfo.getUniqueCode()));
                 Integer days = defaultFileDays;
                 if (!CollectionUtils.isEmpty(bppSettings)) {
                     days = Integer.valueOf(bppSettings.get(0).getConfig());
