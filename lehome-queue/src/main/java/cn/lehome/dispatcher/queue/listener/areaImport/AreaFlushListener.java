@@ -543,10 +543,19 @@ public class AreaFlushListener extends AbstractJobListener {
             isFirst = true;
         }
         if (!CollectionUtils.isEmpty(response.getPagedData())) {
-            for (SmartUserAccount smartUserAccount : response.getPagedData()) {
+            List<SmartUserAccount> list = Lists.newArrayList(response.getPagedData());
+            for (int i = 0; i < list.size();) {
+                SmartUserAccount smartUserAccount = list.get(0);
                 try {
+                    List<SmartOauth2Account> smartOauth2Accounts = Lists.newArrayList();
+                    try {
+                        smartOauth2Accounts = smartOauth2UserAccountApiService.findAll(ApiRequest.newInstance().filterEqual(QSmartOauth2Account.accountId, smartUserAccount.getId()));
+                    } catch (Exception e) {
+                        logger.error("查询数据失败: id = {}", smartUserAccount.getId() , e);
+                        continue;
+                    }
+                    i++;
 
-                    List<SmartOauth2Account> smartOauth2Accounts = smartOauth2UserAccountApiService.findAll(ApiRequest.newInstance().filterEqual(QSmartOauth2Account.accountId, smartUserAccount.getId()));
                     if (CollectionUtils.isEmpty(smartOauth2Accounts)) {
                         logger.error("没有授权信息, id = " + smartUserAccount.getId());
                         lastId = smartUserAccount.getId().intValue();
