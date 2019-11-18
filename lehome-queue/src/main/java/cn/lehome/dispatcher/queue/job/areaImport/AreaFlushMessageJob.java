@@ -29,6 +29,8 @@ public class AreaFlushMessageJob {
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.FLUSH_AREA_DATA_EVENT.getTopicName()));
         defaultMessageListenerContainer.setMessageListener(areaFlushListener());
+        defaultMessageListenerContainer.setMaxConcurrentConsumers(10);
+        defaultMessageListenerContainer.setConcurrentConsumers(2);
         defaultMessageListenerContainer.setSessionTransacted(true);
         return defaultMessageListenerContainer;
     }
