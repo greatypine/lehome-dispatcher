@@ -57,7 +57,7 @@
             <id>release</id>
             <properties>
                 <branch>release</branch>
-                <config.url>172.16.201.30</config.url>
+                <config.url>172.16.201.31</config.url>
                 <exculde.first.branch>dev</exculde.first.branch>
                 <exculde.second.branch>qa</exculde.second.branch>
             </properties>
