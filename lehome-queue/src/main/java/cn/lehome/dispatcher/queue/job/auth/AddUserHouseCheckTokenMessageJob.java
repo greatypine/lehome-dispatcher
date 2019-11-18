@@ -5,6 +5,7 @@ import cn.lehome.dispatcher.queue.listener.auth.AddUserHouseCheckTokenListener;
 import cn.lehome.framework.base.api.core.compoment.jms.EventBusJmsVirtualTopicQueueFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import javax.jms.ConnectionFactory;
@@ -12,7 +13,7 @@ import javax.jms.ConnectionFactory;
 /**
  * Created by jinsheng on 15/11/27.
  */
-//@Configuration
+@Configuration
 public class AddUserHouseCheckTokenMessageJob {
 
     @Autowired
