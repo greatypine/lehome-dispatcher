@@ -545,7 +545,7 @@ public class AreaFlushListener extends AbstractJobListener {
         if (!CollectionUtils.isEmpty(response.getPagedData())) {
             List<SmartUserAccount> list = Lists.newArrayList(response.getPagedData());
             for (int i = 0; i < list.size();) {
-                SmartUserAccount smartUserAccount = list.get(0);
+                SmartUserAccount smartUserAccount = list.get(i);
                 try {
                     List<SmartOauth2Account> smartOauth2Accounts = Lists.newArrayList();
                     try {
