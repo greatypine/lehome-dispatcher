@@ -33,8 +33,9 @@ public class EmployeeAutoEntranceMessageListener extends AbstractJobListener {
             logger.error("消息类型不对");
             return;
         }
-        LongEventMessage longEventMessage = (LongEventMessage) eventMessage;
 
+        LongEventMessage longEventMessage = (LongEventMessage) eventMessage;
+        logger.error("员工开始同步创建开门用户 : " + longEventMessage.getData());
         List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QOauth2AccountIndex.accountId, longEventMessage.getData()).filterEqual(QOauth2AccountIndex.clientId, "sqbj-smart"));
         Oauth2AccountIndex oauth2AccountIndex = null;
         if (!CollectionUtils.isEmpty(oauth2AccountIndexList)) {
@@ -55,6 +56,7 @@ public class EmployeeAutoEntranceMessageListener extends AbstractJobListener {
         for (UserAccountAreaIndex userAccountAreaIndex : userAccountAreaIndexList) {
             autoEntranceService.modifyUserRegionByArea(user, userAccountAreaIndex.getAreaId());
         }
+        logger.error("员工结束同步创建开门用户 : " + longEventMessage.getData());
     }
 
 
