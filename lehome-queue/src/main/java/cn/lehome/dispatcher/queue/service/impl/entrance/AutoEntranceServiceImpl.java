@@ -27,6 +27,7 @@ import cn.lehome.dispatcher.queue.service.impl.AbstractBaseServiceImpl;
 import cn.lehome.framework.base.api.core.compoment.loader.LoaderServiceComponent;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,6 +84,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             for (String openId : oauth2AccountIndex.getMutiOpenId()) {
                 user = userApiService.findByTraceId(UserType.StaffMember, openId);
                 if (user != null) {
+                    logger.error("原始有开门用户 ：" + JSON.toJSONString(user));
                     break;
                 }
             }
@@ -90,6 +92,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             user = userApiService.findByTraceId(UserType.StaffMember, oauth2AccountIndex.getUserOpenId());
         }
         if (user == null) {
+            logger.error("创建员工开门用户 ：" + oauth2AccountIndex.getAccountId());
             user = new User();
             user.setTraceId(oauth2AccountIndex.getUserOpenId());
             user.setUserType(UserType.StaffMember);
