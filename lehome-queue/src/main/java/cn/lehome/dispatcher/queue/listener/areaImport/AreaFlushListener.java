@@ -490,8 +490,23 @@ public class AreaFlushListener extends AbstractJobListener {
                     bppFeeApiService.batchSaveOrUpdateAddress(scaleId, list);
                 }
                 if (!CollectionUtils.isEmpty(billList)) {
-                    bppBillApiService.batchUpdateScale(billList, scaleId);
-                    bppBill += billList.size();
+                    List<Integer> tempList = Lists.newArrayList();
+                    int i = 0;
+                    for (Integer billId : billList) {
+                        tempList.add(billId);
+                        i++;
+                        if (i == 100) {
+                            bppBillApiService.batchUpdateScale(tempList, scaleId);
+                            bppBill += tempList.size();
+                            tempList.clear();
+                            i = 0;
+                        }
+                    }
+                    if (tempList.size() != 0) {
+                        bppBillApiService.batchUpdateScale(tempList, scaleId);
+                        bppBill += tempList.size();
+                        tempList.clear();
+                    }
                 }
             }
             List<BppOrder> bppOrderList = bppOrderApiService.findOrderAll(ApiRequest.newInstance().filterEqual(QBppOrder.areaId, areaId));
