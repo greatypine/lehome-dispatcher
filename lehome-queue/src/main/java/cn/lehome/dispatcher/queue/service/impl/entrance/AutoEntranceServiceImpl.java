@@ -98,6 +98,9 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             user.setUserType(UserType.StaffMember);
             user.setUserId(Long.valueOf(oauth2AccountIndex.getAccountId()));
             user = userApiService.create(user);
+        } else {
+            logger.error("绑定员工ID开门用户 ：" + oauth2AccountIndex.getAccountId());
+            userApiService.updateUserId(user.getId(), Long.valueOf(oauth2AccountIndex.getAccountId()));
         }
         return user;
     }
