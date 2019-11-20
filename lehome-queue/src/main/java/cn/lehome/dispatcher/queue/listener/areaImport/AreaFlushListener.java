@@ -14,8 +14,9 @@ import cn.lehome.base.api.bpp.service.order.BppOrderApiService;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.QSysRole;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.SysRole;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.SysUsersRoles;
-import cn.lehome.base.api.common.business.oauth2.bean.user.Oauth2Account;
+import cn.lehome.base.api.common.business.oauth2.bean.user.*;
 import cn.lehome.base.api.common.business.oauth2.service.sys.SysRoleApiService;
+import cn.lehome.base.api.common.business.oauth2.service.user.UserAccountIndexApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
 import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.base.api.common.custom.oauth2.bean.user.UserAccount;
@@ -60,6 +61,7 @@ import cn.lehome.bean.pro.enums.address.ExtendType;
 import cn.lehome.bean.pro.enums.area.ImportTaskStatus;
 import cn.lehome.common.bean.business.oauth2.enums.sys.RoleType;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
+import cn.lehome.dispatcher.queue.service.entrance.AutoEntranceService;
 import cn.lehome.framework.base.api.core.enums.PageOrderType;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
@@ -67,6 +69,7 @@ import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.bean.core.enums.AccountType;
+import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import cn.lehome.framework.bean.core.enums.SexType;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.alibaba.fastjson.JSON;
@@ -93,6 +96,9 @@ public class AreaFlushListener extends AbstractJobListener {
 
     @Autowired
     private EventBusComponent eventBusComponent;
+
+    @Autowired
+    private AutoEntranceService autoEntranceService;
 
     @Autowired
     private AreaInfoApiService smartAreaInfoApiService;
@@ -151,6 +157,9 @@ public class AreaFlushListener extends AbstractJobListener {
 
     @Autowired
     private RoleTemplateApiService roleTemplateApiService;
+
+    @Autowired
+    private UserAccountIndexApiService businessUserAccountIndexApiService;
 
     private static final Integer PAGE_SIZE = 30;
 
@@ -601,6 +610,15 @@ public class AreaFlushListener extends AbstractJobListener {
                             }
                         }
                     }
+                    List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QOauth2AccountIndex.accountId, userAccount.getId()).filterEqual(QOauth2AccountIndex.clientId, "sqbj-smart"));
+                    Oauth2AccountIndex oauth2AccountIndex = null;
+                    if (!CollectionUtils.isEmpty(oauth2AccountIndexList)) {
+                        oauth2AccountIndex = oauth2AccountIndexList.get(0);
+                    }
+                    User user = null;
+                    if (oauth2AccountIndex != null) {
+                        user = autoEntranceService.getUserByAccount(oauth2AccountIndex);
+                    }
 
                     UserProfiles userProfiles = smartOauth2UserAccountApiService.findByAccountId(smartUserAccount.getId());
                     if (userProfiles != null) {
@@ -663,6 +681,9 @@ public class AreaFlushListener extends AbstractJobListener {
                                 }
                             }
 
+                            if (user != null) {
+                                autoEntranceService.modifyUserRegionByArea(user, areaid);
+                            }
                         }
                     }
                     lastId = smartUserAccount.getId().intValue();
