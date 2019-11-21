@@ -316,6 +316,7 @@ public class AreaFlushListener extends AbstractJobListener {
                         if (household != null) {
                             if (StringUtils.isNotEmpty(household.getTelephone())) {
                                 UserAccount userAccount = userAccountApiService.getByPhone(household.getTelephone());
+                                logger.info("c端用户信息 : phone = {}, bean = {}", household.getTelephone(), userAccount == null ? "null" : JSON.toJSON(userAccount));
                                 if (userAccount == null) {
                                     SexType sexType;
                                     if (household.getGender() == Gender.Male) {
