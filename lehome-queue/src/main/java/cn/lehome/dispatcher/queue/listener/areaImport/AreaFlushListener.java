@@ -666,9 +666,10 @@ public class AreaFlushListener extends AbstractJobListener {
                         }
                         for (Long areaid : roleMultiMap.keySet()) {
                             businessUserAccountApiService.addArea(userAccount.getId(), areaid, YesNoStatus.NO);
+                            logger.error("phone = {}, areaId = {}, roleKeyMap = {}", userAccount.getPhone(), areaid, roleMultiMap.get(areaid));
                             List<RoleMapper> roleMappers = roleTemplateApiService.findMapperAll(ApiRequest.newInstance().filterIn(QRoleMapper.roleKey, roleMultiMap.get(areaid)));
                             if (!CollectionUtils.isEmpty(roleMappers)) {
-                                List<SysRole> sysRoles = sysRoleApiService.findAll(ApiRequest.newInstance().filterEqual(QSysRole.objectId, areaId).filterEqual(QSysRole.type, RoleType.PROJECT_ROLE).filterIn(QSysRole.name, roleMappers.stream().map(RoleMapper::getNewName).collect(Collectors.toList())));
+                                List<SysRole> sysRoles = sysRoleApiService.findAll(ApiRequest.newInstance().filterEqual(QSysRole.objectId, areaid).filterEqual(QSysRole.type, RoleType.PROJECT_ROLE).filterIn(QSysRole.name, roleMappers.stream().map(RoleMapper::getNewName).collect(Collectors.toList())));
                                 if (!CollectionUtils.isEmpty(sysRoles)) {
                                     List<SysUsersRoles> sysUsersRolesList = Lists.newArrayList();
                                     for (SysRole sysRole : sysRoles) {
@@ -679,7 +680,7 @@ public class AreaFlushListener extends AbstractJobListener {
                                         sysUsersRoles.setSysUsersId(userAccount.getId());
                                         sysUsersRolesList.add(sysUsersRoles);
                                     }
-                                    sysRoleApiService.createUpdateUserRoles(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE);
+                                    sysRoleApiService.createUpdateUserRolesWithArea(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE, areaid);
                                 }
                             }
 
