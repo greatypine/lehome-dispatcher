@@ -680,7 +680,7 @@ public class AreaFlushListener extends AbstractJobListener {
                                         sysUsersRoles.setSysUsersId(userAccount.getId());
                                         sysUsersRolesList.add(sysUsersRoles);
                                     }
-                                    sysRoleApiService.createUpdateUserRolesWithArea(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE, areaid);
+                                    sysRoleApiService.createUpdateUserRolesWithArea(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE, areaid.toString());
                                 }
                             }
 
