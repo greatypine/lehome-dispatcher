@@ -75,7 +75,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             user = userApiService.create(user);
         } else {
             if (householdIndex.getUserId() != null && householdIndex.getUserId() != 0L) {
-                user.setUserId(householdIndex.getUserId());
+                userApiService.updateUserId(user.getId(), Long.valueOf(householdIndex.getUserId()));
             }
         }
         return user;

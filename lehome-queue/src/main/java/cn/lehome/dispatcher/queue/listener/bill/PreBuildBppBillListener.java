@@ -21,6 +21,7 @@ import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
+import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -174,6 +175,9 @@ public class PreBuildBppBillListener extends AbstractJobListener {
         amount = amount.setScale(bppFeeScale.getKeepFigures(), roundMode);
         BigDecimal perAmount = amount.divide(new BigDecimal(12), MathContext.DECIMAL128).setScale(bppFeeScale.getKeepFigures(), BigDecimal.ROUND_DOWN);
         BigDecimal specialAmount = perAmount.add(amount.subtract(perAmount.multiply(new BigDecimal(12))));
+        if (bppFeeScale.getIsHasAttachFee().equals(YesNoStatus.YES)) {
+            specialAmount = specialAmount.add(bppFeeScale.getAttachFee());
+        }
         Map<Integer, BigDecimal> bigDecimalMap = Maps.newConcurrentMap();
         for (Integer month = 1; month <= 12; month++) {
             bigDecimalMap.put(month, perAmount);
@@ -296,6 +300,9 @@ public class PreBuildBppBillListener extends AbstractJobListener {
             amount = amount.divide(new BigDecimal(12), MathContext.DECIMAL128);
         } else if (bppFeeScale.getChargeCycle().equals(ChargeCycle.YEAR) && bppFeeScale.getChargeUnitTimeCycle().equals(ChargeUnitTimeCycle.MONTH)) {
             amount = amount.multiply(new BigDecimal(12));
+        }
+        if (bppFeeScale.getIsHasAttachFee().equals(YesNoStatus.YES)) {
+            amount = amount.add(bppFeeScale.getAttachFee());
         }
         int roundMode = BigDecimal.ROUND_HALF_UP;
         if (bppFeeScale.getOperateMode().equals(OperateMode.ROUND_DOWN)) {

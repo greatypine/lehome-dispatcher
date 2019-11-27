@@ -14,7 +14,9 @@ import cn.lehome.base.api.bpp.service.order.BppOrderApiService;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.QSysRole;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.SysRole;
 import cn.lehome.base.api.common.business.oauth2.bean.sys.SysUsersRoles;
-import cn.lehome.base.api.common.business.oauth2.bean.user.*;
+import cn.lehome.base.api.common.business.oauth2.bean.user.Oauth2Account;
+import cn.lehome.base.api.common.business.oauth2.bean.user.Oauth2AccountIndex;
+import cn.lehome.base.api.common.business.oauth2.bean.user.QOauth2AccountIndex;
 import cn.lehome.base.api.common.business.oauth2.service.sys.SysRoleApiService;
 import cn.lehome.base.api.common.business.oauth2.service.user.UserAccountIndexApiService;
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
@@ -69,7 +71,6 @@ import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.request.ApiRequestPage;
 import cn.lehome.framework.base.api.core.response.ApiResponse;
 import cn.lehome.framework.bean.core.enums.AccountType;
-import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import cn.lehome.framework.bean.core.enums.SexType;
 import cn.lehome.framework.bean.core.enums.YesNoStatus;
 import com.alibaba.fastjson.JSON;
@@ -316,6 +317,7 @@ public class AreaFlushListener extends AbstractJobListener {
                         if (household != null) {
                             if (StringUtils.isNotEmpty(household.getTelephone())) {
                                 UserAccount userAccount = userAccountApiService.getByPhone(household.getTelephone());
+                                logger.error("c端用户信息 : phone = {}, bean = {}", household.getTelephone(), userAccount == null ? "null" : JSON.toJSON(userAccount));
                                 if (userAccount == null) {
                                     SexType sexType;
                                     if (household.getGender() == Gender.Male) {
@@ -664,9 +666,10 @@ public class AreaFlushListener extends AbstractJobListener {
                         }
                         for (Long areaid : roleMultiMap.keySet()) {
                             businessUserAccountApiService.addArea(userAccount.getId(), areaid, YesNoStatus.NO);
+                            logger.error("phone = {}, areaId = {}, roleKeyMap = {}", userAccount.getPhone(), areaid, roleMultiMap.get(areaid));
                             List<RoleMapper> roleMappers = roleTemplateApiService.findMapperAll(ApiRequest.newInstance().filterIn(QRoleMapper.roleKey, roleMultiMap.get(areaid)));
                             if (!CollectionUtils.isEmpty(roleMappers)) {
-                                List<SysRole> sysRoles = sysRoleApiService.findAll(ApiRequest.newInstance().filterEqual(QSysRole.objectId, areaId).filterEqual(QSysRole.type, RoleType.PROJECT_ROLE).filterIn(QSysRole.name, roleMappers.stream().map(RoleMapper::getNewName).collect(Collectors.toList())));
+                                List<SysRole> sysRoles = sysRoleApiService.findAll(ApiRequest.newInstance().filterEqual(QSysRole.objectId, areaid).filterEqual(QSysRole.type, RoleType.PROJECT_ROLE).filterIn(QSysRole.name, roleMappers.stream().map(RoleMapper::getNewName).collect(Collectors.toList())));
                                 if (!CollectionUtils.isEmpty(sysRoles)) {
                                     List<SysUsersRoles> sysUsersRolesList = Lists.newArrayList();
                                     for (SysRole sysRole : sysRoles) {
@@ -677,7 +680,7 @@ public class AreaFlushListener extends AbstractJobListener {
                                         sysUsersRoles.setSysUsersId(userAccount.getId());
                                         sysUsersRolesList.add(sysUsersRoles);
                                     }
-                                    sysRoleApiService.createUpdateUserRoles(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE);
+                                    sysRoleApiService.createUpdateUserRolesWithArea(userAccount.getId(), sysUsersRolesList, RoleType.PROJECT_ROLE, areaid.toString());
                                 }
                             }
 
