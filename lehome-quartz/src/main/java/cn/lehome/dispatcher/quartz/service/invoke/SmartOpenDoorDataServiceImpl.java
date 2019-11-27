@@ -1,6 +1,6 @@
 package cn.lehome.dispatcher.quartz.service.invoke;
 
-import cn.lehome.base.api.bigdata.service.smart.SmartCommunityReportApiService;
+//import cn.lehome.base.api.bigdata.service.smart.SmartCommunityReportApiService;
 import cn.lehome.base.api.business.ec.service.partner.PartnerCommunityApiService;
 import cn.lehome.base.api.common.bean.community.CommunityExt;
 import cn.lehome.base.api.common.bean.community.QCommunityExt;
@@ -41,8 +41,8 @@ public class SmartOpenDoorDataServiceImpl extends AbstractInvokeServiceImpl {
     @Autowired
     private CommunityApiService communityApiService;
 
-    @Autowired
-    private SmartCommunityReportApiService smartCommunityReportApiService;
+//    @Autowired
+//    private SmartCommunityReportApiService smartCommunityReportApiService;
 
     private static DateFormat dateFormat_time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
