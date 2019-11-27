@@ -75,8 +75,8 @@ public class FloorAddressChangeServiceImpl extends AbstractBaseServiceImpl imple
 
         for (AddressBaseInfo info : updateList) {
             AddressBean addressBean = JSON.parseObject(info.getAddress(), AddressBean.class);
-            addressBean.setBuildingNumber(floorInfo.getFloorName());
-            addressBean.setBuildingName(floorInfo.getFloorNo());
+            addressBean.setBuildingNumber(floorInfo.getFloorNo());
+            addressBean.setBuildingName(floorInfo.getFloorName());
             info.setAddress(JSON.toJSONString(addressBean));
         }
         if (!CollectionUtils.isEmpty(updateList)) {
