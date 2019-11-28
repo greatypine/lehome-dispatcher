@@ -24,7 +24,7 @@ public class EventMessageMessageJob {
     private SimpleJmsQueueFactoryBean simpleJmsQueueFactoryBean;
 
     @Bean
-    public DefaultMessageListenerContainer eventMessageMessageJob() {
+    public DefaultMessageListenerContainer eventMessageInfoMessageJob() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
         defaultMessageListenerContainer.setDestination(simpleJmsQueueFactoryBean.getInstance(EventConstants.EVENT_MESSAGE_EVENT.getTopicName()));

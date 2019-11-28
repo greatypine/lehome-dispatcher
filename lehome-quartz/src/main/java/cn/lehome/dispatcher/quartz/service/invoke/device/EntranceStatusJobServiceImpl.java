@@ -40,7 +40,6 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
         date = DateUtils.addMinutes(date, ONLINE_INTERVAL);
         ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QEntranceDevice.lastOnlineTime, date);
         ApiRequestPage apiRequestPage = ApiRequestPage.newInstance().paging(0, 50);
-        List<EntranceDevice>
         while (true) {
             ApiResponse<EntranceDevice> apiResponse = entranceDeviceApiService.findAll(apiRequest, apiRequestPage);
 

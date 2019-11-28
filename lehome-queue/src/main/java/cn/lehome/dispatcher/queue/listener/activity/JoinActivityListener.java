@@ -12,6 +12,7 @@ import cn.lehome.base.api.business.activity.bean.bonus.BonusItem;
 import cn.lehome.base.api.business.activity.bean.card.*;
 import cn.lehome.base.api.business.activity.bean.task.*;
 import cn.lehome.base.api.business.activity.constant.JoinActivityTypeConstants;
+import cn.lehome.base.api.business.activity.event.JoinActivityEventBean;
 import cn.lehome.base.api.business.activity.service.activity.ApprenticeContributionStatisticsApiService;
 import cn.lehome.base.api.business.activity.service.activity.InviteApprenticeRecordApiService;
 import cn.lehome.base.api.business.activity.service.activity.MasterApprenticeRelationshipApiService;
@@ -29,7 +30,6 @@ import cn.lehome.base.api.common.bean.device.ClientDevice;
 import cn.lehome.base.api.common.bean.device.PushDeviceInfo;
 import cn.lehome.base.api.common.component.message.push.PushComponent;
 import cn.lehome.base.api.common.constant.MessageKeyConstants;
-import cn.lehome.base.api.common.event.JoinActivityEventBean;
 import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.common.service.device.DeviceApiService;
 import cn.lehome.base.api.user.bean.asset.UserBeanFlowInfo;
@@ -343,6 +343,7 @@ public class JoinActivityListener extends AbstractJobListener {
                 break;
             }
         }
+        logger.error("获取大礼包来源ID : " + begCardId);
 
         // 创建师徒关系
         buildMasterRelation(beBegUser);
@@ -370,7 +371,7 @@ public class JoinActivityListener extends AbstractJobListener {
         List<Long> communityIds = getCommunityIds(beBegUser);
         Advert advert = checkCommunity(communityIds, advertBegCardInfo.getAdvertId());
         if (advert == null) {
-            logger.info("用户%s绑定的小区不在集卡活动%s投放区域内, 不给当前用户卡!", beBegUser.getId(), advertBegCardInfo.getAdvertId());
+            logger.error("用户%s绑定的小区不在集卡活动%s投放区域内, 不给当前用户卡!", beBegUser.getId(), advertBegCardInfo.getAdvertId());
         } else {
             // 给当前用户随机一张求卡人所在集卡活动的卡
             giveBeBegUserOneCard(communityIds, beBegUser, advert);
