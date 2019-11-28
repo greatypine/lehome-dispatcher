@@ -68,6 +68,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
     public User getUserByHousehold(HouseholdIndex householdIndex) {
         User user = userApiService.findByTraceId(UserType.Resident, householdIndex.getOpenId());
         if (user == null) {
+            logger.error("自动新添加住户开门用户, openId = " + householdIndex.getOpenId());
             user = new User();
             user.setTraceId(householdIndex.getOpenId());
             user.setUserType(UserType.Resident);
@@ -75,6 +76,7 @@ public class AutoEntranceServiceImpl extends AbstractBaseServiceImpl implements 
             user = userApiService.create(user);
         } else {
             if (householdIndex.getUserId() != null && householdIndex.getUserId() != 0L) {
+                logger.error("自动更新加住户开门用户, openId = " + householdIndex.getOpenId());
                 userApiService.updateUserId(user.getId(), Long.valueOf(householdIndex.getUserId()));
             }
         }
