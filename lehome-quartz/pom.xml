@@ -183,6 +183,16 @@
         </dependency>
         <dependency>
             <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>acs-bean</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
+            <artifactId>acs-api</artifactId>
+            <classifier>${branch}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>cn.lehome.rebuild</groupId>
             <artifactId>base-common-user-api</artifactId>
             <classifier>${branch}</classifier>
         </dependency>
