@@ -4,7 +4,6 @@ import cn.lehome.base.api.workorder.bean.event.Event;
 import cn.lehome.base.api.workorder.service.event.EventApiService;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
-import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.event.SimpleEventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +19,7 @@ public class EventMessageMessageListener extends AbstractJobListener {
 
     @Override
     public void execute(IEventMessage eventMessage) throws Exception {
-        if (!(eventMessage instanceof LongEventMessage)) {
+        if (!(eventMessage instanceof SimpleEventMessage)) {
             logger.error("消息类型不对");
             return;
         }
