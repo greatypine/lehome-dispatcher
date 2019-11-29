@@ -112,14 +112,14 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
                                 AreaInfo areaInfo = proAreaInfoApiService.findOne(relationship.getCommunityId().intValue());
                                 AddressBaseInfo addressBaseInfo = null;
                                 PositionType positionType = PositionType.UNIT;
-                                if (relationship.getUnitId() != null) {
+                                if (relationship.getUnitId() != null && relationship.getUnitId() != 0) {
                                     addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.UNIT, relationship.getUnitId());
                                 } else {
-                                    if (relationship.getFloorId() != null) {
+                                    if (relationship.getFloorId() != null && relationship.getFloorId() != 0) {
                                         addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.BUILDING, relationship.getFloorId());
                                         positionType = PositionType.BUILDING;
                                     } else {
-                                        if (relationship.getProjectId() != null) {
+                                        if (relationship.getProjectId() != null && relationship.getProjectId() != 0) {
                                             addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.PROJECT, relationship.getProjectId());
                                             positionType = PositionType.PROJECT;
                                         }
