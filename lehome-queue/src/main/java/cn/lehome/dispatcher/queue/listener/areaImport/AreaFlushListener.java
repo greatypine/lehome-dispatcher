@@ -310,53 +310,53 @@ public class AreaFlushListener extends AbstractJobListener {
         if (!CollectionUtils.isEmpty(response.getPagedData())) {
             for (HouseholdsSettingsInfo householdSettingsInfo : response.getPagedData()) {
                 try {
+                    Household household = smartHouseholdsInfoApiService.findOne(householdSettingsInfo.getId().longValue());
+                    if (household != null) {
+                        if (StringUtils.isNotEmpty(household.getTelephone())) {
+                            UserAccount userAccount = userAccountApiService.getByPhone(household.getTelephone());
+                            logger.error("c端用户信息 : phone = {}, bean = {}", household.getTelephone(), userAccount == null ? "null" : JSON.toJSON(userAccount));
+                            if (userAccount == null) {
+                                SexType sexType;
+                                if (household.getGender() == Gender.Male) {
+                                    sexType = SexType.Male;
+                                } else if (household.getGender() == Gender.Female) {
+                                    sexType = SexType.Female;
+                                } else {
+                                    sexType = SexType.Unknown;
+                                }
+                                userAccount = userAccountApiService.createBySmartPro(household.getTelephone(), household.getName(), sexType);
+                            }
+                            if (StringUtils.isNotEmpty(household.getTelephone())) {
+                                HouseholdsUser householdsUser = householdsUserApiService.findOne(household.getTelephone(), areaInfo.getUniqueCode());
+                                if (householdsUser == null) {
+                                    householdsUser = new HouseholdsUser();
+                                    householdsUser.setOpenId(household.getOpenId());
+                                    householdsUser.setPhone(household.getTelephone());
+                                    householdsUser.setTenantCode(areaInfo.getUniqueCode());
+                                    householdsUserApiService.create(householdsUser);
+                                }
+                            }
+
+                            smartHouseholdsInfoApiService.updateUserId(householdSettingsInfo.getId(), userAccount.getId().intValue());
+                            User user = userApiService.findByTraceId(UserType.Resident, household.getOpenId());
+                            if (user == null) {
+                                user = new User();
+                                user.setTraceId(household.getOpenId());
+                                user.setUserType(UserType.Resident);
+                                user.setUserId(userAccount.getId());
+                                userApiService.create(user);
+                            } else {
+                                user.setUserId(userAccount.getId());
+                                userApiService.updateUserId(user.getId(), userAccount.getId());
+                            }
+                        }
+                    }
                     if (householdSettingsInfo.getDeleteStatus().equals(RecordDeleteStatus.Deleted)) {
                         delNum += 1;
                     } else {
-                        Household household = smartHouseholdsInfoApiService.findOne(householdSettingsInfo.getId().longValue());
-                        if (household != null) {
-                            if (StringUtils.isNotEmpty(household.getTelephone())) {
-                                UserAccount userAccount = userAccountApiService.getByPhone(household.getTelephone());
-                                logger.error("c端用户信息 : phone = {}, bean = {}", household.getTelephone(), userAccount == null ? "null" : JSON.toJSON(userAccount));
-                                if (userAccount == null) {
-                                    SexType sexType;
-                                    if (household.getGender() == Gender.Male) {
-                                        sexType = SexType.Male;
-                                    } else if (household.getGender() == Gender.Female) {
-                                        sexType = SexType.Female;
-                                    } else {
-                                        sexType = SexType.Unknown;
-                                    }
-                                    userAccount = userAccountApiService.createBySmartPro(household.getTelephone(), household.getName(), sexType);
-                                }
-                                if (StringUtils.isNotEmpty(household.getTelephone())) {
-                                    HouseholdsUser householdsUser = householdsUserApiService.findOne(household.getTelephone(), areaInfo.getUniqueCode());
-                                    if (householdsUser == null) {
-                                        householdsUser = new HouseholdsUser();
-                                        householdsUser.setOpenId(household.getOpenId());
-                                        householdsUser.setPhone(household.getTelephone());
-                                        householdsUser.setTenantCode(areaInfo.getUniqueCode());
-                                        householdsUserApiService.create(householdsUser);
-                                    }
-                                }
-
-                                smartHouseholdsInfoApiService.updateUserId(householdSettingsInfo.getId(), userAccount.getId().intValue());
-                                User user = userApiService.findByTraceId(UserType.Resident, household.getOpenId());
-                                if (user == null) {
-                                    user = new User();
-                                    user.setTraceId(household.getOpenId());
-                                    user.setUserType(UserType.Resident);
-                                    user.setUserId(userAccount.getId());
-                                    userApiService.create(user);
-                                } else {
-                                    user.setUserId(userAccount.getId());
-                                    userApiService.updateUserId(user.getId(), userAccount.getId());
-                                }
-                            }
-                        }
                         num += 1;
-                        acsNum += 1;
                     }
+                    acsNum += 1;
                     lastId = householdSettingsInfo.getId();
                 } catch (Exception e) {
                     logger.error("刷新住户数据出错, id = " + householdSettingsInfo.getId(), e);
