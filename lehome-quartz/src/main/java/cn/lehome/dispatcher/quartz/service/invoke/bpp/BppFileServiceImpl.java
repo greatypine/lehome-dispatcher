@@ -34,6 +34,7 @@ import cn.lehome.base.pro.api.service.households.HouseholdIndexApiService;
 import cn.lehome.bean.bpp.enums.bill.BillPaidType;
 import cn.lehome.bean.bpp.enums.bill.BillStatus;
 import cn.lehome.bean.bpp.enums.order.OrderStatus;
+import cn.lehome.bean.bpp.enums.order.OrderType;
 import cn.lehome.bean.bpp.enums.setting.BppSettingType;
 import cn.lehome.bean.bpp.enums.transaction.PayType;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
@@ -141,7 +142,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
         date = DateUtils.setDays(date, 1);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppPayOrder.createdAt, date).filterEqual(QBppPayOrder.areaId, areaId);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppPayOrder.createdAt, date).filterEqual(QBppPayOrder.areaId, areaId).filterIn(QBppPayOrder.orderStatus, Lists.newArrayList(OrderStatus.PAID, OrderStatus.REFUNDED, OrderStatus.CANCEL));
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
@@ -195,11 +196,13 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
         date = DateUtils.setDays(date, 1);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppOrder.createdAt, date).filterEqual(QBppOrder.areaId, areaId);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterIn(QBppOrder.orderType, Lists.newArrayList(OrderType.MULTI, OrderType.ROUTINE)).filterEqual(QBppOrder.areaId, areaId).filterIn(QBppPayOrder.orderStatus, Lists.newArrayList(OrderStatus.PAID, OrderStatus.REFUNDED, OrderStatus.CANCEL)).filterLessThan(QBppOrder.createdAt, date);
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
         Integer notDeleteNum = 0;
+        Integer fileBillNum = 0;
+        Integer notBillDeleteNum = 0;
         while (true) {
             ApiResponse<BppOrder> response = bppOrderApiService.findAll(apiRequest, requestPage);
 
@@ -301,6 +304,109 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                             bppOrderDetailIndex.setFeeName(bppFee.getName());
                             bppOrderDetailIndex.setScaleName(bppFeeScale.getName());
                             list.add(bppOrderDetailIndex);
+                            BppBill bppBill = bppBillApiService.get(bppOrderDetail.getBillId());
+                            if (bppBill != null) {
+                                bppFee = bppFeeApiService.getFee(bppBill.getFeeId());
+                                bppFeeScale = bppFeeApiService.getFeeScale(bppBill.getScaleId());
+                                houseInfoIndices = proHouseInfoIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QHouseInfoIndex.addressId, bppBill.getAddressId()));
+                                BppBillIndex bppBillIndex = BeanMapping.map(bppBill, BppBillIndex.class);
+                                areaInfo = proAreaInfoApiService.findOne(bppBill.getAreaId());
+                                if (bppFee != null) {
+                                    bppBillIndex.setFeeName(bppFee.getName());
+                                }
+                                if (bppFeeScale != null) {
+                                    bppBillIndex.setFeeScaleName(bppFeeScale.getName());
+                                }
+                                if (!CollectionUtils.isEmpty(houseInfoIndices)) {
+                                    bppBillIndex.setAddress(houseInfoIndices.get(0).getRoomAddress());
+                                }
+                                if (areaInfo != null) {
+                                    bppBillIndex.setAreaName(areaInfo.getAreaName());
+                                }
+                                if (bppBillIndex.getStatus().equals(BillStatus.RECEIVED)) {
+                                    if (bppOrder != null) {
+                                        bppBillIndex.setPaidDate(bppOrder.getPaidAt().getTime());
+                                        if (bppBillIndex.getPaidDate() > bppBillIndex.getReceivableDate()) {
+                                            bppBillIndex.setBillPaidType(BillPaidType.OVERDUE);
+                                        } else {
+                                            bppBillIndex.setBillPaidType(BillPaidType.RECEIVED);
+                                        }
+                                    } else {
+                                        List<BppOrderDetailIndex> bppOrderDetailIndices = bppOrderIndexApiService.findDetail(ApiRequest.newInstance().filterEqual(QBppOrderDetailIndex.billId, bppBillIndex.getId()));
+                                        if (!CollectionUtils.isEmpty(bppOrderDetailIndices)) {
+                                            bppOrderIndex = bppOrderIndexApiService.getOrder(bppOrderDetailIndices.get(0).getOrderId());
+                                            if (bppOrderIndex != null) {
+                                                bppBillIndex.setPaidDate(bppOrderIndex.getPaidAt());
+                                                if (bppBillIndex.getPaidDate() > bppBillIndex.getReceivableDate()) {
+                                                    bppBillIndex.setBillPaidType(BillPaidType.OVERDUE);
+                                                } else {
+                                                    bppBillIndex.setBillPaidType(BillPaidType.RECEIVED);
+                                                }
+                                            } else {
+                                                bppBillIndex.setBillPaidType(BillPaidType.RECEIVED);
+                                            }
+                                        } else {
+                                            bppBillIndex.setBillPaidType(BillPaidType.RECEIVED);
+                                        }
+
+                                    }
+                                } else {
+                                    bppBillIndex.setPaidDate(0L);
+                                    if (bppBillIndex.getStatus().equals(BillStatus.UNRECEIVE)) {
+                                        bppBillIndex.setBillPaidType(BillPaidType.UNRECEIVE);
+                                    } else {
+                                        bppBillIndex.setBillPaidType(BillPaidType.UNRECEIVE);
+                                    }
+                                }
+                                List<BppBillReduce> bppBillReduces = bppBillApiService.findAllReduce(bppBill.getId());
+                                List<BppBillReduceIndex> bppBillReduceIndices = Lists.newArrayList();
+                                if (!CollectionUtils.isEmpty(bppBillReduces)) {
+                                    bppBillReduceIndices = BeanMapping.mapList(bppBillReduces, BppBillReduceIndex.class);
+                                    Set<String> userOpenIdSet = Sets.newHashSet();
+                                    bppBillReduces.forEach(bppBillReduce -> {
+                                        userOpenIdSet.add(bppBillReduce.getOperationUser());
+                                        if (StringUtils.isNotEmpty(bppBillReduce.getCancelUser())) {
+                                            userOpenIdSet.add(bppBillReduce.getCancelUser());
+                                        }
+                                    });
+                                    List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterEqual(QOauth2Account.clientId, "sqbj-smart").filterIn(QOauth2Account.userOpenId, userOpenIdSet));
+                                    Map<String, UserAccountIndex> userAccountIndexMap = Maps.newHashMap();
+                                    if (!CollectionUtils.isEmpty(oauth2AccountIndexList)) {
+                                        List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().filterIn(QUserAccountIndex.id, oauth2AccountIndexList.stream().map(Oauth2AccountIndex::getAccountId).collect(Collectors.toList())));
+                                        Map<String, UserAccountIndex> map = Maps.newHashMap();
+                                        if (!CollectionUtils.isEmpty(userAccountIndices)) {
+                                            map = userAccountIndices.stream().collect(Collectors.toMap(UserAccountIndex::getId, userAccountIndex -> userAccountIndex));
+                                        }
+                                        for (Oauth2AccountIndex oauth2AccountIndex : oauth2AccountIndexList) {
+                                            UserAccountIndex userAccountIndex = map.get(oauth2AccountIndex.getAccountId());
+                                            if (userAccountIndex != null) {
+                                                userAccountIndexMap.put(oauth2AccountIndex.getUserOpenId(), userAccountIndex);
+                                            }
+                                        }
+                                    }
+                                    for (BppBillReduceIndex bppBillReduceIndex : bppBillReduceIndices) {
+                                        UserAccountIndex operationUser = userAccountIndexMap.get(bppBillReduceIndex.getOperationUser());
+                                        if (operationUser != null) {
+                                            bppBillReduceIndex.setOperationUserName(operationUser.getRealName());
+                                            bppBillReduceIndex.setOperationPhone(operationUser.getPhone());
+                                        }
+                                        if (StringUtils.isNotEmpty(bppBillReduceIndex.getCancelUser())) {
+                                            UserAccountIndex cancelUser = userAccountIndexMap.get(bppBillReduceIndex.getCancelUser());
+                                            if (cancelUser != null) {
+                                                bppBillReduceIndex.setCancelUserName(cancelUser.getRealName());
+                                                bppBillReduceIndex.setCancelUserPhone(cancelUser.getPhone());
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bppBill.getStatus().equals(BillStatus.UNRECEIVE)) {
+                                    bppBillIndexApiService.create(bppBillIndex, bppBillReduceIndices, false);
+                                    notBillDeleteNum++;
+                                } else {
+                                    bppBillIndexApiService.create(bppBillIndex, bppBillReduceIndices, true);
+                                    fileBillNum++;
+                                }
+                            }//
                         }
                     }
                     if (bppOrder.getOrderStatus().equals(OrderStatus.CREATE) || bppOrder.getOrderStatus().equals(OrderStatus.PAYING) || bppOrder.getOrderStatus().equals(OrderStatus.REFUNDING)) {
@@ -316,7 +422,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                     errorNum++;
                 }
             }
-            logger.error("正常导入支付单{}条, 导入未删除支付单{}条, 导入支付单错误{}条", fileNum, notDeleteNum, errorNum);
+            logger.error("正常导入支付单{}条, 导入未删除支付单{}条, 导入支付单错误{}条, 导入账单{}条, 导入未删除账单{}条", fileNum, notDeleteNum, errorNum, fileBillNum, notBillDeleteNum);
 
             if (response.getCount() < response.getPageSize()) {
                 break;
@@ -326,10 +432,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
     }
 
     private void fileBill(Integer days, Integer areaId) {
-        Date date = new Date();
-        date = DateUtils.addDays(date, -days);
-        date = DateUtils.setDays(date, 1);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterLessThan(QBppBill.receivableDate, date).filterEqual(QBppBill.areaId, areaId);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterEqual(QBppBill.areaId, areaId).filterIn(QBppBill.status, Lists.newArrayList(BillStatus.DELETE));
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
