@@ -53,7 +53,7 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
                 ParkCarRegistered parkCarRegistered = new ParkCarRegistered();
                 parkCarRegistered.setParkId(parkId);
                 parkCarRegistered.setParkRegion(carRegisteredName);
-                String numStr=String.format(carRegisteredName+"%03d",i);
+                String numStr=String.format("%03d",i);
                 parkCarRegistered.setParkcarNo(numStr);
                 System.out.println(parkCarRegistered.getParkcarNo());
                 parkCarRegistered.setCarNum("");
