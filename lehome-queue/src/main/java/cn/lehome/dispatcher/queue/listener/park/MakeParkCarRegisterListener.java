@@ -62,7 +62,7 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
                 parkCarRegistered.setOwnerPhone("");
                 parkCarRegistered.setParkcarStartTime(today);
                 parkCarRegistered.setParkcarEndTime(today);
-                parkCarRegistered.setParkcarProperties(ParkCarProperties.AGENT);
+                parkCarRegistered.setParkcarProperties(ParkCarProperties.NORMAL);
                 parkCarRegisteredApiService.create(parkCarRegistered);
             }
         }
