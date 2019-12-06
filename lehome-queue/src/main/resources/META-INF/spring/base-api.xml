@@ -41,7 +41,8 @@
     <dubbo:reference id="importTaskApiService" interface="cn.lehome.base.pro.api.service.area.ImportTaskApiService" group="pro"/>
     <dubbo:reference id="importIdMapperApiService" interface="cn.lehome.base.pro.api.service.area.ImportIdMapperApiService" group="pro"/>
     <dubbo:reference id="householdsUserApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdsUserApiService" group="pro"/>
-
+    <dubbo:reference id="parkCarRegisteredApiService" interface="cn.lehome.base.api.park.service.parkcar.ParkCarRegisteredApiService" group="pro"/>
+    <dubbo:reference id="parkMessageApiService" interface="cn.lehome.base.api.park.service.park.ParkMessageApiService" group="pro"/>
 
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
     <dubbo:reference id="resourceApiService" interface="cn.lehome.base.api.common.operation.service.resource.ResourceApiService" group="com"/>
