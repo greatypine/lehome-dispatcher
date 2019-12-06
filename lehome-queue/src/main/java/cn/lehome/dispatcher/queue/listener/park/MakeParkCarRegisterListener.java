@@ -8,14 +8,10 @@ import cn.lehome.bean.park.enums.parkcar.ParkCarProperties;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
 import cn.lehome.framework.base.api.core.event.LongEventMessage;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -36,8 +32,6 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
 
     @Override
     public void execute(IEventMessage eventMessage) throws Exception {
-        System.out.println(eventMessage + "测试消息来源");
-
         if (!(eventMessage instanceof LongEventMessage)) {
             logger.error("消息类型不对");
             return;
@@ -53,8 +47,6 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
         Iterator<Map.Entry<String, String>> iterator = regionMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
-            System.out.println("key:" + entry.getKey());
-            System.out.println("value:" + entry.getValue());
             int carRegisteredNum = Integer.valueOf(entry.getValue());
             String carRegisteredName = entry.getKey();
             for (int i = 1 ; i < carRegisteredNum+1 ; i++) {
