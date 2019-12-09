@@ -10,14 +10,17 @@ import cn.lehome.base.api.iot.common.service.entrance.EntranceDeviceApiService;
 import cn.lehome.base.api.workorder.bean.event.Event;
 import cn.lehome.base.pro.api.bean.address.AddressBaseInfo;
 import cn.lehome.base.pro.api.bean.area.AreaInfo;
+import cn.lehome.base.pro.api.bean.area.DevicePositionRelation;
+import cn.lehome.base.pro.api.bean.area.QDevicePositionRelation;
 import cn.lehome.base.pro.api.bean.house.AddressBean;
 import cn.lehome.base.pro.api.bean.regions.ControlRegionsPositionRelationship;
 import cn.lehome.base.pro.api.bean.regions.QControlRegionsPositionRelationship;
 import cn.lehome.base.pro.api.service.address.AddressBaseApiService;
 import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
-import cn.lehome.base.pro.api.service.regions.ControlRegionsApiService;
+import cn.lehome.base.pro.api.service.area.DevicePositionApiService;
 import cn.lehome.base.pro.api.service.regions.ControlRegionsPositionRelationshipApiService;
 import cn.lehome.bean.pro.enums.address.ExtendType;
+import cn.lehome.bean.pro.enums.area.DeviceFacilityType;
 import cn.lehome.bean.workorder.enums.event.EventType;
 import cn.lehome.bean.workorder.enums.event.PositionType;
 import cn.lehome.bean.workorder.enums.event.TargetType;
@@ -53,7 +56,7 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
     private RegionApiService regionApiService;
 
     @Autowired
-    private ControlRegionsApiService controlRegionsApiService;
+    private DevicePositionApiService devicePositionApiService;
 
     @Autowired
     private ControlRegionsPositionRelationshipApiService controlRegionsPositionRelationshipApiService;
@@ -106,50 +109,33 @@ public class EntranceStatusJobServiceImpl extends AbstractInvokeServiceImpl {
                     if (System.currentTimeMillis() - entranceDevice.getUpdatedTime().getTime() >= offlineTime) {
                         Region region = regionApiService.findByDeviceUuid(entranceDevice.getDeviceUuid());
                         if (region != null && !region.getDisabled())  {
-                            List<ControlRegionsPositionRelationship> regionsPositionRelationships = controlRegionsPositionRelationshipApiService.findAll(ApiRequest.newInstance().filterEqual(QControlRegionsPositionRelationship.controlRegionId, region.getTraceId()));
-                            if (!CollectionUtils.isEmpty(regionsPositionRelationships)) {
-                                ControlRegionsPositionRelationship relationship = regionsPositionRelationships.get(0);
-                                AreaInfo areaInfo = proAreaInfoApiService.findOne(relationship.getCommunityId().intValue());
-                                AddressBaseInfo addressBaseInfo = null;
-                                PositionType positionType = PositionType.UNIT;
-                                if (relationship.getUnitId() != null && relationship.getUnitId() != 0) {
-                                    addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.UNIT, relationship.getUnitId());
-                                } else {
-                                    if (relationship.getFloorId() != null && relationship.getFloorId() != 0) {
-                                        addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.BUILDING, relationship.getFloorId());
-                                        positionType = PositionType.BUILDING;
-                                    } else {
-                                        if (relationship.getProjectId() != null && relationship.getProjectId() != 0) {
-                                            addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.PROJECT, relationship.getProjectId());
-                                            positionType = PositionType.PROJECT;
-                                        }
-                                    }
-                                }
-                                if (areaInfo != null && addressBaseInfo != null) {
-                                    AddressBean addressBean = JSON.parseObject(addressBaseInfo.getAddress(), AddressBean.class);
-                                    String positionStr = areaInfo.getAreaName();
-                                    if (positionType == PositionType.UNIT) {
-                                        positionStr = positionStr + String.format("%s-%s-%s", addressBean.getProjectName(), addressBean.getBuildingNumber(), addressBean.getUnitNumber());
-                                    } else if (positionType == PositionType.BUILDING) {
-                                        positionStr = positionStr + String.format("%s-%s", addressBean.getProjectName(), addressBean.getBuildingNumber());
-                                    } else if (positionType == PositionType.PROJECT) {
-                                        positionStr = positionStr + addressBean.getProjectName();
-                                    }
-                                    String content = String.format("位于%s的门禁设备(%s)长期掉线", positionStr, entranceDevice.getDeviceUuid());
-                                    Event event = new Event();
-                                    event.setEventTime(new Date());
-                                    event.setContent(content);
-                                    event.setTargetType(TargetType.ENTRANCE_DEVICE);
-                                    event.setTargetId(entranceDevice.getId().toString());
-                                    event.setAreaId(areaInfo.getId());
-                                    event.setPositionId(addressBaseInfo.getExtendId());
-                                    event.setPositionType(positionType);
-                                    event.setTenantId(areaInfo.getUniqueCode());
-                                    event.setType(EventType.ALARM);
-                                    logger.error("发送设备长期掉线告警, deviceUUid = {}", entranceDevice.getDeviceUuid());
-                                    eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.EVENT_MESSAGE_EVENT, event));
-                                }
+                            List<DevicePositionRelation> devicePositionRelations = devicePositionApiService.findAllRelation(ApiRequest.newInstance().filterNotEqual(QDevicePositionRelation.type, DeviceFacilityType.ENTRANCE_FACILITY).filterEqual(QDevicePositionRelation.objectId, region.getTraceId()));
+                            if (CollectionUtils.isEmpty(devicePositionRelations)) {
+                                continue;
                             }
+                            AddressBaseInfo addressBaseInfo = addressBaseApiService.findByExtendId(ExtendType.DEVICE_POSITION, devicePositionRelations.get(0).getPositionId());
+                            if (addressBaseInfo == null) {
+                                logger.error("设备点地址信息未找到");
+                                continue;
+                            }
+                            AreaInfo areaInfo = proAreaInfoApiService.findOne(addressBaseInfo.getManageAreaId().intValue());
+                            if (areaInfo == null) {
+                                logger.error("小区信息未找到");
+                                continue;
+                            }
+                            String content = String.format("位于%s的门禁设备(%s)长期掉线", addressBaseInfo.getName(), entranceDevice.getDeviceUuid());
+                            Event event = new Event();
+                            event.setEventTime(new Date());
+                            event.setContent(content);
+                            event.setTargetType(TargetType.ENTRANCE_DEVICE);
+                            event.setTargetId(entranceDevice.getId().toString());
+                            event.setAreaId(addressBaseInfo.getManageAreaId());
+                            event.setPositionId(addressBaseInfo.getExtendId());
+                            event.setPositionType(PositionType.DEVICE_POSITION);
+                            event.setTenantId(areaInfo.getUniqueCode());
+                            event.setType(EventType.ALARM);
+                            logger.error("发送设备长期掉线告警, deviceUUid = {}", entranceDevice.getDeviceUuid());
+                            eventBusComponent.sendEventMessage(new SimpleEventMessage<>(EventConstants.EVENT_MESSAGE_EVENT, event));
                         }
                     }
                 }

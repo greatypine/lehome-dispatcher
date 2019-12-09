@@ -40,6 +40,7 @@
     <dubbo:reference id="addressBaseApiService" interface="cn.lehome.base.pro.api.service.address.AddressBaseApiService" group="pro"/>
     <dubbo:reference id="proHouseholdIndexApiService" interface="cn.lehome.base.pro.api.service.households.HouseholdIndexApiService" group="pro"/>
     <dubbo:reference id="proAreaInfoApiService" interface="cn.lehome.base.pro.api.service.area.AreaInfoApiService" group="pro"/>
+    <dubbo:reference id="devicePositionApiService" interface="cn.lehome.base.pro.api.service.area.DevicePositionApiService" group="pro"/>
     <dubbo:reference id="applicationApiService" interface="cn.lehome.base.api.common.operation.service.application.ApplicationApiService" group="com"/>
     <dubbo:reference id="applicationsTenantApiService" interface="cn.lehome.base.api.common.operation.service.application.ApplicationsTenantApiService" group="com"/>
 
