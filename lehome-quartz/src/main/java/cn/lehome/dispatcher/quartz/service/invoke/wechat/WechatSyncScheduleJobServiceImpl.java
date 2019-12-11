@@ -1,12 +1,6 @@
 package cn.lehome.dispatcher.quartz.service.invoke.wechat;
 
-import cn.lehome.base.api.business.activity.service.task.UserTaskOperationRecordApiService;
-import cn.lehome.base.api.business.activity.service.wechat.WeChatTaskOperationRecordApiService;
-import cn.lehome.base.api.common.operation.service.mkt.ShareRecordApiService;
-import cn.lehome.base.api.user.service.asset.UserBeanFlowApiService;
-import cn.lehome.base.api.user.service.wechat.WeChatBeanFlowApiService;
 import cn.lehome.dispatcher.quartz.service.AbstractInvokeServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -16,23 +10,6 @@ public class WechatSyncScheduleJobServiceImpl extends AbstractInvokeServiceImpl{
 
 //    @Autowired
 //    private WechatSyncTaskApiService wechatSyncTaskApiService;
-
-    @Autowired
-    private WeChatBeanFlowApiService weChatBeanFlowApiService;
-
-    @Autowired
-    private UserBeanFlowApiService userBeanFlowApiService;
-
-    @Autowired
-    private WeChatTaskOperationRecordApiService weChatTaskOperationRecordApiService;
-
-    @Autowired
-    private UserTaskOperationRecordApiService userTaskOperationRecordApiService;
-
-    @Autowired
-    private ShareRecordApiService shareRecordApiService;
-
-    private static final Integer PAGE_SIZE = 20;
 
     @Override
     public void doInvoke(Map<String, String> params) {
