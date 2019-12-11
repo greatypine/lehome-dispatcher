@@ -57,9 +57,7 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
                 parkCarRegistered.setParkcarNo(numStr);
                 System.out.println(parkCarRegistered.getParkcarNo());
                 parkCarRegistered.setCarNum("");
-                parkCarRegistered.setParkcarOwner("");
-                parkCarRegistered.setOwnerAddress("");
-                parkCarRegistered.setOwnerPhone("");
+                parkCarRegistered.setUserId(0);
                 parkCarRegistered.setParkcarStartTime(today);
                 parkCarRegistered.setParkcarEndTime(today);
                 parkCarRegistered.setParkcarProperties(ParkCarProperties.NORMAL);
