@@ -20,7 +20,6 @@
     <import resource="classpath*:provider/base-api/pay-service.xml"/>
     <import resource="classpath*:provider/base-api/common-service.xml"/>
     <import resource="classpath*:provider/base-api/ec-service.xml"/>
-    <import resource="classpath*:provider/base-api/common-bigdata-service.xml"/>
     <import resource="classpath*:provider/base-api/content-service.xml"/>
     <import resource="classpath*:provider/base-api/common-user-service.xml"/>
     <import resource="classpath*:provider/base-api/workorder-service.xml"/>
@@ -49,6 +48,8 @@
     <dubbo:reference id="zKZHDeviceApiService" interface="cn.lehome.base.api.iot.common.service.zkzh.ZKZHDeviceApiService" group="iot"/>
     <dubbo:reference id="attDeviceApiService" interface="cn.lehome.base.api.iot.common.service.att.AttDeviceApiService" group="iot"/>
     <dubbo:reference id="entranceDeviceApiService" interface="cn.lehome.base.api.iot.common.service.entrance.EntranceDeviceApiService" group="iot"/>
+    <!-- big data -->
+    <dubbo:reference id="statisticBusinessJobExecuteApiService" interface="cn.lehome.base.api.bigdata.service.execute.StatisticBusinessJobExecuteApiService" group="com"/>
 
     <import resource="classpath*:provider/base-api/custom-oauth2-service.xml"/>
     
