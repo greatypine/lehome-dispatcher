@@ -48,6 +48,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -196,7 +197,7 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
         Date date = new Date();
         date = DateUtils.addDays(date, -days);
         date = DateUtils.setDays(date, 1);
-        ApiRequest apiRequest = ApiRequest.newInstance().filterIn(QBppOrder.orderType, Lists.newArrayList(OrderType.MULTI, OrderType.ROUTINE)).filterEqual(QBppOrder.areaId, areaId).filterIn(QBppPayOrder.orderStatus, Lists.newArrayList(OrderStatus.PAID, OrderStatus.REFUNDED, OrderStatus.CANCEL)).filterLessThan(QBppOrder.createdAt, date);
+        ApiRequest apiRequest = ApiRequest.newInstance().filterIn(QBppOrder.orderType, Lists.newArrayList(OrderType.MULTI, OrderType.ROUTINE, OrderType.TEMPORARY)).filterEqual(QBppOrder.areaId, areaId).filterIn(QBppPayOrder.orderStatus, Lists.newArrayList(OrderStatus.PAID, OrderStatus.REFUNDED, OrderStatus.CANCEL)).filterLessThan(QBppOrder.createdAt, date);
         ApiRequestPage requestPage = ApiRequestPage.newInstance().paging(0, 100);
         Integer errorNum = 0;
         Integer fileNum = 0;
@@ -301,8 +302,12 @@ public class BppFileServiceImpl extends AbstractInvokeServiceImpl {
                         BppFeeScale bppFeeScale = bppFeeApiService.getFeeScale(bppOrderDetails.get(0).getScaleId());
                         for (BppOrderDetail bppOrderDetail : bppOrderDetails) {
                             BppOrderDetailIndex bppOrderDetailIndex = BeanMapping.map(bppOrderDetail, BppOrderDetailIndex.class);
-                            bppOrderDetailIndex.setFeeName(bppFee.getName());
-                            bppOrderDetailIndex.setScaleName(bppFeeScale.getName());
+                            if (bppFee != null) {
+                                bppOrderDetailIndex.setFeeName(bppFee.getName());
+                            }
+                            if (bppFeeScale != null) {
+                                bppOrderDetailIndex.setScaleName(bppFeeScale.getName());
+                            }
                             list.add(bppOrderDetailIndex);
                             BppBill bppBill = bppBillApiService.get(bppOrderDetail.getBillId());
                             if (bppBill != null) {
