@@ -1,14 +1,12 @@
 package cn.lehome.dispatcher.queue.listener.login;
 
 import cn.lehome.base.api.common.component.jms.EventBusComponent;
-import cn.lehome.base.api.common.constant.EventConstants;
 import cn.lehome.base.api.common.service.community.CommunityCacheApiService;
 import cn.lehome.base.api.user.bean.user.UserInfoIndex;
 import cn.lehome.base.api.user.service.user.UserInfoIndexApiService;
 import cn.lehome.dispatcher.queue.listener.AbstractJobListener;
 import cn.lehome.dispatcher.queue.service.token.SmartExchangeTokenService;
 import cn.lehome.framework.base.api.core.event.IEventMessage;
-import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.event.StringEventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,7 +42,7 @@ public class LoginExchangeSmartTokenListener extends AbstractJobListener {
             return;
         }
         smartExchangeTokenService.exchangeAll(stringEventMessage.getData());
-        eventBusComponent.sendEventMessage(new LongEventMessage(EventConstants.REFRESH_ENTRANCE_EVENT, userInfoIndex.getId()));
+//        eventBusComponent.sendEventMessage(new LongEventMessage(EventConstants.REFRESH_ENTRANCE_EVENT, userInfoIndex.getId()));
     }
 
 
