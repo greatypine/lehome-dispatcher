@@ -40,6 +40,8 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
 
         ParkMessage parkMessage =parkMessageApiService.findById(longEventMessage.getData().intValue());
         String regionDetail = parkMessage.getRegionDetail();
+        long areaId = parkMessage.getAreaId();
+        String tenantId = parkMessage.getTenantId();
         int parkId = parkMessage.getId();
         Date today = new Date();
         Map<String, String> regionMap = JSONObject.parseObject(regionDetail, Map.class);
@@ -61,6 +63,9 @@ public class MakeParkCarRegisterListener extends AbstractJobListener {
                 parkCarRegistered.setParkcarStartTime(today);
                 parkCarRegistered.setParkcarEndTime(today);
                 parkCarRegistered.setParkcarProperties(ParkCarProperties.NORMAL);
+                //设置车位的小区id和租户id
+                parkCarRegistered.setAreaId(areaId);
+                parkCarRegistered.setTenantId(tenantId);
                 parkCarRegisteredApiService.create(parkCarRegistered);
             }
         }
