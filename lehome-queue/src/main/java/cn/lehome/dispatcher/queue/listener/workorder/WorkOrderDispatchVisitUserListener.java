@@ -12,10 +12,14 @@ import cn.lehome.base.api.common.operation.service.resource.ResourceApiService;
 import cn.lehome.base.api.workorder.bean.customercenter.BusinessAcceptOrder;
 import cn.lehome.base.api.workorder.bean.customercenter.BusinessOrderUserStatistics;
 import cn.lehome.base.api.workorder.bean.customercenter.QBusinessOrderUserStatistics;
+import cn.lehome.base.api.workorder.bean.settings.BusinessTypeSetting;
 import cn.lehome.base.api.workorder.bean.settings.BusinessTypeUserSetting;
 import cn.lehome.base.api.workorder.service.customercenter.BusinessAcceptOrderApiService;
 import cn.lehome.base.api.workorder.service.customercenter.BusinessOrderUserStatisticsApiService;
+import cn.lehome.base.api.workorder.service.settings.BusinessTypeSettingApiService;
 import cn.lehome.base.api.workorder.service.settings.BusinessTypeUserSettingApiService;
+import cn.lehome.base.pro.api.bean.area.AreaInfo;
+import cn.lehome.base.pro.api.service.area.AreaInfoApiService;
 import cn.lehome.bean.workorder.enums.YesOrNo;
 import cn.lehome.bean.workorder.enums.customercenter.BusinessAcceptStatus;
 import cn.lehome.common.bean.business.oauth2.enums.sys.RoleType;
@@ -25,6 +29,7 @@ import cn.lehome.framework.base.api.core.event.LongEventMessage;
 import cn.lehome.framework.base.api.core.request.ApiRequest;
 import cn.lehome.framework.base.api.core.util.AuthPermissionValueUtils;
 import cn.lehome.framework.bean.core.enums.DeleteStatus;
+import cn.lehome.framework.bean.core.enums.EnableDisableStatus;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -61,8 +66,14 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
     @Autowired
     private BusinessOrderUserStatisticsApiService businessOrderUserStatisticsApiService;
 
+    @Autowired
+    private BusinessTypeSettingApiService businessTypeSettingApiService;
+
     @Value("${workorder.return.visit.resource.key}")
     private String returnVisitResourceKey;
+
+    @Autowired
+    private AreaInfoApiService smartAreaInfoApiService;
 
 
     @Override
@@ -77,6 +88,17 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
             logger.error("工单信息未找到, id = {}", longEventMessage.getData());
             return;
         }
+        AreaInfo areaInfo = smartAreaInfoApiService.findOne(businessAcceptOrder.getAreaId());
+        if (areaInfo == null) {
+            logger.error("小区信息未找到, areaId = {}", businessAcceptOrder.getAreaId());
+            return;
+        }
+        BusinessTypeSetting businessTypeSetting = businessTypeSettingApiService.findByUniqueCodeAndTopTypeId(areaInfo.getUniqueCode(), businessAcceptOrder.getTopLevelTypeId().longValue());
+        if (businessTypeSetting != null && businessTypeSetting.getIsReturnVisit().equals(YesOrNo.No)) {
+            logger.error("该类型工单不需要进行回访, typeId = {}", businessAcceptOrder.getTopLevelTypeId());
+            return;
+        }
+
         List<BusinessTypeUserSetting> businessTypeUserSettingList = businessTypeUserSettingApiService.findByAreaIdAndTopTypeIdAndStatus(businessAcceptOrder.getAreaId().longValue(), businessAcceptOrder.getTopLevelTypeId().longValue(), BusinessAcceptStatus.ReturnVisited);
         Map<String, UserAccountIndex> userOpenIds = Maps.newHashMap();
         if (!CollectionUtils.isEmpty(businessTypeUserSettingList)) {
@@ -115,7 +137,7 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
                     }
                 }
             }
-            List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("user_area", ApiRequest.newInstance().filterEqual(QUserAccountAreaIndex.areaId, businessAcceptOrder.getAreaId())).cascadeChild("user_roles", ApiRequest.newInstance().filterIn(QUserRolesIndex.sysRolesId, roleIdSet).filterEqual(QUserRolesIndex.deleteStatus, DeleteStatus.NORMAL.toString())));
+            List<UserAccountIndex> userAccountIndices = businessUserAccountIndexApiService.findAccountAll(ApiRequest.newInstance().cascadeChild("user_area", ApiRequest.newInstance().filterEqual(QUserAccountAreaIndex.areaId, businessAcceptOrder.getAreaId()).filterEqual(QUserAccountAreaIndex.disableStatus, EnableDisableStatus.ENABLE)).cascadeChild("user_roles", ApiRequest.newInstance().filterIn(QUserRolesIndex.sysRolesId, roleIdSet).filterEqual(QUserRolesIndex.deleteStatus, DeleteStatus.NORMAL.toString())));
             if (!CollectionUtils.isEmpty(userAccountIndices)) {
                 Map<String, UserAccountIndex> userAccountIndexMap = userAccountIndices.stream().collect(Collectors.toMap(UserAccountIndex::getId, userAccountIndex -> userAccountIndex));
                 List<Oauth2AccountIndex> oauth2AccountIndexList = businessUserAccountIndexApiService.findAll(ApiRequest.newInstance().filterIn(QOauth2AccountIndex.accountId, userAccountIndices.stream().map(UserAccountIndex::getId).collect(Collectors.toList())).filterEqual(QOauth2AccountIndex.clientId, "sqbj-smart"));
