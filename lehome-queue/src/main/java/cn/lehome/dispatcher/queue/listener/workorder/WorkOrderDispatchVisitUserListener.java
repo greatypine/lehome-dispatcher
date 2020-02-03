@@ -72,6 +72,11 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
     @Value("${workorder.return.visit.resource.key}")
     private String returnVisitResourceKey;
 
+    @Value("${workorder.return.visit.app.resource.key}")
+    private String returnAppVisitResourceKey;
+
+
+
     @Autowired
     private AreaInfoApiService smartAreaInfoApiService;
 
@@ -123,7 +128,8 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
             }
             Map<Long, List<SysRolesAuth>> listMap = sysRoleApiService.findByRoleIds(sysRoles.stream().map(SysRole::getId).collect(Collectors.toList()));
             List<Resources> resourcesList = resourceApiService.findAll(ApiRequest.newInstance().filterEqual(QResources.key, returnVisitResourceKey));
-            if (CollectionUtils.isEmpty(resourcesList)) {
+            List<Resources> appResourcesList = resourceApiService.findAll(ApiRequest.newInstance().filterEqual(QResources.key, returnAppVisitResourceKey));
+            if (CollectionUtils.isEmpty(resourcesList) && CollectionUtils.isEmpty(appResourcesList)) {
                 logger.error("未找到资源信息");
                 return;
             }
@@ -131,7 +137,11 @@ public class WorkOrderDispatchVisitUserListener extends AbstractJobListener {
             for (Long sysRoleId : listMap.keySet()) {
                 List<SysRolesAuth> sysRolesAuthList = listMap.get(sysRoleId);
                 for (SysRolesAuth sysRolesAuth : sysRolesAuthList) {
-                    if (sysRolesAuth.getModelKey().startsWith(resourcesList.get(0).getAppKey()) && AuthPermissionValueUtils.checkAuth(sysRolesAuth.getPermissionValue(), Lists.newArrayList(resourcesList.get(0).getAuthValue()))) {
+                    if (!CollectionUtils.isEmpty(resourcesList) && sysRolesAuth.getModelKey().startsWith(resourcesList.get(0).getAppKey()) && AuthPermissionValueUtils.checkAuth(sysRolesAuth.getPermissionValue(), Lists.newArrayList(resourcesList.get(0).getAuthValue()))) {
+                        roleIdSet.add(sysRoleId);
+                        break;
+                    }
+                    if (!CollectionUtils.isEmpty(appResourcesList) && sysRolesAuth.getModelKey().startsWith(appResourcesList.get(0).getAppKey()) && AuthPermissionValueUtils.checkAuth(sysRolesAuth.getPermissionValue(), Lists.newArrayList(appResourcesList.get(0).getAuthValue()))) {
                         roleIdSet.add(sysRoleId);
                         break;
                     }
