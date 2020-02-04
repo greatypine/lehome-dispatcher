@@ -29,8 +29,8 @@ import java.util.*;
 @Service("smartOpenDoorDataService")
 public class SmartOpenDoorDataServiceImpl extends AbstractInvokeServiceImpl {
 
-    @Autowired
-    private PartnerCommunityApiService partnerCommunityApiService;
+    //@Autowired
+    //private PartnerCommunityApiService partnerCommunityApiService;
 
 //    @Autowired
 //    private SmartHttpRequestApiService smartHttpRequestApiService;
