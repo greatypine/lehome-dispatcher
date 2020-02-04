@@ -24,6 +24,7 @@
     <import resource="classpath*:provider/base-api/common-user-service.xml"/>
     <import resource="classpath*:provider/base-api/workorder-service.xml"/>
     <import resource="classpath*:provider/base-api/base-finance-service.xml"/>
+    <import resource="classpath*:provider/iot-basic-service/iot-property-device-management-consumer.xml"/>
 
     <dubbo:reference id="subassemblyDetailApiService" interface="cn.lehome.base.api.common.operation.service.module.subassembly.SubassemblyDetailApiService" group="com"/>
     <dubbo:reference id="pushPlanApiService" interface="cn.lehome.base.api.common.operation.service.push.PushPlanApiService" group="com"/>
